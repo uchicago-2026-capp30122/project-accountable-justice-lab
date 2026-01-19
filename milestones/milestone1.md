@@ -26,28 +26,28 @@ Source Type: API
 Summary: Last year, the Mexican Supreme Court of Justice released an API for developers to access information regarding tesis and jurisprudencia (legal precedents) and court rulings.
 
 For the tesis/jurisprudencia part, the most relevant information is: 
-Unique registry number 
-Year
-Month
-Type of the court that emitted the precedent 
-Name of the court that emitted the precedent
-Subject 
-Type of tesis (tesis or jurisprudencia)
-Title
-Text 
+- Unique registry number 
+- Year
+- Month
+- Type of the court that emitted the precedent 
+- Name of the court that emitted the precedent
+- Subject 
+- Type of tesis (tesis or jurisprudencia)
+- Title
+- Text 
 
 For the court ruling part, the most relevant information is:
-File number 
-Court 
-Justice that was assigned to emit the decision
-Topic
-Court case of origin (the Supreme Court usually reviews lower courts’ decisions)
-Court of origin (the Supreme Court usually reviews lower courts’ decisions)
-Date of ruling 
-Resolutive points 
-Justice that actually emitted the decision
-Ruling document 
-Voting result (unanimous decision, majority, etc.). 
+- File number 
+- Court 
+- Justice that was assigned to emit the decision
+- Topic
+- Court case of origin (the Supreme Court usually reviews lower courts’ decisions)
+- Court of origin (the Supreme Court usually reviews lower courts’ decisions)
+- Date of ruling 
+- Resolutive points 
+- Justice that actually emitted the decision
+- Ruling document 
+- Voting result (unanimous decision, majority, etc.). 
 
 
 Challenges:
@@ -70,7 +70,7 @@ Although this platform contains historical data, the time required for public en
 
 ## Questions
 
-The first data source (API) uses pagination to access the ids of tesis and jurisprudencia (which should later be used to access the json of each), but we’re not sure how to apply that pagination and not get the same result every time (GET  /api/v1/tesis/ids). We would like to check with you how to apply this pagination. We have an alternative solution if this is a design problem of the API. 
-We are not sure what the best strategy for the second data source is. We believe the best path would be to do bulk download of json files and rather do the linking between data sources through those json files and not through a web-scrapping technique. 
-What is the minimum number of variables that the justice’s profile should have? Should we run some sort of statistical test to check for the independence of these variables? 
+1) The first data source (API) uses pagination to access the ids of tesis and jurisprudencia (which should later be used to access the json of each), but we’re not sure how to apply that pagination and not get the same result every time (GET  /api/v1/tesis/ids). We would like to check with you how to apply this pagination. We have an alternative solution if this is a design problem of the API. 
+2) We are not sure what the best strategy for the second data source is. We believe the best path would be to do bulk download of json files and rather do the linking between data sources through those json files and not through a web-scrapping technique. 
+3) What is the minimum number of variables that the justice’s profile should have? Should we run some sort of statistical test to check for the independence of these variables? 
 
