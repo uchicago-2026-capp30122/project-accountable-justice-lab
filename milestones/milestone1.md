@@ -74,3 +74,4 @@ Although this platform contains historical data, the time required for public en
 2) We are not sure what the best strategy for the second data source is. We believe the best path would be to do bulk download of json files and rather do the linking between data sources through those json files and not through a web-scrapping technique. 
 3) What is the minimum number of variables that the justice’s profile should have? Should we run some sort of statistical test to check for the independence of these variables? 
 
+### Milestone 2 Notes
