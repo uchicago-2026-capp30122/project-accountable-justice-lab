@@ -57,7 +57,7 @@ def extraer_todo_el_pdf(pdf_path):
 # --- EJECUCIÓN ---
 try:
     print("Iniciando extracción de 1.pdf...")
-    registro = extraer_todo_el_pdf("1.pdf")
+    registro = extraer_todo_el_pdf("data_3/1.pdf")
     
     # Creamos el DataFrame
     df = pd.DataFrame([registro])
