@@ -8,19 +8,15 @@
 
 ## Abstract
 
-Our project focuses on metrics related to Mexico’s Supreme Court, with special emphasis on its justices. We will approach these metrics from two perspectives: transparency and access to public information and “judicial content production”. The second perspective (transparency and access to public information) will examine two elements. The first, corresponds to requests of information addressed to the Supreme Court, which we will link to specific topics of interest, but particularly, when directly referencing justices. We will link all requests of public information linked to each of the Supreme Court justices and analyze what kind of information people are most interested in. Additionally, we will also add metrics related to the proportion of responses that fully addressed the requests or those that were discarded (and thus there was not a satisfactory answer). Once again, we will do this both for the Supreme Court as a whole and also for each justice (we will try to do this with as many justices as possible even if they are no longer in office). 
+Our project focuses on metrics related to Mexico’s Supreme Court, with special emphasis on its justices. We will approach these metrics from two perspectives: transparency and access to public information and “judicial content production”. The first perspective (transparency and access to public information) will examine two elements. The first, corresponds to requests of information addressed to the Supreme Court, which we will link to specific topics of interest, but particularly, when directly referencing justices. We will link all requests of public information linked to each of the Supreme Court justices and analyze what kind of information people are most interested in. Additionally, we will also add metrics related to the proportion of responses that fully addressed the requests or those that were discarded (and thus there was not a satisfactory answer). Once again, we will do this both for the Supreme Court as a whole and also for each justice (we will try to do this with as many justices as possible even if they are no longer in office). The second element related to transparency and access to justice will link justice’s annual income and asset disclosures, which we will process to identify each of the justice’s education, previous work experience and assets (personal property, real estate, vehicles, etc.). 
 
-The second element related to transparency and access to justice will link justice’s annual income and asset disclosures, which we will process to identify each of the justice’s education, previous work experience and assets (personal property, real estate, vehicles, etc.). 
-
-For the second perspective (judicial content production), we will build a set of performance and effectiveness indicators, applicable to the Supreme Court as a whole and to each of the justices: number of court cases processed per year, number of rulings passed by unanimity, number of precedents created, and most recurring topics ruled. For this component, we will use the Supreme Court of Justice’s API, which provides access to two sources of information: tesis/jurisprudencia (similar to judicial precedents) and court rulings.
+For the second perspective (judicial content production), we will build a set of performance and effectiveness indicators, applicable to the Supreme Court as a whole and to each of the justices: number of court cases processed per year, number of rulings passed by unanimity, number of precedents created, and most recurring topics ruled. For this component, we will use bulk data previously consulted and the Supreme Court of Justice’s API, which provides access to two sources of information: tesis/jurisprudencia (similar to judicial precedents) and court rulings.
 
 Our objective with this project is to develop a platform that incorporates relevant information regarding performance metrics of the Supreme Court and its justices. We will create a dashboard template applicable to the institution and each judge, which will incorporate both perspectives previously mentioned. 
 
 This is particularly relevant in Mexico’s current institutional context: in 2025, the judicial selection mechanism shifted from a career-based public service system to an electoral model in which all judges are elected by popular vote. Eligibility requirements were lowered, removing mandatory prior judicial experience. We intend for this platform to serve as a foundation for future statistical analyses of the reform’s effect on judicial indicators, such as productivity, independence and quality, and to eventually expand this analysis beyond the Supreme Court to include judges at the federal and local level who have been recently elected. 
 
-*These details can & will change as much as needed over the next few weeks.*
-
-## Preliminary Data Sources
+## Data Sources
 
 ### Data Source #1
 Person in charge: María Muñoz
@@ -42,7 +38,7 @@ Title
 Text 
 
 Approximate number of records: 311,033
-When filtering for the Supreme Court and 2015-2016 we get around 600 records (this is historical data that includes tesis since the 1930s). Given the reduction of information, we are considering keeping all records for the general trend analysis and keep information from 2015 on regarding topic analysis (we could expand this time frame such that we get robust results and enough variability across justices). 
+When filtering for the Supreme Court and 2015-2026 we get around 6,000 records (this is historical data that includes tesis since the 1930s). Given the reduction of information, we are considering keeping all records for the general trend analysis and keep information from 2015 on regarding topic analysis (we could expand this time frame such that we get robust results and enough variability across justices). 
 Approximate number of attributes: 17
 
 For the court ruling part, the most relevant information is:
@@ -59,14 +55,14 @@ Ruling document
 Voting result (unanimous decision, majority, etc.). 
 
 Approximate number of records: 104,901
-Approximate number of attributes: 11
+Approximate number of attributes: 15 
 
 Current status: 
-We had access to bulk historical data (up until August 2025). We have already processed and integrated this data in one json file as well as individual json files corresponding to each tesis and ruling. We will use this information as the starting point where we will add our API requests for information from August 2025 on. There is one small detail regarding one field’s text that we would like to check with James and see whether it will present issues. 
+We had access to bulk historical data (up until August 2025). We have already processed and integrated this data in one json file for tesis as well as individual json files corresponding to each tesis. We are currently working on the ruling integration. However, we have encountered some issues regarding how data is viewed (file numbers were interpreted as dates in the csv file) and some fields in the bulk data do not match the fields available in the API. We will use this information as the starting point where we will add our API requests for information from August 2025 on. 
 Both APIs’ structures have been analyzed and preliminary code has been written. We will need to access around 2,000 extra records for this period. We expect the API to be done by Week 5 and completely integrated with historical data (into a unique json per type of information and individual jsons to keep records of the information accessed).
 
 Challenges:
-One of our objectives is to reconcile the data contained in the tesis API with court rulings (a tesis consists of a judicial criterion that is produced and extracted from a court ruling). Therefore, we can see which tesis were produced per ruling - although not all rulings have tesis. However, when analyzing the data, we noticed there is one key component in the ruling data structure that would have allowed us to do a clean and complete match between those two sources (tipo de asunto). Because of this, we will try to match them using: file number, justice, date as the primary matching components and identify the percentage of cases we were able to match. 
+One of our objectives is to reconcile the data contained in the tesis API with court rulings (a tesis consists of a judicial criterion that is produced and extracted from a court ruling). Therefore, we can see which tesis were produced per ruling - although not all rulings have tesis. However, when analyzing the data, we noticed there is one key component in the ruling data structure that would have allowed us to do a clean and complete match between those two sources (tipo de asunto - this field is available in our bulk data). Because of this, we will try to match them using: file number, justice, date as the primary matching components and identify the percentage of cases we were able to match. 
 
 We have also asked around if it is possible for them to change the API such that we can access this element. 
 
