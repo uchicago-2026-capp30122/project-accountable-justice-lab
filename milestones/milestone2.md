@@ -140,6 +140,7 @@ Data source 3: Daniela Avayu
  1) Analyze multiple PDFs to understand most important data assets and understand differences in information
  2) Do the skeleton code to scrap one PDF
  3) Understand scope: how can this code replicate the process for all PDFs
+
 **Week 6**
 Data Analysis and conciliation:
 1) Definition of general metrics per data source: each person will be responsible for their data sources. 
@@ -147,11 +148,14 @@ Data Analysis and conciliation:
   - Connection between tesis and rulings (María Muñoz)
   - Conciliation between justices and requests for public information (María Muñoz and Jimena Gómez)
   - Conciliation between justices and asset disclosures (María Muñoz and Daniela Avayú). 
+
 **Week 7**
 - Final definition visualizations and principal insights we would like to show at a general level (Supreme Court of Justice) and individual (justices). 
 - Final design of the page’s template. 
+
 **Week 8**
 Page design, implementation and execution. 
+
 **Week 9**
 Final update of available information. 
 
