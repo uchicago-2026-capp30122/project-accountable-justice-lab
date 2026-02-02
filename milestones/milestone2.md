@@ -120,41 +120,39 @@ Tesis/court rulings with information requests and asset disclosures: we will ext
 ## Project plan 
 
 
-Week
-Tasks
-Week 5
-Data source 1: Maria Muñoz
-Transform historical data into a unique json file and individual json files (done)
-Filter all information to keep only the Supreme Court of Justice’s tesis and rulings from 2015 to August 2025 (done)
-Design and execute API requests for remaining information between August 2025 and January 2026 (in process). 
-Start exploring and testing matches between tesis and rulings. 
+Weekly Tasks
+**Week 5**
+- Data source 1: Maria Muñoz
+ 1) Transform historical data into a unique json file and individual json files (done)
+ 2) Filter all information to keep only the Supreme Court of Justice’s tesis and rulings from 2015 to August 2025 (done)
+ 3) Design and execute API requests for remaining information between August 2025 and January 2026 (in process). 
+ 4) Start exploring and testing matches between tesis and rulings. 
 
 Data source 2: Jimena Gómez
-Begin writing code and run n-gram analysis to identify most frequent terms and validate categories to do the following:
-Filter requests mentioning Supreme Court justices or the SCJN (names, “Minister”, “Justice”, “SCJN”).
-Extract request outcome/status to classify
-Compute access-to-information indicators by justice and aggregated
-Classify request content using keyword rules
-Build yearly counts of requests to identify peaks and time trends
+ 1) Begin writing code and run n-gram analysis to identify most frequent terms and validate categories to do the following:
+ 2) Filter requests mentioning Supreme Court justices or the SCJN (names, “Minister”, “Justice”, “SCJN”).
+ 3) Extract request outcome/status to classify
+ 4) Compute access-to-information indicators by justice and aggregated
+ 5) Classify request content using keyword rules
+ 6) Build yearly counts of requests to identify peaks and time trends
 
 Data source 3: Daniela Avayu 
-Analyze multiple PDFs to understand most important data assets and understand differences in information
-Do the skeleton code to scrap one PDF
-Understand scope: how can this code replicate the process for all PDFs
-Week 6
-Data Analysis and conciliation: 
-Definition of general metrics per data source: each person will be responsible for their data sources. 
-Data conciliation execution:
-Connection between tesis and rulings (María Muñoz)
-Conciliation between justices and requests for public information (María Muñoz and Jimena Gómez)
-Conciliation between justices and asset disclosures (María Muñoz and Daniela Avayú). 
-Week 7
-Final definition visualizations and principal insights we would like to show at a general level (Supreme Court of Justice) and individual (justices). 
-
-Final design of the page’s template. 
-Week 8
+ 1) Analyze multiple PDFs to understand most important data assets and understand differences in information
+ 2) Do the skeleton code to scrap one PDF
+ 3) Understand scope: how can this code replicate the process for all PDFs
+**Week 6**
+Data Analysis and conciliation:
+1) Definition of general metrics per data source: each person will be responsible for their data sources. 
+2) Data conciliation execution:
+  - Connection between tesis and rulings (María Muñoz)
+  - Conciliation between justices and requests for public information (María Muñoz and Jimena Gómez)
+  - Conciliation between justices and asset disclosures (María Muñoz and Daniela Avayú). 
+**Week 7**
+- Final definition visualizations and principal insights we would like to show at a general level (Supreme Court of Justice) and individual (justices). 
+- Final design of the page’s template. 
+**Week 8**
 Page design, implementation and execution. 
-Week 9
+**Week 9**
 Final update of available information. 
 
 
