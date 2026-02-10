@@ -24,10 +24,10 @@ def extraer_remuneracion_desde_texto(texto: str) -> int | None:
     #Divides text in lines and strip to eliminate spaces
     lines = [ln.strip() for ln in texto.splitlines()]
 
-    # Encontrar la primera ocurrencia del header de remuneración (sección 8)
+    #Loop through line by line and search if it has what we are looking for: remuneración (sección 8)
     for i, ln in enumerate(lines):
         if re.search(r"\bI\.\s*REMUNERACI[ÓO]N\b", ln, re.IGNORECASE):
-            # Buscar monto en una ventana cercana (misma línea + siguientes 8 líneas)
+            #Create search window 
             window = " ".join(lines[i:i+9])
             m = MXN_RE.search(window)
             if m:
