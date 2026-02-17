@@ -1,4 +1,3 @@
-# part3_extract_remuneracion.py
 import re
 from pathlib import Path
 import pandas as pd
@@ -20,8 +19,7 @@ def extract_salary_from_text(text: str) -> int | None:
     Looks for salary in section 8. When it finds a line with 'I. REMUNERACIÓN' (mensual/anual/año en curso...)
     looks for first '#### MXN' in that line or next lines.
     """
-
-def extract_salary_from_text(text: str):
+    
     lines = [ln.strip() for ln in text.splitlines()]
     for i, ln in enumerate(lines):
         if re.search(r"\bI\.\s*REMUNERACI[ÓO]N\b", ln, re.IGNORECASE):
