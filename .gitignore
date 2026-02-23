@@ -1,0 +1,5 @@
+.DS_Store
+*.pyc
+_cache
+sentencias_data
+tesis_data
