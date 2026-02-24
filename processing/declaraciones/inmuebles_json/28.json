@@ -1,0 +1,24 @@
+[
+  {
+    "tipo_inmueble": "Baja                                                    Casa",
+    "titular": "DECLARANTE                                                                                                                                 100 %",
+    "porcentaje": null,
+    "superficie_terreno_m2": 622,
+    "superficie_construccion_m2": 548,
+    "forma_adquisicion": "COMPRAVENTA                                                                       CRÉDITO",
+    "forma_pago": "COMPRAVENTA                                                                       CRÉDITO",
+    "valor_adquisicion_mxn": 4235000,
+    "fecha_adquisicion": "04/11/2004"
+  },
+  {
+    "tipo_inmueble": "Sin Cambios                                             Terreno",
+    "titular": "DECLARANTE                                                                                                                                 100 %",
+    "porcentaje": null,
+    "superficie_terreno_m2": 1000,
+    "superficie_construccion_m2": 0,
+    "forma_adquisicion": "COMPRAVENTA                                                                       CONTADO",
+    "forma_pago": "COMPRAVENTA                                                                       CONTADO",
+    "valor_adquisicion_mxn": 50000,
+    "fecha_adquisicion": "30/11/1990"
+  }
+]

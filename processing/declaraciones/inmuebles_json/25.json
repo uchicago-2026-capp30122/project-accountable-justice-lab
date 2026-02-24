@@ -1,0 +1,24 @@
+[
+  {
+    "tipo_inmueble": "Agregar                                                 Departamento",
+    "titular": "DECLARANTE                                                                                                                                 100 %",
+    "porcentaje": null,
+    "superficie_terreno_m2": 182,
+    "superficie_construccion_m2": 142,
+    "forma_adquisicion": "COMPRAVENTA                                                                  CONTADO",
+    "forma_pago": "COMPRAVENTA                                                                  CONTADO",
+    "valor_adquisicion_mxn": 5550000,
+    "fecha_adquisicion": "20/09/2018"
+  },
+  {
+    "tipo_inmueble": "Agregar                                                     Departamento",
+    "titular": "DECLARANTE                                                                                                                              100 %",
+    "porcentaje": null,
+    "superficie_terreno_m2": 360,
+    "superficie_construccion_m2": 103,
+    "forma_adquisicion": "COMPRAVENTA                                                                    CRÉDITO",
+    "forma_pago": "COMPRAVENTA                                                                    CRÉDITO",
+    "valor_adquisicion_mxn": 1300000,
+    "fecha_adquisicion": "17/06/2004"
+  }
+]
