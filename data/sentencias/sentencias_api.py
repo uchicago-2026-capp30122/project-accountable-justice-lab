@@ -67,30 +67,6 @@ def get_total_ids(url, api_type):
     return sorted(id_list_total, reverse=True)
 
 
-def get_id_list(url, api_type, page_number):
-    """
-
-    This functions gets list of ids from API, looping over every page number.
-
-    Inputs:
-        url (str): base URL for API request
-        api_type (str): type of information we are accessing ('tesis' or 'engroses')
-    #     page_number (int): page number to access
-
-    # Outputs:
-    #     id_list (list): list of ids found in a specific page of the API
-
-    #"""
-
-    # if page_number == 0:
-    #     id_list = cached_get(api_type, "ids")
-    # else:
-    #     kwargs = {"page": str(page_number)}
-    #     id_list = cached_get(api_type, "ids", **kwargs)
-
-    # return id_list
-
-
 def get_all_rulings(url, api_type):
     """
 
@@ -110,18 +86,17 @@ def get_all_rulings(url, api_type):
     id_list_total = get_total_ids(BASE_URL, api_type)
 
     engroses_data_general = []
-    counter = 0
+    #  counter = 0
     for id_record in id_list_total[0:MAX_RECORDS]:
-        print(id_record)
+        #    print(id_record)
         response = cached_get(api_type, id_record)
         response["fuenteExtraccion"] = "api"
         response["idSentencia"] = id_record
         engroses_data_general.append(response)
         # counter to test a subset of elements
-        counter += 1
-        if counter == 5:
-            break
-    print(counter)
+    #   counter += 1
+
+    # print(counter)
     return engroses_data_general
 
 
