@@ -12,24 +12,43 @@ have tesis from both the supreme count and lower courts. For
 the purposes of this project, we are only interested in supreme court. 
 """
 
-
-FILENAME = "Tesis.csv"
-
 BASE_DIR = Path(__file__).parent
+
 TESIS_DIR = BASE_DIR / "tesis_data"
 if not TESIS_DIR.is_dir():
     TESIS_DIR.mkdir(parents=True, exist_ok=True)
-JSON_TESIS_DIR = TESIS_DIR / "_tesis_json_historical"
+
+RAW_DATA = TESIS_DIR / "raw_data"
+if not TESIS_DIR.is_dir():
+    TESIS_DIR.mkdir(parents=True, exist_ok=True)
+
+JSON_TESIS_DIR = TESIS_DIR / "_cache"
 if not JSON_TESIS_DIR.is_dir():
     JSON_TESIS_DIR.mkdir(parents=True, exist_ok=True)
 
+JSON_TESIS_DIR_H = JSON_TESIS_DIR / "_tesis_json_historical"
+if not JSON_TESIS_DIR_H.is_dir():
+    JSON_TESIS_DIR_H.mkdir(parents=True, exist_ok=True)
 
-def load_tesis():
+# Will be located in tesis_data/raw_data
+FILENAME = "Tesis.csv"
+
+
+def load_tesis_csv():
     """
-    Process csv file into a pandas dataframe and rename columns according to API
-    structure
+    This function loads the original 'Tesis.csv' file provided by the Supreme
+    Court. It updates some information, including column names to be homogeneized
+    with the Supreme Court's API structure. After basic cleaning and adding a
+    column to identify its source (fuenteExtraccion = 'csv'), integrated data is
+    exported to a json and csv file.
+
+    Inputs: None
+
+    Output: tesis (pandas dataframe). This dataframe includes all historical
+    tesis up to july 2025.
+
     """
-    file_path = BASE_DIR / FILENAME
+    file_path = RAW_DATA / FILENAME
     # Set all columns to strings
     tesis_original = pd.read_csv(file_path, dtype=str)
 
@@ -80,42 +99,47 @@ def load_tesis():
 
 
 def convert_to_json(df, dir_name, filename):
-    # Convert any dataframe to json file
+    """
+    This function converts a pandas dataframe into a json file and saves it in
+    a given directory.
+    """
+
     output_file_json = dir_name / filename
     df.to_json(output_file_json, orient="records", force_ascii=False, indent=4)
 
 
-def check_correct_load(filename):
-
-    # Check that json loaded correctly. this will be a test
-
-    with open(TESIS_DIR / filename) as t:
-        tesis_json = json.load(t)
-
-    # assert len(tesis_json) == 310111 - for "tesis_historical.json"
-    return len(tesis_json)
-
-
+# this function will be transfered to utils in cleaning
 def filter_by_instancia(tesis, instancia: str):
     # Filter by column instancia
     tesis_instancia = tesis[tesis["instancia"] == instancia]
     return tesis_instancia
 
 
+# this function will be transfered to utils in cleaning
 def filter_by_year(tesis, year: int):
     # Filter by column anio
     tesis_year = tesis[tesis["anio"] >= year]
     return tesis_year
 
 
-def do_everything():
+def upload_historical_information():
+    """
+    This function loads the original 'Tesis.csv' file provided by the Supreme
+    Court and creates individual files for information related to the Supreme
+    Court only (instancia) and from 2015 on. This to avoid the generation of
+    hundreds of thousands of json files.
 
-    tesis = load_tesis()
+    Inputs: None
+
+    Output: None.
+    """
+
+    tesis = load_tesis_csv()
 
     tesis_scjn = filter_by_instancia(tesis, "Suprema Corte de Justicia de la Nación")
     tesis_scjn_2015 = filter_by_year(tesis_scjn, 2015)
 
-    output_filename = "tesis_scjn_2015.json"
+    output_filename = "tesis_scjn_historical_2015.json"
     convert_to_json(tesis_scjn_2015, TESIS_DIR, output_filename)
 
     # create json files
@@ -123,23 +147,25 @@ def do_everything():
 
 
 def create_individual_files(general_json_file):
+    """
+    This function creates individual json files for each tesis record. This
+    function can take in any json file that integrates a specific number of tesis.
+    For the purposes of this project, we will only convert individual json files
+    for tesis by the Supreme Court from 2015 up to july 2025 (for historical data)
+
+    Inputs: None
+
+    Output: None. Generates json files
+    """
 
     with open(general_json_file) as t:
         tesis_json_2015 = json.load(t)
 
-    # load each tesis to a json file
-    if not JSON_TESIS_DIR.is_dir():
-        JSON_TESIS_DIR.mkdir(parents=True, exist_ok=True)
-
-    # mkdir of json files
-    tesis_number = 0
+    # create individual json files
     for tesis in tesis_json_2015:
         if tesis["anexos"] is None:
             tesis["anexos"] = "Sin anexos"
         filename = str(tesis["idTesis"]) + ".json"
-        file_path = JSON_TESIS_DIR / filename
+        file_path = JSON_TESIS_DIR_H / filename
         with open(file_path, "w") as f:
             json.dump(tesis, f, ensure_ascii=False, indent=4)
-        tesis_number += 1
-    print(tesis_number)
-    # total tesis files: 5374
