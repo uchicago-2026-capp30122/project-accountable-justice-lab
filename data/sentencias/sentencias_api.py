@@ -86,17 +86,16 @@ def get_all_rulings(url, api_type):
     id_list_total = get_total_ids(BASE_URL, api_type)
 
     engroses_data_general = []
-    #  counter = 0
-    for id_record in id_list_total[0:MAX_RECORDS]:
-        #    print(id_record)
-        response = cached_get(api_type, id_record)
-        response["fuenteExtraccion"] = "api"
-        response["idSentencia"] = id_record
-        engroses_data_general.append(response)
-        # counter to test a subset of elements
-    #   counter += 1
 
-    # print(counter)
+    for id_record in id_list_total[0:MAX_RECORDS]:
+        response = cached_get(api_type, id_record)
+        if datetime.strptime(
+            response["fechaResolucion"], "%d/%m/%Y"
+        ) > datetime.strptime("09/07/2025", "%d/%m/%Y"):
+            response["fuenteExtraccion"] = "api"
+            response["idSentencia"] = id_record
+            engroses_data_general.append(response)
+
     return engroses_data_general
 
 
