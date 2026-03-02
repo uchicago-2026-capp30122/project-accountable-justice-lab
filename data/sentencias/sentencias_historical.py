@@ -69,7 +69,7 @@ def load_sentencias_csv():
             # equivalent to url sentencia - this is a document
             "Documento de Sentencia VP": "documentoSentencia",
             "Votación": "votacion",
-            "Asuntos acumulados": "asuntos_acumulados",
+            "Asuntos acumulados": "asuntosAcumulados",
             # tipo de asunto not in API
             "Tipo de asunto": "tipoAsunto",
             "Certificado Digital": "huellaDigital",
@@ -90,7 +90,7 @@ def load_sentencias_csv():
     sentencias["expedienteOrigen"] = sentencias["expedienteOrigen"].apply(str)
     sentencias["expedienteOrigen"] = sentencias["expedienteOrigen"].apply(clean_date)
 
-    sentencias["asuntos_acumulados"] = sentencias["asuntos_acumulados"].fillna(
+    sentencias["asuntosAcumulados"] = sentencias["asuntosAcumulados"].fillna(
         "Sin asuntos acumulados"
     )
     sentencias["fuenteExtraccion"] = "csv"

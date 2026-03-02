@@ -48,13 +48,13 @@ def get_ministro(precedentes: str):
     pattern = (
         r"(?<=Ponente:\s)[A-Z][a-záéíóúüñ]+(?:\s[A-Z]\.)*(?:\s[A-Z][a-záéíóúüñ]+)+"
     )
-    noise = r"Ministr[o|a]\s|President[e|a]\s"
+    noise = r"ministr[o|a]\s|president[e|a]\s"
     ministro = re.findall(pattern, precedentes)
 
     if not ministro:
         return "sin datos"
-    
-    ministro = " ".join(ministro)
+
+    ministro = " ".join(ministro).lower()
     return re.sub(noise, "", ministro)
 
 
