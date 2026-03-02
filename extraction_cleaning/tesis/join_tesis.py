@@ -45,13 +45,17 @@ def join_tesis_sources():
 
 def get_ministro(precedentes: str):
 
-    pattern = r"Ponente: (.*?)\."
+    pattern = (
+        r"(?<=Ponente:\s)[A-Z][a-záéíóúüñ]+(?:\s[A-Z]\.)*(?:\s[A-Z][a-záéíóúüñ]+)+"
+    )
+    noise = r"Ministr[o|a]\s|President[e|a]\s"
     ministro = re.findall(pattern, precedentes)
 
-    if len(ministro) == 0:
+    if not ministro:
         return "sin datos"
-    else:
-        return " ".join(ministro)
+    
+    ministro = " ".join(ministro)
+    return re.sub(noise, "", ministro)
 
 
 def get_votacion_pleno(precedentes: str):
@@ -104,7 +108,3 @@ def simplify_materia(materias):
         return materia.group()
     else:
         return ""
-
-
-# total_per_year = tesis_scjn_2015.groupby(["epoca", "anio"])["mes"].count()
-# total_per_year = tesis_scjn.groupby(["epoca", "anio"])["mes"].count()
