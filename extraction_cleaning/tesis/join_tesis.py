@@ -87,7 +87,6 @@ def get_votacion_salas(precedentes: str):
         else:
             return ""
 
-
 def filter_by_instancia(tesis, instancia: str):
     # Filter by column instancia
     tesis_instancia = tesis[tesis["instancia"] == instancia]
@@ -108,3 +107,7 @@ def simplify_materia(materias):
         return materia.group()
     else:
         return ""
+
+
+if __name__ == "__main__":
+    join_tesis_sources()

@@ -6,7 +6,6 @@ import time
 from datetime import datetime
 from pathlib import Path
 from http_tesis import cached_get
-# from .http_scjn import cached_get
 
 BASE_DIR = Path(__file__).parent
 
@@ -158,3 +157,7 @@ def get_id_list(url, api_type, page_number):
         tesis_data_general.append(response)
 
     return tesis_data_general, tesis_data_scjn, page_number
+
+
+if __name__ == "__main__":
+    build_tesis_csv()

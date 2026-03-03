@@ -169,3 +169,7 @@ def create_individual_files(general_json_file):
         file_path = JSON_TESIS_DIR_H / filename
         with open(file_path, "w") as f:
             json.dump(tesis, f, ensure_ascii=False, indent=4)
+
+
+if __name__ == "__main__":
+    upload_historical_information()

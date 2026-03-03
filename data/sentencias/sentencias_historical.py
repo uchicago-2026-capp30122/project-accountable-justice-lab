@@ -192,3 +192,7 @@ def clean_date(file: str):
         return formatted_date
     else:
         return file
+
+
+if __name__ == "__main__":
+    upload_historical_information()

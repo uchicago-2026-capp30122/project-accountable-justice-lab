@@ -116,3 +116,7 @@ def build_sentencia_csv():
         writer = csv.DictWriter(f, fieldnames=ENGROSES_CSV_COLUMNS)
         writer.writeheader()
         writer.writerows(engroses_data_general)
+
+
+if __name__ == "__main__":
+    build_sentencia_csv()
