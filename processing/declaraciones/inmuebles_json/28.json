@@ -8,7 +8,9 @@
     "forma_adquisicion": "COMPRAVENTA                                                                       CRÉDITO",
     "forma_pago": "COMPRAVENTA                                                                       CRÉDITO",
     "valor_adquisicion_mxn": 4235000,
-    "fecha_adquisicion": "04/11/2004"
+    "fecha_adquisicion": "04/11/2004",
+    "nombre": "Norma LucÌa",
+    "primer_apellido": "PiÒa"
   },
   {
     "tipo_inmueble": "Sin Cambios                                             Terreno",
@@ -19,6 +21,8 @@
     "forma_adquisicion": "COMPRAVENTA                                                                       CONTADO",
     "forma_pago": "COMPRAVENTA                                                                       CONTADO",
     "valor_adquisicion_mxn": 50000,
-    "fecha_adquisicion": "30/11/1990"
+    "fecha_adquisicion": "30/11/1990",
+    "nombre": "Norma LucÌa",
+    "primer_apellido": "PiÒa"
   }
 ]

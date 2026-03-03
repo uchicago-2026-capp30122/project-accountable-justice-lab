@@ -8,7 +8,9 @@
     "forma_adquisicion": "COMPRAVENTA                                                                  CONTADO",
     "forma_pago": "COMPRAVENTA                                                                  CONTADO",
     "valor_adquisicion_mxn": 5550000,
-    "fecha_adquisicion": "20/09/2018"
+    "fecha_adquisicion": "20/09/2018",
+    "nombre": "Sara Irene",
+    "primer_apellido": "HerrerÌas"
   },
   {
     "tipo_inmueble": "Agregar                                                     Departamento",
@@ -19,6 +21,8 @@
     "forma_adquisicion": "COMPRAVENTA                                                                    CRÉDITO",
     "forma_pago": "COMPRAVENTA                                                                    CRÉDITO",
     "valor_adquisicion_mxn": 1300000,
-    "fecha_adquisicion": "17/06/2004"
+    "fecha_adquisicion": "17/06/2004",
+    "nombre": "Sara Irene",
+    "primer_apellido": "HerrerÌas"
   }
 ]

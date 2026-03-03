@@ -8,6 +8,8 @@
     "forma_adquisicion": "COMPRAVENTA                                                                 CONTADO",
     "forma_pago": "COMPRAVENTA                                                                 CONTADO",
     "valor_adquisicion_mxn": 16534400,
-    "fecha_adquisicion": "05/05/2019"
+    "fecha_adquisicion": "05/05/2019",
+    "nombre": "Javier",
+    "primer_apellido": "Laynez"
   }
 ]

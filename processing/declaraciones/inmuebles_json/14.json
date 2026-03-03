@@ -8,7 +8,9 @@
     "forma_adquisicion": "COMPRAVENTA                                                                 CONTADO",
     "forma_pago": "COMPRAVENTA                                                                 CONTADO",
     "valor_adquisicion_mxn": 675000,
-    "fecha_adquisicion": "11/10/1993"
+    "fecha_adquisicion": "11/10/1993",
+    "nombre": "Loretta",
+    "primer_apellido": "Ortiz"
   },
   {
     "tipo_inmueble": "Sin Cambios                                           Departamento",
@@ -19,6 +21,8 @@
     "forma_adquisicion": "COMPRAVENTA                                                  CONTADO",
     "forma_pago": "COMPRAVENTA                                                  CONTADO",
     "valor_adquisicion_mxn": 2000000,
-    "fecha_adquisicion": "01/05/2004"
+    "fecha_adquisicion": "01/05/2004",
+    "nombre": "Loretta",
+    "primer_apellido": "Ortiz"
   }
 ]

@@ -8,7 +8,9 @@
     "forma_adquisicion": "COMPRAVENTA                                                                  CONTADO",
     "forma_pago": "COMPRAVENTA                                                                  CONTADO",
     "valor_adquisicion_mxn": 3429120,
-    "fecha_adquisicion": "31/08/2011"
+    "fecha_adquisicion": "31/08/2011",
+    "nombre": "Javier",
+    "primer_apellido": "Laynez"
   },
   {
     "tipo_inmueble": "Agregar                                                  Departamento",
@@ -19,7 +21,9 @@
     "forma_adquisicion": "COMPRAVENTA                                                                  CONTADO",
     "forma_pago": "COMPRAVENTA                                                                  CONTADO",
     "valor_adquisicion_mxn": 16534400,
-    "fecha_adquisicion": "05/05/2019"
+    "fecha_adquisicion": "05/05/2019",
+    "nombre": "Javier",
+    "primer_apellido": "Laynez"
   },
   {
     "tipo_inmueble": "Agregar                                                  Departamento",
@@ -30,6 +34,8 @@
     "forma_adquisicion": "COMPRAVENTA                                                                  CRÉDITO",
     "forma_pago": "COMPRAVENTA                                                                  CRÉDITO",
     "valor_adquisicion_mxn": 2500000,
-    "fecha_adquisicion": "09/08/2010"
+    "fecha_adquisicion": "09/08/2010",
+    "nombre": "Javier",
+    "primer_apellido": "Laynez"
   }
 ]
