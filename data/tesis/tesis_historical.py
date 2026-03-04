@@ -93,7 +93,7 @@ def load_tesis_csv():
 
     # Convert from pandas df to a csv file with new column names
     output_file_csv = TESIS_DIR / "tesis_historical_clean.csv"
-    tesis.to_csv(output_file_csv)
+    tesis.to_csv(output_file_csv, index=False)
 
     return tesis
 

@@ -103,7 +103,7 @@ def load_sentencias_csv():
     # Convert from pandas df to a csv file with new column names.
     # file I will merge with the one online. csv join
     output_file_csv = SENTENCIAS_DIR / "sentencias_historical_clean.csv"
-    sentencias.to_csv(output_file_csv)
+    sentencias.to_csv(output_file_csv, index=False)
 
     return sentencias
 

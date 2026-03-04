@@ -14,8 +14,8 @@ api_sourcefile = TESIS_DATA / "tesis_data_api.csv"
 
 def join_tesis_sources():
 
-    api_data = pd.read_csv(api_sourcefile, dtype=str)
-    csv_data = pd.read_csv(csv_sourcefile, dtype=str)
+    api_data = pd.read_csv(api_sourcefile, dtype=str, index_col=0)
+    csv_data = pd.read_csv(csv_sourcefile, dtype=str, index_col=0)
 
     csv_data = csv_data.drop(columns=["Unnamed: 0"])
 
@@ -40,7 +40,11 @@ def join_tesis_sources():
 
     tesis_scjn_2015 = filter_by_year(tesis_scjn, 2015)
 
-    return tesis_scjn_2015
+    output_file_csv = TESIS_DATA / "tesis_joined_data.csv"
+    tesis_scjn_2015.to_csv(output_file_csv, index=False)
+
+
+# return tesis_scjn_2015
 
 
 def get_ministro(precedentes: str):
@@ -87,6 +91,7 @@ def get_votacion_salas(precedentes: str):
         else:
             return ""
 
+
 def filter_by_instancia(tesis, instancia: str):
     # Filter by column instancia
     tesis_instancia = tesis[tesis["instancia"] == instancia]
@@ -102,7 +107,7 @@ def filter_by_year(tesis, year: int):
 def simplify_materia(materias):
 
     materia_pattern = r"([A-Za-záéíóúÁÉÍÓÚüÜñÑ]+)"
-    materia = re.search(materia_pattern, materias)
+    materia = re.search(materia_pattern, str(materias))
     if materia:
         return materia.group()
     else:
