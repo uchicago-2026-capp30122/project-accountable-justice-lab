@@ -1,0 +1,42 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <style>
+    #vis.vega-embed {
+      width: 100%;
+      display: flex;
+    }
+
+    #vis.vega-embed details,
+    #vis.vega-embed details summary {
+      position: relative;
+    }
+  </style>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega@6"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-lite@6.1.0"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/vega-embed@7"></script>
+</head>
+<body>
+  <div id="vis"></div>
+  <script>
+    (function(vegaEmbed) {
+      var spec = {"config": {"view": {"continuousWidth": 300, "continuousHeight": 300}}, "data": {"name": "data-4aa67382b9899dd821c645ab583e70f4"}, "mark": {"type": "line", "color": "#2c3e50", "point": true, "strokeWidth": 3}, "encoding": {"tooltip": [{"field": "year", "type": "temporal"}, {"field": "count", "type": "quantitative"}], "x": {"field": "year", "title": "Year", "type": "temporal"}, "y": {"field": "count", "title": "Number of Solicitudes", "type": "quantitative"}}, "height": 400, "params": [{"name": "param_1e9efca18e7a2868", "select": {"type": "interval", "encodings": ["x", "y"]}, "bind": "scales"}], "title": "Mentions of Minister Over Time (2017-2026)", "width": 700, "$schema": "https://vega.github.io/schema/vega-lite/v6.1.0.json", "datasets": {"data-4aa67382b9899dd821c645ab583e70f4": [{"year": "2017-01-01T00:00:00", "count": 33}, {"year": "2018-01-01T00:00:00", "count": 35}, {"year": "2019-01-01T00:00:00", "count": 58}, {"year": "2020-01-01T00:00:00", "count": 62}, {"year": "2021-01-01T00:00:00", "count": 24}, {"year": "2022-01-01T00:00:00", "count": 40}, {"year": "2023-01-01T00:00:00", "count": 58}, {"year": "2024-01-01T00:00:00", "count": 34}, {"year": "2025-01-01T00:00:00", "count": 4}, {"year": "2026-01-01T00:00:00", "count": 1}]}};
+      var embedOpt = {"mode": "vega-lite"};
+
+      function showError(el, error){
+          el.innerHTML = ('<div style="color:red;">'
+                          + '<p>JavaScript Error: ' + error.message + '</p>'
+                          + "<p>This usually means there's a typo in your chart specification. "
+                          + "See the javascript console for the full traceback.</p>"
+                          + '</div>');
+          throw error;
+      }
+      const el = document.getElementById('vis');
+      vegaEmbed("#vis", spec, embedOpt)
+        .catch(error => showError(el, error));
+    })(vegaEmbed);
+
+  </script>
+</body>
+</html>
