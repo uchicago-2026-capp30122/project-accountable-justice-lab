@@ -56,7 +56,9 @@ with tab3:
     st.header("Declarations")
 
     edu_por_persona = (
-        df.groupby(["nombre", "primer_apellido", "segundo_apellido"])["edu_highest_level"]
+        df.groupby(["nombre", "primer_apellido", "segundo_apellido"])[
+            "edu_highest_level"
+        ]
         .first()
         .reset_index()
     )
