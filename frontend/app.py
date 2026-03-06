@@ -72,3 +72,9 @@ with tab3:
 
     st.subheader("Nivel educativo por persona")
     st.dataframe(edu_por_persona, use_container_width=True)
+    
+
+
+
+
+
