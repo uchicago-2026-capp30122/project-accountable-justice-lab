@@ -2,6 +2,7 @@ import csv
 import argparse
 import math
 import unicodedata
+import csv
 from pathlib import Path
 from collections import Counter
 
@@ -121,25 +122,32 @@ def get_ngrams(text, n):
 
 def analyze_themes(csv_path, n_size, top_k, filter_name=None):
     """
-    groups text by year and applies TF-IDF formula for salient tokens (like PA3 capp30121)
-    we group per year to get a sort of "time series" of salient words
+    groups text by year and applies TF-IDF formula for salient tokens.
+    includes a time-series counter for the filtered minister/word.
     """
     year_docs = {}
+    mentions_per_year = Counter() # This stays here
     
-    print(f"Reading CSV! Filtering by: {filter_name if filter_name else 'None'})")
+    print(f"Reading CSV! Filtering by: {filter_name if filter_name else 'None'}")
     
     with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             year = row.get("year")
-            if not year: continue
-            # combines "DescripcionSolicitud" and otros datos in case there is relevant info 
+            # Ensure we only look at 2017 onwards as requested
+            if not year or not year.isdigit() or int(year) < 2017: 
+                continue
+                
             raw_text = f"{row.get('DescripcionSolicitud', '')} {row.get('OtrosDatos', '')}"
             clean_text = normalize_text(raw_text)
             
-            # MINISTER FILTER (if in CLI we use --filter we skip rows that dont match name)
-            if filter_name and not is_mentioning(clean_text, filter_name):
-                continue
+            # MINISTER FILTER
+            if filter_name:
+                if is_mentioning(clean_text, filter_name):
+                    # --- THIS IS THE KEY ADDITION ---
+                    mentions_per_year[year] += 1 
+                else:
+                    continue
                 
             ngrams = get_ngrams(clean_text, n_size)
             if year not in year_docs:
@@ -149,10 +157,16 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
     if not year_docs:
         print("No matches found for that filter")
         return
+    
+    # OUT PUT FOR COUNTER (this we will use for time series graph)
+    if filter_name:
+        print(f"\n- SOLICITUDES MENTIONING '{filter_name.upper()}' ---")
+        # Sorting ensures 2017 comes before 2018, etc.
+        for y in sorted(mentions_per_year.keys(), key=int):
+            print(f"{y} | {mentions_per_year[y]} solicitudes")
+        print("-" * 65)
 
-    # Calculate Global DF
-    # How many years does a phrase appear in?
-    # if a word appears in all years (like amparo), it is not a "theme"
+    # Calculate Global DF 
     all_years = list(year_docs.keys())
     num_years = len(all_years)
     ngram_year_counts = {}
@@ -160,29 +174,39 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
         for gram in set(ngrams):
             ngram_year_counts[gram] = ngram_year_counts.get(gram, 0) + 1
 
-    # TF-IDF Output
+    # TF-IDF Output Table
     title = f"SALIENT {n_size}-GRAM THEMES"
     if filter_name: title += f" FOR: {filter_name.upper()}"
     print(f"\n{'YEAR':<6} | {title}")
     print("-" * 100)
 
-    # sort years and calc scores 
     for year in sorted(all_years, key=int):
         ngrams_in_year = year_docs[year]
-        if not ngrams_in_year: continue
+        if not ngrams_in_year: 
+            continue
         
         counts = Counter(ngrams_in_year)
         total = len(ngrams_in_year)
         scores = []
         for gram, count in counts.items():
-            # term frequesncy (how common in this year)
             tf = count / total
-            # inverse doc frequency (how rare across the years)
             idf = math.log(num_years / ngram_year_counts[gram]) if num_years > 1 else 1.0
             scores.append((gram, tf * idf))
-        # now show top k results with highest tf-idf scores
+            
         top_themes = sorted(scores, key=lambda x: x[1], reverse=True)[:top_k]
         print(f"{year:<6} | {', '.join([t[0] for t in top_themes])}")
+
+    # EXTRA PREPARACION DE DATOS PARA SERIE DE TIEMPO ALTAIR
+    counts_file = "mentions_timeseries.csv"
+    with open(counts_file, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["year", "count"])  # header
+        # csv cronological 
+        for y in sorted(mentions_per_year.keys(), key=int):
+            writer.writerow([y, mentions_per_year[y]])
+            
+    print(f"\nTime series saved to: {counts_file}")
+
 
 def main():
     parser = argparse.ArgumentParser()

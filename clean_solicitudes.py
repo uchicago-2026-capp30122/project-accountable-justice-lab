@@ -22,7 +22,6 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-## RESOLVE WILL ALWAYS FIN IT (*)
 PROJECT_DIR = Path(__file__).resolve().parent
 DATA_DIR = PROJECT_DIR / "solicitudes"
 OUT_DIR = PROJECT_DIR / "clean_output"
@@ -50,7 +49,7 @@ FLAG_FIELDS = ["Prorroga", "Prevencion", "Disponibilidad", "Queja"]
 # FIRST FIND INPUT FILES
 def find_year_files() -> list[Path]:
     """
-    Find all yearly files named like 'solicitudes2017.JSON' inside DATA_DIR.
+    Find all yearly files named like 'solicitudes2017.JSON' 
     """
     return sorted(DATA_DIR.glob("solicitudes20*.JSON"))
 
@@ -58,10 +57,9 @@ def find_year_files() -> list[Path]:
 # CLEAN TEXT FOR CSV 
 def clean_text(text: str) -> str:
     """
-    Clean a text value so it won't break CSV output.
+    Clean a text value so it won't break CSV output
     - Some fields contain weird control characters from exports
-    - CSVs can get messy with inconsistent newlines and invisible characters
-    - We do NOT remove accents and eńes (áéíóúñ)
+    - dont remove acentos or ñ
     """
     if text is None:
         return ""
@@ -86,12 +84,10 @@ def clean_text(text: str) -> str:
 
 def parse_date_ddmmyyyy(date_str: str) -> str:
     """
-    Convert dates like '31/12/2020' -> '2020-12-31' (ISO).
-
+    Convert dates like '31/12/2020' to '2020-12-31' (ISO)
     - ISO sorts correctly as strings
-    - Easy to group/filter by year/month in pandas/SQL
-
-    If parsing fails, return empty string to avoid crashing.
+    - Easy to group/filter by year/month in pandas
+    If parsing fails, return empty string to avoid crashing
     """
     date_str = (date_str or "").strip()
     if not date_str:
@@ -151,17 +147,11 @@ def split_records(raw_text: str) -> list[str]:
     """
     Split the big file into individual "record blocks".
 
-    Why do we split like this?
-    - Your files contain many requests inside a big structure
     - They are not always valid JSON because strings can contain quotes
-    - Instead, we find the beginning of each request by matching:
+    - Find the beginning of each request by matching:
         {"Folio":"...
 
-    Then we slice from one start position to the next.
-
-    This works because:
-    - Every request begins with the Folio key
-    - Folio is stable and unique and appears right at record start
+    Then we slice from one start position to the next
     """
     starts = [m.start() for m in re.finditer(r'\{"Folio"\s*:\s*"', raw_text)]
     if not starts:
@@ -185,14 +175,11 @@ def split_records(raw_text: str) -> list[str]:
 
 def build_field_regex(key: str, all_keys: list[str]) -> re.Pattern:
     """
-    Build a regex that extracts the value for one field inside a record.
+    Build a regex that extracts the value for one field inside a record
+    - Values may contain commas and quotes (eg. rubros: "AUTONOMÍA...")
+    - So we CANNOT simply stop at the next quote or comma
 
-    The tricky problem:
-    - Values may contain commas and quotes (e.g., rubros: "AUTONOMÍA...")
-    - So we CANNOT simply stop at the next quote or comma.
-
-    Our solution:
-    - Capture everything lazily (.*?) until we see:
+    so we try capture everything lazily (.*?) until we see:
       a comma + a "KNOWN NEXT KEY" OR
       the end of the block
 
@@ -211,15 +198,14 @@ def build_field_regex(key: str, all_keys: list[str]) -> re.Pattern:
     return re.compile(pattern, re.DOTALL)
 
 
-# Precompile once (faster than compiling inside the loop for every record)
+# Precompile once (faster than compiling inside the loop for every record?)
 FIELD_REGEX = {k: build_field_regex(k, CORE_FIELDS) for k in CORE_FIELDS}
 
 
 def parse_record(block: str) -> dict:
     """
-    Extract all CORE_FIELDS from one record block.
-
-    If a field is missing, we return "" so the CSV stays rectangular.
+    Extract all CORE_FIELDS from one record block
+    If a field is missing, we return "" so the CSV stays 'rectangular'
     """
     rec: dict[str, str] = {}
     for key, rx in FIELD_REGEX.items():
@@ -227,13 +213,12 @@ def parse_record(block: str) -> dict:
         rec[key] = m.group("val") if m else ""
     return rec
 
-
-# STEP 5: NORMALIZE RECORDS (final columns)
+# NORMALIZE RECORDS (final columns)
 def normalize_record(rec: dict, year: int) -> dict:
     """
-    Produce the final row we will write to CSV.
+    Produce the final row we will write to CSV
 
-    Adds:
+    Adds
     - year (from filename)
     - cleaned text versions of each field
     - *_iso versions of dates
@@ -266,8 +251,6 @@ def write_csv(rows: list[dict], out_path: Path) -> None:
     if not rows:
         print("No rows to write:", out_path)
         return
-
-    # Column order: stable and predictable
     cols = ["year"] + CORE_FIELDS
     cols += [f"{k}_iso" for k in DATE_FIELDS]
     cols += [f"{k}_bin" for k in FLAG_FIELDS]
@@ -279,9 +262,7 @@ def write_csv(rows: list[dict], out_path: Path) -> None:
 
     print(f"  DONE W/: {out_path.name} ({len(rows)} rows)")
 
-
-
- # MAIN: RUN THE PIPELINE
+ # MAIN
 def main():
     print("Reading JSON files from", DATA_DIR)
 
