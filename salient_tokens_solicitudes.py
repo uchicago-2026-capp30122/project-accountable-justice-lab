@@ -1,3 +1,5 @@
+# Salient tokens
+
 import csv
 import argparse
 import math
@@ -8,25 +10,55 @@ from collections import Counter
 
 DEFAULT_CSV = Path("clean_output") / "clean_solicitudes_2017_2026.csv"
 
-
-## Conteo por ano, o sea cuantos salen en cada ministro, en cuantos solicitudes aparence el ministro!!! 
-
-## Tabla TOP 1, TOP 5, TOP 10, por ministro, ngram por ministro (esto loopear con el set) (NO POR AÑO SINO EN TODOS LOS ANOS)
-# altair serie tiempo
-
 STOPWORDS = {
-    "el","la","los","las","un","una","unos","unas","y","o","u","e","de","del","al","a","en","por",
+    "el","la","los","las","un","una","unos","unas","y","o","u","e","de","del","al","a","en","por", "denominado"
     "para","con","sin","sobre","que","como","cuando","donde","cada","uno","este","esta","quien",
     "se","su","sus","mi","mis","me","te","le","les","lo","nos","no","sí","si","ya","más","menos",
-    "muy","tan","también","tampoco","scjn","suprema","corte","justicia","nación","nacion",
-    "solicitud","solicito","información","informacion","pública","publica","favor","año","toda",
-    "vez","dia","lic","pudieran","ser","ha","he","fue","son","es","unir","hacer","solicitar",
-    "atentamente","cordial","saludo","gracias","mexicanos","unidos","estados","federal","poder",
-    "judicial","ejecutoria","sentencia","expediente","número","numero","materia","revisión",
-    "amparo","directo","indirecto","sala","tribunal","colegiado","circuito", "solicita", "hago","requiero", 
-    "hacer", "llegar", "medio", "presente", "usted", "dar", "pueda", "proporcione", "copia", "asi", "dio", "precedente","version"
+    "muy","tan","también","tampoco","todo","toda","todos","todas","mismo","misma","así","asi",
+    "vez","día","dia","año","ano","parte","partes","estos","estas","esos","esas","aquello","aquella",
+    "enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",
+    "mes","meses","periodo","lapso","comprendido","durante","actual","pasado","presente","fecha","fechas",
+    "http","https","www","com","mx","html","php","aspx","url","sitio","web","enlace","link","archivo","pdf","formatos",
+    "imagen","jpg","png","clic","click","adjunto","adjunta","anexo","anexa","descargar",
+    "solicitud","solicito","solicita","solicitante","información","informacion","pública","publica","favor","pudieran",
+    "ser","ha","he","fue","son","es","unir","hacer","solicitar","atentamente","cordial","saludo","gracias","trasparencia",
+    "unidad","acceso","folio","respuesta","oficio","escrito","presentado","mediante","través","traves","medio",
+    "proporcione","entregue","haga","llegar","pueda","dar","conocer","copia","copias","versión","version",
+    "pública","publica","documento","documentos","expediente","número","numero","registrado","ingresado",
+    "scjn","suprema","corte","justicia","nación","nacion","poder","judicial","federal","ley","artículo","articulo",
+    "art","fracción","fraccion","inciso","párrafo","parrafo","tesis","jurisprudencia","rubro","sentencia","ejecutoria",
+    "amparo","directo","indirecto","revisión","revision","sala","tribunal","colegiado","circuito","asunto","asuntos",
+    "acuerdo","resolución","resolucion","votos","voto","ponente","ministro","ministra","secretario","actuaria",
+    "[…]","[...]","...","….","señala","señalada","senala","senalada","punto","puntos","inciso","literal","referencia",
+    "relación","relacion","respecto","dicho","dicha","mencionada","citada","tal","tales",
+    "sujeto", "obligado", "tiene", "tienen", "ser", "son", "fue", "don", "lic", "está", "esta",
+    "mexicanos", "mexicano", "mexicana", "peso", "pesos", "dinero", "adquirido", "adquiridos",
+    "adquisicion", "cual", "cuales", "quiere", "quisiera", "tipo", "materia", "versaron", 
+    "pertenecientes", "dictada", "respectiva", "fueron", "quien", "presenta", "anexo",
+    "ejercicio", "posible", "incluyendo", "hayan", "sea", "manera", "tambien", "debidamente",
+    "caracter", "respetuosamente", "disponible", "mensualmente", "anual", "mas", "total",
+    "millones", "mil", "tomo", "pagina", "paginas", "folio", "modulo", "tramitada", "derivo",
+    "tratar", "danar", "otro", "otra", "otros", "otras", "aquellos", "aquellas", 
+    "general", "nacional", "social", "universidad", "directora", "director", "escuela",
+    "comunicado", "firmado", "emision", "digital", "electronica", "fisica", "empresa",
+    "nombre", "persona", "personas", "punto", "sentido", "amplio", "entradas", "salidas",
+    "bienes", "entregado", "elementos", "causas", "procesos", "presuntos", "responsables",
+    "irregularidades", "administrativas", "ordenadoras", "validez", "mayor", "autorizada",
+    "juridica", "unifamiliar", "identificacion", "comparte", "adjunto",
+    "www", "http", "https", "mx", "com", "html", "php", "url", "link", '//www', 'proyectado', "el","la","los","las","un","una","unos","unas",
+    "y","o","u","e","de","del","al","a","en","por","para","con","sin","sobre", "señor", "señor",
+    "que","como","cuando","donde","cada","uno","este","esta","quien","corresponda","contradicción", "criterio", "criterios",
+    "solicitud","solicitar","usted","cordial","saludo","enviar", "ponencia", "ponente", "ministro", "ministra", 
+    "se","su","sus","mi","mis","tu","tus","me","te","le","les","lo","nos", "numero", "así", "asi",
+    "no","sí","si","ya","más","menos","muy","tan","también","tampoco", "toda", "vez", "dia", "lic", "pudieran",
+    "solicito","información","informacion","pública","publica","favor", "fue", "ha", "he", "realizado", "tiene",
+    "scjn","suprema","corte","justicia","nación","nacion","unidad","transparencia", "amparo", "amparos", 
+    "estados", "unidos", "ley", "federal", "código", "codigo", "reglamento", "constitucion", "constitución",
+    "buenas", "tardes", "sujeto", "obligado", "han", "sido", "¿cual", "hacer", "llegar", "tal", "motivo", 
+    "medio", "presente", "mexicanos", "directo", "indirecto", "materia", "revisión", "revision", "sentencia", "año",
+    "semanario", "judicial", "poder", "dirección", "general", "circuito", "número", "expediente", "es", "cual", "¿cuál"
+    "legal","hasta","asuntos","tribunal","sala","año","colegiado", "institución" 
 }
-
 
 
 def jaro_winkler(s1, s2):
@@ -124,27 +156,27 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
     """
     groups text by year and applies TF-IDF formula for salient tokens.
     includes a time-series counter for the filtered minister/word.
+    Genera output en terminal y guarda CSVs para Streamlit.
     """
     year_docs = {}
-    mentions_per_year = Counter() # This stays here
+    mentions_per_year = Counter() 
     
-    print(f"Reading CSV! Filtering by: {filter_name if filter_name else 'None'}")
+    print(f"Reading CSV, filtering by {filter_name if filter_name else 'None'}")
     
     with open(csv_path, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             year = row.get("year")
-            # Ensure we only look at 2017 onwards as requested
             if not year or not year.isdigit() or int(year) < 2017: 
                 continue
-                
-            raw_text = f"{row.get('DescripcionSolicitud', '')} {row.get('OtrosDatos', '')}"
+            raw_text = row.get('DescripcionSolicitud', '')
             clean_text = normalize_text(raw_text)
             
-            # MINISTER FILTER
+            if len(clean_text) < 10: continue
+            
+         # filtro 
             if filter_name:
                 if is_mentioning(clean_text, filter_name):
-                    # --- THIS IS THE KEY ADDITION ---
                     mentions_per_year[year] += 1 
                 else:
                     continue
@@ -158,15 +190,7 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
         print("No matches found for that filter")
         return
     
-    # OUT PUT FOR COUNTER (this we will use for time series graph)
-    if filter_name:
-        print(f"\n- SOLICITUDES MENTIONING '{filter_name.upper()}' ---")
-        # Sorting ensures 2017 comes before 2018, etc.
-        for y in sorted(mentions_per_year.keys(), key=int):
-            print(f"{y} | {mentions_per_year[y]} solicitudes")
-        print("-" * 65)
-
-    # Calculate Global DF 
+# calc salient tokens
     all_years = list(year_docs.keys())
     num_years = len(all_years)
     ngram_year_counts = {}
@@ -174,7 +198,9 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
         for gram in set(ngrams):
             ngram_year_counts[gram] = ngram_year_counts.get(gram, 0) + 1
 
-    # TF-IDF Output Table
+    minister_data = []
+
+    # CLI
     title = f"SALIENT {n_size}-GRAM THEMES"
     if filter_name: title += f" FOR: {filter_name.upper()}"
     print(f"\n{'YEAR':<6} | {title}")
@@ -182,8 +208,7 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
 
     for year in sorted(all_years, key=int):
         ngrams_in_year = year_docs[year]
-        if not ngrams_in_year: 
-            continue
+        if not ngrams_in_year: continue
         
         counts = Counter(ngrams_in_year)
         total = len(ngrams_in_year)
@@ -191,22 +216,21 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
         for gram, count in counts.items():
             tf = count / total
             idf = math.log(num_years / ngram_year_counts[gram]) if num_years > 1 else 1.0
-            scores.append((gram, tf * idf))
+            scores.append((gram, tf * idf, count))
             
         top_themes = sorted(scores, key=lambda x: x[1], reverse=True)[:top_k]
         print(f"{year:<6} | {', '.join([t[0] for t in top_themes])}")
-
-    # EXTRA PREPARACION DE DATOS PARA SERIE DE TIEMPO ALTAIR
-    counts_file = "mentions_timeseries.csv"
-    with open(counts_file, "w", encoding="utf-8", newline="") as f:
-        writer = csv.writer(f)
-        writer.writerow(["year", "count"])  # header
-        # csv cronological 
-        for y in sorted(mentions_per_year.keys(), key=int):
-            writer.writerow([y, mentions_per_year[y]])
+        
+        # save for the minister_data set and tables for streamlit
+        for gram, score, count in top_themes:
+            minister_data.append({
+                "year": year,
+                "ngram": gram,
+                "count": count,
+                "score": score
+            })
             
-    print(f"\nTime series saved to: {counts_file}")
-
+    return minister_data
 
 def main():
     parser = argparse.ArgumentParser()
@@ -224,12 +248,6 @@ if __name__ == "__main__":
 # uv run salient_tokens_solicitudes.py -n 2
 # uv run salient_tokens_solicitudes.py --filter "Zaldivar" -n 2
 # uv run salient_tokens_solicitudes.py -n 2 -k 5 ## top 5 results 
-
-
-
-
-
-
 
 
 # some of the links used 

@@ -51,16 +51,30 @@ def get_ministro(precedentes: str):
 
     precedentes = precedentes.lower().strip()
     pattern = (
-        r"(?<=Ponente:\s)[A-Z][a-záéíóúüñ]+(?:\s[A-Z]\.)*(?:\s[A-Z][a-záéíóúüñ]+)+"
+        r"(?<=ponente:\s)([a-záéíóúüñ]+(?:\s[a-z][\.,]?)*(?:\s[a-záéíóúüñ]+)+)(?=[\.,])"
     )
     noise = r"ministr[o|a]\s|president[e|a]\s"
-    ministro = re.findall(pattern, precedentes)
+    ministro = re.search(pattern, precedentes)
 
     if not ministro:
         return "sin datos"
+    else:
+        ministro = ministro.group(1)
+        ministro_clean = re.sub(noise, "", ministro)
+        ministro = fuzzy_match_ministro(ministro_clean)
+        return ministro
 
-    ministro = " ".join(ministro).lower()
-    return re.sub(noise, "", ministro)
+
+def fuzzy_match_ministro(ministro: str):
+    ministro = ministro
+    ministro_words = ministro.split()
+    if ministro_words[0] == "sergio":
+        return "sergio a. valls hernández"
+    elif ministro_words[0] == "juan":
+        if ministro_words[1] != "luis":
+            return "juan n. silva meza"
+    else:
+        return ministro
 
 
 def get_votacion_pleno(precedentes: str):
