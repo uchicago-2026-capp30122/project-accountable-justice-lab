@@ -1,0 +1,28 @@
+[
+  {
+    "tipo_inmueble": "Agregar                                              Departamento",
+    "titular": "DECLARANTE                                                                                                                  100 %",
+    "porcentaje": null,
+    "superficie_terreno_m2": 377,
+    "superficie_construccion_m2": 377,
+    "forma_adquisicion": "COMPRAVENTA                                                             CONTADO",
+    "forma_pago": "COMPRAVENTA                                                             CONTADO",
+    "valor_adquisicion_mxn": 7559359,
+    "fecha_adquisicion": "21/04/2009",
+    "nombre": "Arturo Fernando",
+    "primer_apellido": "ZaldÔøΩvar"
+  },
+  {
+    "tipo_inmueble": "Agregar                                              Casa",
+    "titular": "DECLARANTE                                                                                                                  100 %",
+    "porcentaje": null,
+    "superficie_terreno_m2": 573,
+    "superficie_construccion_m2": 648,
+    "forma_adquisicion": "COMPRAVENTA                                                             CONTADO",
+    "forma_pago": "COMPRAVENTA                                                             CONTADO",
+    "valor_adquisicion_mxn": 25000000,
+    "fecha_adquisicion": "21/06/2010",
+    "nombre": "Arturo Fernando",
+    "primer_apellido": "ZaldÔøΩvar"
+  }
+]

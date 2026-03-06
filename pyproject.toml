@@ -10,3 +10,9 @@ dependencies = [
     "pandas>=3.0.1",
     "pathlib>=1.0.1",
 ]
+
+[dependency-groups]
+dev = [
+    "ipykernel>=7.2.0",
+    "httpx>=0.28.1",
+]
