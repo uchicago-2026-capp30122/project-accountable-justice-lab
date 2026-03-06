@@ -4,6 +4,7 @@ import csv
 import argparse
 import math
 import unicodedata
+import jellyfish
 import csv
 from pathlib import Path
 from collections import Counter
@@ -11,7 +12,7 @@ from collections import Counter
 DEFAULT_CSV = Path("clean_output") / "clean_solicitudes_2017_2026.csv"
 
 STOPWORDS = {
-    "el","la","los","las","un","una","unos","unas","y","o","u","e","de","del","al","a","en","por", "denominado"
+    "el","la","los","las","un","una","unos","unas","y","o","u","e","de","del","al","a","en","por", "denominado",
     "para","con","sin","sobre","que","como","cuando","donde","cada","uno","este","esta","quien",
     "se","su","sus","mi","mis","me","te","le","les","lo","nos","no","sí","si","ya","más","menos",
     "muy","tan","también","tampoco","todo","toda","todos","todas","mismo","misma","así","asi",
@@ -54,57 +55,11 @@ STOPWORDS = {
     "solicito","información","informacion","pública","publica","favor", "fue", "ha", "he", "realizado", "tiene",
     "scjn","suprema","corte","justicia","nación","nacion","unidad","transparencia", "amparo", "amparos", 
     "estados", "unidos", "ley", "federal", "código", "codigo", "reglamento", "constitucion", "constitución",
-    "buenas", "tardes", "sujeto", "obligado", "han", "sido", "¿cual", "hacer", "llegar", "tal", "motivo", 
+    "buenas", "tardes", "sujeto", "obligado", "han", "sido", "¿cual", "hacer", "llegar", "tal", "motivo", '2000',
     "medio", "presente", "mexicanos", "directo", "indirecto", "materia", "revisión", "revision", "sentencia", "año",
     "semanario", "judicial", "poder", "dirección", "general", "circuito", "número", "expediente", "es", "cual", "¿cuál"
-    "legal","hasta","asuntos","tribunal","sala","año","colegiado", "institución" 
+    "legal","hasta","asuntos","tribunal","sala","año","colegiado", "institución", '-el', '2023', '2024', '&#13', '421','422', 'allegados', '1024/1980'
 }
-
-
-def jaro_winkler(s1, s2):
-    """calc Jaro-Winkler similarity (0.0 to 1.0),
-    Zaldivar Saldivar etc, skip accents 
-    """
-    s1, s2 = s1.lower(), s2.lower()
-    if s1 == s2: return 1.0
-    
-    len1, len2 = len(s1), len(s2)
-    # max distance characters can be apart to be considered a match 
-    max_dist = max(len1, len2) // 2 - 1
-    match = 0
-    hash_s1 = [0] * len1
-    hash_s2 = [0] * len2
-
-    # find matching chars
-    for i in range(len1):
-        for j in range(max(0, i - max_dist), min(len2, i + max_dist + 1)):
-            if s1[i] == s2[j] and hash_s2[j] == 0:
-                hash_s1[i] = 1
-                hash_s2[j] = 1
-                match += 1
-                break
-    if match == 0: return 0.0
-
-    # find characters in wrong order
-    t = 0
-    point = 0
-    for i in range(len1):
-        if hash_s1[i]:
-            while hash_s2[point] == 0:
-                point += 1
-            if s1[i] != s2[point]:
-                t += 1
-            point += 1
-    t //= 2
-
-    # combine into a score 
-    # i added extra if there is prefix matching 
-    jaro = (1/3) * (match/len1 + match/len2 + (match - t)/match)
-    p, l = 0.1, 0 #p constant scaling factor 
-    for i in range(min(len1, len2, 4)):
-        if s1[i] == s2[i]: l += 1
-        else: break
-    return jaro + (l * p * (1 - jaro))
 
 def is_mentioning(text, target_name, threshold=0.92):
     """checks if target_name (or parts of it) 
@@ -113,20 +68,17 @@ def is_mentioning(text, target_name, threshold=0.92):
     normalized_target = normalize_text(target_name)
     target_parts = normalized_target.split()
     
-    # check full name first (simple substring)
+    # Check full name first
     if normalized_target in text:
         return True
     
-    # check individual significant parts (like last names)
     words = text.split()
     for part in target_parts:
-        if len(part) < 4: continue # skip short words like 'de'
+        if len(part) < 4: continue
         for word in words:
-            if jaro_winkler(word, part) >= threshold:
+            if jellyfish.jaro_winkler_similarity(word, part) >= threshold:
                 return True
     return False
-
-# THIS IS BASICALLY TEXT PROCESSING 
 
 def normalize_text(text):
     """
@@ -151,7 +103,6 @@ def get_ngrams(text, n):
     return [" ".join(words[i:i+n]) for i in range(len(words)-n+1)]
 
 # MAIN ANALISIS!! 
-
 def analyze_themes(csv_path, n_size, top_k, filter_name=None):
     """
     groups text by year and applies TF-IDF formula for salient tokens.
@@ -247,7 +198,7 @@ if __name__ == "__main__":
 
 # uv run salient_tokens_solicitudes.py -n 2
 # uv run salient_tokens_solicitudes.py --filter "Zaldivar" -n 2
-# uv run salient_tokens_solicitudes.py -n 2 -k 5 ## top 5 results 
+# uv run salient_tokens_solicitudes.py -n 2 -k 5 (top 5 results) 
 
 
 # some of the links used 

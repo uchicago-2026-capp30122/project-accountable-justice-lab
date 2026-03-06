@@ -1,0 +1,50 @@
+import csv
+from pathlib import Path
+from collections import defaultdict
+from salient_tokens_solicitudes import normalize_text, is_mentioning
+
+DEFAULT_CSV = Path("clean_output") / "clean_solicitudes_2017_2026.csv"
+OUTPUT_CSV = "todos_los_ministros_timeseries.csv"
+
+# scjn members per year 
+INTEGRACION_POR_ANIO = {
+    "2017": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "José Ramón Cossío Díaz", "Margarita Beatriz Luna Ramos", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Eduardo Medina Mora", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández"],
+    "2018": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "José Ramón Cossío Díaz", "Margarita Beatriz Luna Ramos", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Eduardo Medina Mora", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández"],
+    "2019": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
+    "2020": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
+    "2021": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
+    "2022": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
+    "2023": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
+    "2024": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Lenia Batres Guadarrama", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
+    "2025": ["Hugo Aguilar Ortiz", "Lenia Batres Guadarrama", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "María Estela Ríos González", "Sara Irene Herrerías Guerra", "Giovanni Azael Figueroa Mejía", "Irving Espinosa Betanzo", "Arístides Rodrigo Guerrero García"],
+    "2026": ["Hugo Aguilar Ortiz", "Lenia Batres Guadarrama", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "María Estela Ríos González", "Sara Irene Herrerías Guerra", "Giovanni Azael Figueroa Mejía", "Irving Espinosa Betanzo", "Arístides Rodrigo Guerrero García"]
+}
+
+def run_count():
+    conteos = defaultdict(lambda: defaultdict(int))
+    with open(DEFAULT_CSV, "r", encoding="utf-8") as f:
+        reader = csv.DictReader(f)
+        for row in reader:
+            year = row.get("year")
+            if year not in INTEGRACION_POR_ANIO: continue
+            
+            # Usamos las funciones importadas
+            clean_text = normalize_text(f"{row.get('DescripcionSolicitud', '')}")
+            
+            ministros_del_anio = INTEGRACION_POR_ANIO[year]
+            for min_name in ministros_del_anio:
+                if is_mentioning(clean_text, min_name):
+                    conteos[min_name][year] += 1
+
+    print(f"Writing output file ngrams streamlit {OUTPUT_CSV}")
+    with open(OUTPUT_CSV, "w", encoding="utf-8", newline="") as f:
+        writer = csv.writer(f)
+        writer.writerow(["year", "minister", "count"])
+        for yr in sorted(INTEGRACION_POR_ANIO.keys(), key=int):
+            for min_name in INTEGRACION_POR_ANIO[yr]:
+                cuenta = conteos[min_name].get(yr, 0)
+                writer.writerow([yr, min_name, cuenta])
+    print("Done")
+
+if __name__ == "__main__":
+    run_count()

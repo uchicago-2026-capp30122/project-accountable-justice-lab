@@ -10,7 +10,41 @@ DEFAULT_CSV = Path("clean_output") / "clean_solicitudes_2017_2026.csv"
 # this uses raw freq (vs salience tf-idf in the other one)
 
 STOPWORDS = {
-    "el","la","los","las","un","una","unos","unas",
+    "el","la","los","las","un","una","unos","unas","y","o","u","e","de","del","al","a","en","por", "denominado"
+    "para","con","sin","sobre","que","como","cuando","donde","cada","uno","este","esta","quien",
+    "se","su","sus","mi","mis","me","te","le","les","lo","nos","no","sí","si","ya","más","menos",
+    "muy","tan","también","tampoco","todo","toda","todos","todas","mismo","misma","así","asi",
+    "vez","día","dia","año","ano","parte","partes","estos","estas","esos","esas","aquello","aquella",
+    "enero","febrero","marzo","abril","mayo","junio","julio","agosto","septiembre","octubre","noviembre","diciembre",
+    "mes","meses","periodo","lapso","comprendido","durante","actual","pasado","presente","fecha","fechas",
+    "http","https","www","com","mx","html","php","aspx","url","sitio","web","enlace","link","archivo","pdf","formatos",
+    "imagen","jpg","png","clic","click","adjunto","adjunta","anexo","anexa","descargar",
+    "solicitud","solicito","solicita","solicitante","información","informacion","pública","publica","favor","pudieran",
+    "ser","ha","he","fue","son","es","unir","hacer","solicitar","atentamente","cordial","saludo","gracias","trasparencia",
+    "unidad","acceso","folio","respuesta","oficio","escrito","presentado","mediante","través","traves","medio",
+    "proporcione","entregue","haga","llegar","pueda","dar","conocer","copia","copias","versión","version",
+    "pública","publica","documento","documentos","expediente","número","numero","registrado","ingresado",
+    "scjn","suprema","corte","justicia","nación","nacion","poder","judicial","federal","ley","artículo","articulo",
+    "art","fracción","fraccion","inciso","párrafo","parrafo","tesis","jurisprudencia","rubro","sentencia","ejecutoria",
+    "amparo","directo","indirecto","revisión","revision","sala","tribunal","colegiado","circuito","asunto","asuntos",
+    "acuerdo","resolución","resolucion","votos","voto","ponente","ministro","ministra","secretario","actuaria",
+    "[…]","[...]","...","….","señala","señalada","senala","senalada","punto","puntos","inciso","literal","referencia",
+    "relación","relacion","respecto","dicho","dicha","mencionada","citada","tal","tales",
+    "sujeto", "obligado", "tiene", "tienen", "ser", "son", "fue", "don", "lic", "está", "esta",
+    "mexicanos", "mexicano", "mexicana", "peso", "pesos", "dinero", "adquirido", "adquiridos",
+    "adquisicion", "cual", "cuales", "quiere", "quisiera", "tipo", "materia", "versaron", 
+    "pertenecientes", "dictada", "respectiva", "fueron", "quien", "presenta", "anexo",
+    "ejercicio", "posible", "incluyendo", "hayan", "sea", "manera", "tambien", "debidamente",
+    "caracter", "respetuosamente", "disponible", "mensualmente", "anual", "mas", "total",
+    "millones", "mil", "tomo", "pagina", "paginas", "folio", "modulo", "tramitada", "derivo",
+    "tratar", "danar", "otro", "otra", "otros", "otras", "aquellos", "aquellas", 
+    "general", "nacional", "social", "universidad", "directora", "director", "escuela",
+    "comunicado", "firmado", "emision", "digital", "electronica", "fisica", "empresa",
+    "nombre", "persona", "personas", "punto", "sentido", "amplio", "entradas", "salidas",
+    "bienes", "entregado", "elementos", "causas", "procesos", "presuntos", "responsables",
+    "irregularidades", "administrativas", "ordenadoras", "validez", "mayor", "autorizada",
+    "juridica", "unifamiliar", "identificacion", "comparte", "adjunto",
+    "www", "http", "https", "mx", "com", "html", "php", "url", "link", '//www', 'proyectado', "el","la","los","las","un","una","unos","unas",
     "y","o","u","e","de","del","al","a","en","por","para","con","sin","sobre", "señor", "señor",
     "que","como","cuando","donde","cada","uno","este","esta","quien","corresponda","contradicción", "criterio", "criterios",
     "solicitud","solicitar","usted","cordial","saludo","enviar", "ponencia", "ponente", "ministro", "ministra", 
@@ -22,14 +56,12 @@ STOPWORDS = {
     "buenas", "tardes", "sujeto", "obligado", "han", "sido", "¿cual", "hacer", "llegar", "tal", "motivo", 
     "medio", "presente", "mexicanos", "directo", "indirecto", "materia", "revisión", "revision", "sentencia", "año",
     "semanario", "judicial", "poder", "dirección", "general", "circuito", "número", "expediente", "es", "cual", "¿cuál"
-    "legal","hasta","asuntos","tribunal","sala","año","colegiado", "institución" ## ADD MORE!!!!!!!!
-    ### OJO AQUI CON LOS ACENTOS, HAY QUE AGREGAR CON ACENTO Y SIN ACENTO
+    "legal","hasta","asuntos","tribunal","sala","año","colegiado", "institución" 
 }
 
 # Minister list
 # solo se usa cuando corres --minister-breakdown
 # tratar de mergear con lista mafer, incluimos apellidos solos??
-
 
 ## AQUI DEBEMOS DE AGREGAR EL NOMBRE SOLO Y EL APELLIDO SOLO,
 # TODOS CON Y SIN ACENTOS, LAS 3 VARIANTES DIFERENTES! 
@@ -48,7 +80,6 @@ DEFAULT_MINISTERS = [
     "Jorge Mario Pardo",
     "Lenia Batres",
 ]
-
 
 # TEXT SELECTION
 # cols de texto: 
@@ -212,13 +243,12 @@ def main():
         print("-" * 70)
 
         if not breakdown:
-            print("No matches.")
+            print("No matches")
             return
 
         for name, c in breakdown.most_common():
             print(f"{c:>6}  {name}")
         return
-
 
     # REGULAR NGRAM 
     counts = ngrams_by_year(
@@ -232,7 +262,7 @@ def main():
     print("-" * 70)
 
     if not counts:
-        print("No matches.")
+        print("No matches")
         return
 
     for gram, count in counts.most_common(args.top):
