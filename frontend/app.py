@@ -11,6 +11,8 @@ import altair as alt
 
 tesis = pd.read_csv("frontend/tesis_joined_data.csv", dtype=str, index_col=0)
 sentencias = pd.read_csv("frontend/sentencias_joined_data.csv", dtype=str, index_col=0)
+df = pd.read_excel("frontend/declaraciones/final_variables.xlsx")
+
 
 
 def return_materias_chart():
@@ -42,3 +44,22 @@ def return_materias_chart():
 
 chart = return_materias_chart()
 st.altair_chart(chart, use_container_width=True)
+
+# Table 1: highest education by judge
+edu_por_persona = (
+    df.groupby(["nombre", "primer_apellido", "segundo_apellido"])["edu_highest_level"]
+    .first()
+    .reset_index()
+)
+
+edu_por_persona = edu_por_persona.rename(
+    columns={
+        "nombre": "Nombre",
+        "primer_apellido": "Primer apellido",
+        "segundo_apellido": "Segundo apellido",
+        "edu_highest_level": "Nivel educativo",
+    }
+)
+
+st.subheader("Nivel educativo por persona")
+st.dataframe(edu_por_persona, use_container_width=True)
