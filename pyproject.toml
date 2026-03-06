@@ -7,8 +7,9 @@ requires-python = ">=3.13"
 dependencies = [
     "altair>=6.0.0",
     "datetime>=6.0",
-    "pandas>=3.0.1",
+    "pandas<3",
     "pathlib>=1.0.1",
+    "streamlit>=1.30",
 ]
 
 [dependency-groups]
