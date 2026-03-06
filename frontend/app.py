@@ -396,6 +396,7 @@ STOPWORDS = {
     "denominado",
 }
 
+
 # Cached data loaders
 @st.cache_data
 def load_main_data():
@@ -417,6 +418,7 @@ def load_solicitudes_text():
 
 
 tesis, sentencias, declaraciones, solicitudes_counts = load_main_data()
+
 
 # Text processing helpers
 def normalize_text(text):
