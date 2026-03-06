@@ -27,7 +27,12 @@ We accessed information from two different types of data sources:
         2015-2026
 
     ### Declaraciones (Dani)
-        2024-2026 
+       In data/declaraciones, we used the bulk download option to import CSV files for each quarter.
+       Then, the script compiled_dataset.py compiles all of the CSV files into a single dataset and generates an Excel file containing the aggregated information. The script also filters the rows to keep only those corresponding to judges, and saves the filtered dataset in the same folder.
+       In total, we compile 7 CSV files, which together contain approximately 9,000 rows. After applying the filter, the resulting dataset contains only 29 rows.
+       Next, in the folder processing/declaraciones, we created two scripts: pdf_download_and_layout.py and json_download.py.
+       The first script, pdf_download_and_layout.py, loops through the compiled dataset, retrieves the hyperlinks in each row, and generates a PDF layout for each declaration. The second script, json_download.py, loops through the compiled dataset, retrieves the JSONs in the inmbueble column and and generates a JSON for each inmueble declaration. Then with the json_inmuebles_to_excel.py we create an Excel file with all the inmuebles declarations. 
+       
 ## Repository structure
 
 1. data: code to access raw data from our sources. 
