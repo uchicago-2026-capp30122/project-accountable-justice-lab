@@ -41,10 +41,8 @@ def join_sentencias_sources():
         dayfirst=True,
     )
 
-    # # clean date - extraer año y mes
-    joined_sentencias["ministro_clean"] = joined_sentencias["ministro"].apply(
-        clean_ministro_name
-    )
+    joined_sentencias["ministro_clean"] = joined_sentencias["ministro"].astype("string")
+    joined_sentencias["ministro"].str.lower()
     joined_sentencias["anio"] = joined_sentencias["cleanDate"].dt.year.astype("Int64")
     mask = joined_sentencias["anio"] == 1900
 
@@ -56,9 +54,11 @@ def join_sentencias_sources():
 
     joined_sentencias["votos"] = joined_sentencias["votacion"].apply(get_votacion_pleno)
 
-    sentencias_scjn_2015 = filter_by_year(joined_sentencias, 2015)
+    output_file_csv = SENTENCIAS_DATA / "sentencias_joined_data_full.csv"
+    joined_sentencias.to_csv(output_file_csv, index=False)
 
-    output_file_csv = SENTENCIAS_DATA / "sentencias_joined_data.csv"
+    sentencias_scjn_2015 = filter_by_year(joined_sentencias, 2015)
+    output_file_csv = SENTENCIAS_DATA / "sentencias_joined_data_2015.csv"
     sentencias_scjn_2015.to_csv(output_file_csv, index=False)
 
     return sentencias_scjn_2015
@@ -132,7 +132,7 @@ def extract_year(file: str):
 
 def clean_ministro_name(ministro: str):
 
-    return ministro.lowerr().strip()
+    return str(ministro.lower().strip())
 
 
 if __name__ == "__main__":
