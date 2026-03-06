@@ -3,6 +3,9 @@ import numpy as np
 import pandas as pd
 import re
 from pathlib import Path
+from data_references import get_ministro_name_list
+
+ministros_names = get_ministro_name_list()
 
 BASE_DIR = Path(__file__).parent.parent.parent
 
@@ -16,8 +19,6 @@ def join_tesis_sources():
 
     api_data = pd.read_csv(api_sourcefile, dtype=str, index_col=0)
     csv_data = pd.read_csv(csv_sourcefile, dtype=str, index_col=0)
-
-    csv_data = csv_data.drop(columns=["Unnamed: 0"])
 
     joined_tesis = pd.concat([csv_data, api_data], ignore_index=True)
     # Keep año as the only int type column
@@ -43,23 +44,37 @@ def join_tesis_sources():
     output_file_csv = TESIS_DATA / "tesis_joined_data.csv"
     tesis_scjn_2015.to_csv(output_file_csv, index=False)
 
-
-# return tesis_scjn_2015
+    return tesis_scjn_2015
 
 
 def get_ministro(precedentes: str):
 
+    precedentes = precedentes.lower().strip()
     pattern = (
-        r"(?<=Ponente:\s)[A-Z][a-záéíóúüñ]+(?:\s[A-Z]\.)*(?:\s[A-Z][a-záéíóúüñ]+)+"
+        r"(?<=ponente:\s)([a-záéíóúüñ]+(?:\s[a-z][\.,]?)*(?:\s[a-záéíóúüñ]+)+)(?=[\.,])"
     )
     noise = r"ministr[o|a]\s|president[e|a]\s"
-    ministro = re.findall(pattern, precedentes)
+    ministro = re.search(pattern, precedentes)
 
     if not ministro:
         return "sin datos"
+    else:
+        ministro = ministro.group(1)
+        ministro_clean = re.sub(noise, "", ministro)
+        ministro = fuzzy_match_ministro(ministro_clean)
+        return ministro
 
-    ministro = " ".join(ministro).lower()
-    return re.sub(noise, "", ministro)
+
+def fuzzy_match_ministro(ministro: str):
+    ministro = ministro
+    ministro_words = ministro.split()
+    if ministro_words[0] == "sergio":
+        return "sergio a. valls hernández"
+    elif ministro_words[0] == "juan":
+        if ministro_words[1] != "luis":
+            return "juan n. silva meza"
+    else:
+        return ministro
 
 
 def get_votacion_pleno(precedentes: str):
@@ -74,7 +89,7 @@ def get_votacion_pleno(precedentes: str):
         if votacion_mayoria:
             return "mayoría"
         else:
-            return ""
+            return "otros"
 
 
 def get_votacion_salas(precedentes: str):
@@ -89,7 +104,7 @@ def get_votacion_salas(precedentes: str):
         if votacion_mayoria:
             return "mayoría"
         else:
-            return ""
+            return "otros"
 
 
 def filter_by_instancia(tesis, instancia: str):
