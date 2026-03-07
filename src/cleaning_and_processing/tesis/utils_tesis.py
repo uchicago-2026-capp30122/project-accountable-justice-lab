@@ -164,3 +164,5 @@ def simplify_materia(materias: str):
         return materia.group()
     else:
         return ""
+
+

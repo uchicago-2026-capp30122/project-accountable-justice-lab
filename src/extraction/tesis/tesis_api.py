@@ -80,6 +80,8 @@ def build_tesis_csv():
         writer.writeheader()
         writer.writerows(general_tesis_scjn)
 
+    return general_tesis
+
 
 def get_all_tesis():
     """

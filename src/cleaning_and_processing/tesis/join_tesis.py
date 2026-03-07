@@ -9,7 +9,6 @@ from utils_tesis import (
     simplify_materia,
 )
 
-
 """
 
 Because tesis can be emitted by courts other
@@ -68,8 +67,29 @@ def join_tesis_sources():
 
     joined_tesis["main_materia"] = joined_tesis["materias"].apply(simplify_materia)
 
-    output_file_csv = TESIS_CLEAN_DATA / "tesis_joined_data.csv"
+    # Filter tesis only by Supreme Court
+    tesis_scjn = filter_by_instancia(
+        joined_tesis, "Suprema Corte de Justicia de la Nación"
+    )
+
+    output_file_csv = TESIS_CLEAN_DATA / "tesis_joined_data_scjn.csv"
     joined_tesis.to_csv(output_file_csv, index=False)
+
+
+def filter_by_instancia(tesis, instancia: str):
+    """
+    This function filters the dataframe by the type of court selected
+
+    Inputs:
+        - tesis (dataframe): dataframe where changes will be made
+
+    Returns:
+        - tesis_instancia (dataframe): filtered dataframe given the selected
+        court
+
+    """
+    tesis_instancia = tesis[tesis["instancia"] == instancia]
+    return tesis_instancia
 
 
 if __name__ == "__main__":

@@ -68,7 +68,7 @@ def load_tesis_csv():
     # Keep year (anio) as the only int type column
     tesis["anio"] = tesis["anio"].astype("int64")
     # Modify NA values for anexos
-  #  tesis["anexos"] = tesis["anexos"].fillna("Sin anexos")
+    #  tesis["anexos"] = tesis["anexos"].fillna("Sin anexos")
     # Add source of extraction - historical comes from csv files
     tesis["fuenteExtraccion"] = "csv"
     # First convert from pandas df to a json file with new column names
@@ -77,6 +77,8 @@ def load_tesis_csv():
     # Convert from pandas df to a csv file with new column names
     output_file_csv = TESIS_DIR / "tesis_historical_clean.csv"
     tesis.to_csv(output_file_csv, index=False)
+
+    return tesis
 
 
 def convert_to_json(df, dir_name, filename):
