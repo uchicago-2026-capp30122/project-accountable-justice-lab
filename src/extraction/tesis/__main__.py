@@ -1,7 +1,7 @@
-from .tesis_historical import upload_historical_information
+from .tesis_historical import load_tesis_csv
 from .tesis_api import build_tesis_csv
 
 
 if __name__ == "__main__":
-    upload_historical_information()
+    load_tesis_csv()
     build_tesis_csv()
