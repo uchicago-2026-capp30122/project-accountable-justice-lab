@@ -8,11 +8,10 @@ from datetime import datetime as dt
 
 
 BASE_DIR = Path(__file__).parent.parent
-
+SENTENCIAS_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 
-sentencias = TESIS_DATA / "sentencias_joined_data.csv"
-
+sentencias = SENTENCIAS_DATA / "sentencias_joined_data.csv"
 tesis_data = TESIS_DATA / "tesis_joined_data_scjn.csv"
 
 tesis = pd.read_csv(tesis_data, dtype=str)
