@@ -2,9 +2,9 @@ import pandas as pd
 import json
 from pathlib import Path
 
-INPUT_FILE = "frontend/declaraciones/final_variables.xlsx"
+INPUT_FILE = "data/clean_data/declaraciones/final_variables.xlsx"
 
-OUT_DIR = Path("processing/declaraciones/inmuebles_json")
+OUT_DIR = Path("data/raw_data/declaraciones/inmuebles_json")
 OUT_DIR.mkdir(parents=True, exist_ok=True)
 
 # Convert excel to dataframe 
