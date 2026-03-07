@@ -6,6 +6,7 @@ import re
 from pathlib import Path
 from datetime import datetime as dt
 
+
 BASE_DIR = Path(__file__).parent.parent
 
 TESIS_DATA = BASE_DIR / "data" / "tesis" / "tesis_data"
@@ -48,3 +49,45 @@ def return_materias_chart():
     ).interactive()
 
     return chart
+
+    ### ESTO LO SAQUÉ DE JOINED TESIS
+
+    tesis_scjn = filter_by_instancia(
+        joined_tesis, "Suprema Corte de Justicia de la Nación"
+    )
+    tesis_scjn_2015 = filter_by_year(tesis_scjn, 2015)
+    output_file_csv = TESIS_CLEAN_DATA / "tesis_joined_data_2015.csv"
+    tesis_scjn_2015.to_csv(output_file_csv, index=False)
+
+
+def filter_by_instancia(tesis, instancia: str):
+    """
+    This function filters the dataframe by the type of court selected
+
+    Inputs:
+        - tesis (dataframe): dataframe where changes will be made
+
+    Returns:
+        - tesis_instancia (dataframe): filtered dataframe given the selected
+        court
+
+    """
+    tesis_instancia = tesis[tesis["instancia"] == instancia]
+    return tesis_instancia
+
+
+def filter_by_year(tesis, year: int):
+    """
+    This function filters the dataframe by selecting all records from or
+    after the selected year
+
+    Inputs:
+        - tesis (dataframe): dataframe where changes will be made
+
+    Returns:
+        - tesis_instancia (dataframe): filtered dataframe given the selected
+        cutoff year
+
+    """
+    tesis_year = tesis[tesis["anio"] >= year]
+    return tesis_year

@@ -7,16 +7,21 @@ from datetime import datetime
 from pathlib import Path
 from http_tesis import cached_get
 
-BASE_DIR = Path(__file__).parent
+"""
+This file gets tesis (legal precedents) most recent information from the Supreme
+Court's API. This information will only be accessed for tesis emitted after 
+July 2025, since everything before that has been provided via csv file. Because
+tesis are given progressive id's, we know which is the last historical id we have.
+This number is written as a global variable for the code.
 
-TESIS_DIR = BASE_DIR / "tesis_data"
-JSON_TESIS_DIR = TESIS_DIR / "_cache"
+"""
 
-JSON_TESIS_DIR_A = JSON_TESIS_DIR / "_tesis_json_api"
-if not JSON_TESIS_DIR_A.is_dir():
-    JSON_TESIS_DIR_A.mkdir(parents=True, exist_ok=True)
+BASE_DIR = Path(__file__).parent.parent.parent.parent
 
-BASE_URL = "https://bicentenario.scjn.gob.mx/repositorio-scjn/api/v1/"
+DATA_DIR = BASE_DIR / "data"
+RAW_DATA = DATA_DIR / "raw_data"
+TESIS_DIR = RAW_DATA / "tesis_data"
+
 HISTORICAL_TESIS = 2030777
 
 TESIS_CSV_COLUMNS = (
@@ -51,16 +56,18 @@ def build_tesis_csv():
     we will generate two lists from the outset in order to save the corresponding
     information (one general and one specific to the Supreme Court)
 
-    add description
+    Inputs:
+        None
+
+    Returns:
+        None. Creates csv files for Supreme Court and general tesis information
     """
 
-    api_type = "tesis"
-    output_filename_general = "tesis_data_api.csv"
-
     # Access all data from API. Both general and specific to the Supreme Court
-    general_tesis, general_tesis_scjn = get_all_tesis(BASE_URL, api_type)
+    general_tesis, general_tesis_scjn = get_all_tesis()
 
     # Create general csv
+    output_filename_general = "tesis_data_api.csv"
     with open(TESIS_DIR / output_filename_general, "w") as f:
         writer = csv.DictWriter(f, fieldnames=TESIS_CSV_COLUMNS)
         writer.writeheader()
@@ -74,7 +81,7 @@ def build_tesis_csv():
         writer.writerows(general_tesis_scjn)
 
 
-def get_all_tesis(url, api_type):
+def get_all_tesis():
     """
 
     Given the base url for the API and type of API we are accessing ('tesis'),
@@ -85,7 +92,6 @@ def get_all_tesis(url, api_type):
 
     Inputs:
         url (str): base URL for API request
-        api_type (str): type of information we are accessing ('tesis' or 'engroses')
 
     Outputs:
         general_tesis (list of dics): list of dictionaries of tesis.
@@ -100,9 +106,7 @@ def get_all_tesis(url, api_type):
     page_number = 0
 
     while page_number is not None:
-        tesis_data_general, tesis_data_scjn, page_number = get_id_list(
-            BASE_URL, api_type, page_number
-        )
+        tesis_data_general, tesis_data_scjn, page_number = get_id_list(page_number)
         general_tesis.extend(tesis_data_general)
         general_tesis_scjn.extend(tesis_data_scjn)
         if page_number is None:
@@ -112,7 +116,7 @@ def get_all_tesis(url, api_type):
     return general_tesis, general_tesis_scjn
 
 
-def get_id_list(url, api_type, page_number):
+def get_id_list(page_number):
     """
 
     Given the base url for the API and type of API we are accessing ('tesis'),
@@ -121,7 +125,6 @@ def get_id_list(url, api_type, page_number):
 
     Inputs:
         url (str): base URL for API request
-        api_type (str): type of information we are accessing ('tesis' or 'engroses')
         page_number (int): page number of id page we are accessing in the API
 
     Outputs:
@@ -138,20 +141,19 @@ def get_id_list(url, api_type, page_number):
 
     # The first page (0) doesn't include a parameter of looping over pages
     if page_number == 0:
-        id_list = cached_get(api_type, "ids")
+        id_list = cached_get("ids")
     else:
         kwargs = {"page": str(page_number)}
-        id_list = cached_get(api_type, "ids", **kwargs)
+        id_list = cached_get("ids", **kwargs)
 
     for id_record in id_list:
         # Check if we have reached records that we already have in historical
         if int(id_record) <= HISTORICAL_TESIS:
             page_number = None
             break
-        response = cached_get(api_type, id_record)
+        response = cached_get(id_record)
         # Add source of extraction to know we obtained it from API
         response["fuenteExtraccion"] = "api"
-
         # Add tesis if it comes from the Supreme Court
         if response["instancia"] == "Suprema Corte de Justicia de la Nación":
             tesis_data_scjn.append(response)

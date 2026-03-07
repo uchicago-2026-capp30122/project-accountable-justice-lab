@@ -60,3 +60,13 @@ def return_votacion_percentages():
     )
 
     return chart_sentencias
+
+
+# def filter_by_year(sentencias, year: int):
+#     # Filter by column anio
+#     sentencias_year = sentencias[sentencias["anio"] >= year]
+#     return sentencias_year
+
+#     sentencias_scjn_2015 = filter_by_year(joined_sentencias, 2015)
+#     output_file_csv = SENTENCIAS_DATA / "sentencias_joined_data_2015.csv"
+#     sentencias_scjn_2015.to_csv(output_file_csv, index=False)
