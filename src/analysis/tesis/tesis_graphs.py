@@ -9,85 +9,128 @@ from datetime import datetime as dt
 
 BASE_DIR = Path(__file__).parent.parent
 
-TESIS_DATA = BASE_DIR / "data" / "tesis" / "tesis_data"
+TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 
-tesis_complete_path = TESIS_DATA / "tesis_joined_data_full.csv"
-tesis_2015_path = TESIS_DATA / "tesis_joined_data_2015.csv"
+sentencias = TESIS_DATA / "sentencias_joined_data.csv"
 
-tesis_complete = pd.read_csv(tesis_complete_path, dtype=str, index_col=0)
-tesis_2015 = pd.read_csv(tesis_2015_path, dtype=str, index_col=0)
+tesis_data = TESIS_DATA / "tesis_joined_data_scjn.csv"
+
+tesis = pd.read_csv(tesis_data, dtype=str)
+tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]
 
 
 def return_totals():
+    """
+    Returns total tesis
+    """
 
-    return len(tesis_complete)
+    return len(tesis)
+
+
+def tesis_timeline():
+    """
+    Returns timeline of tesis
+    """
+    counts_tesis = tesis.groupby("anio")["idTesis"].count().to_frame().reset_index()
+
+    chart_timeline = (
+        alt.Chart(counts_tesis)
+        .mark_line(point=True, color="#2b6cb0")
+        .encode(
+            x=alt.X("anio:T", title="Año"),
+            y=alt.Y("idTesis:Q", title="Tesis"),
+            tooltip=[
+                alt.Tooltip("anio:T", title="Año", format="%Y"),
+                alt.Tooltip("idTesis:Q", title="Sentencias emitidas", format=","),
+            ],
+        )
+        .properties(
+            title=alt.Title("Tesis emitidas por la SCJN a lo largo del tiempo"),
+            width=800,
+            height=500,
+        )
+        .configure_title(fontSize=15)
+        .configure_view(strokeWidth=0)
+        .configure_axis(gridColor="#eeeeee")
+    )
+
+    return chart_timeline
 
 
 def return_materias_chart():
     materias = (
-        tesis_complete.groupby(["anio", "main_materia"])["idTesis"]
+        tesis_2015.groupby(["anio", "main_materia"])["idTesis"]
         .count()
         .to_frame()
         .reset_index()
     )
 
-    chart = (
+    chart_materias = (
         alt.Chart(materias)
         .transform_window(
             rank="rank()",
             sort=[alt.SortField("idTesis", order="descending")],
             groupby=["anio"],
         )
-        .mark_line(point=True)
+        .mark_line(point=alt.OverlayMarkDef(size=70))
         .encode(
-            x=alt.X("anio:O", title="Year"),
-            y=alt.Y("rank:O", title="Rank"),
-            color="main_materia:N",
-            tooltip=["anio:N", "main_materia:N", "idTesis:Q", "rank:Q"],
+            x=alt.X("anio:T", title="Año"),
+            y=alt.Y("rank:Q", title="Ranking", scale=alt.Scale(reverse=True)),
+            color=alt.Color(
+                "main_materia:N",
+                legend=alt.Legend(title="Materias", symbolSize=50, labelFontSize=10),
+            ),
+            tooltip=[
+                alt.Tooltip("anio:T", title="Año", format="%Y"),
+                alt.Tooltip("main_materia:N", title="Materia"),
+                alt.Tooltip("idTesis:Q", title="Número de tesis"),
+                alt.Tooltip("rank:Q", title="Ranking materia"),
+            ],
         )
-        .properties(width=500, height=500)
-    ).interactive()
-
-    return chart
-
-    ### ESTO LO SAQUÉ DE JOINED TESIS
-
-    tesis_scjn = filter_by_instancia(
-        joined_tesis, "Suprema Corte de Justicia de la Nación"
+        .properties(
+            title=alt.Title("Ranking de materias por año"),
+            width=650,
+            height=400,
+            padding={"left": 50, "right": 100, "top": 50, "bottom": 10},
+        )
+        .configure_axis(grid=False)
+        .configure_title(fontSize=15)
+        .configure_view(strokeWidth=0)
     )
-    tesis_scjn_2015 = filter_by_year(tesis_scjn, 2015)
-    output_file_csv = TESIS_CLEAN_DATA / "tesis_joined_data_2015.csv"
-    tesis_scjn_2015.to_csv(output_file_csv, index=False)
+
+    return chart_materias
 
 
-def filter_by_instancia(tesis, instancia: str):
-    """
-    This function filters the dataframe by the type of court selected
+def return_heatmap_tesis():
 
-    Inputs:
-        - tesis (dataframe): dataframe where changes will be made
+    tesis_ministro = (
+        tesis_2015.groupby(["anio", "ministro"])["idTesis"]
+        .count()
+        .to_frame()
+        .reset_index()
+    )
 
-    Returns:
-        - tesis_instancia (dataframe): filtered dataframe given the selected
-        court
+    chart_tesis_ministro = (
+        alt.Chart(tesis_ministro)
+        .mark_rect()
+        .encode(
+            x="anio:O",
+            y=alt.Y("ministro:N", sort="-x"),
+            color=alt.Color("idTesis:Q", title="Tesis"),
+            tooltip=[
+                alt.Tooltip("anio:N", title="Año"),
+                alt.Tooltip("ministro:N", title="Ministra/o"),
+                alt.Tooltip("idTesis:Q", title="Sentencias emitidas"),
+            ],
+        )
+        .properties(
+            title=alt.Title("Sentencias emitidas por ministra/o a lo largo del tiempo"),
+            width=800,
+            height=500,
+        )
+        .configure_title(fontSize=15)
+        .configure_view(strokeWidth=0)
+        .configure_axis(gridColor="#eeeeee")
+    )
 
-    """
-    tesis_instancia = tesis[tesis["instancia"] == instancia]
-    return tesis_instancia
-
-
-def filter_by_year(tesis, year: int):
-    """
-    This function filters the dataframe by selecting all records from or
-    after the selected year
-
-    Inputs:
-        - tesis (dataframe): dataframe where changes will be made
-
-    Returns:
-        - tesis_instancia (dataframe): filtered dataframe given the selected
-        cutoff year
-
-    """
-    tesis_year = tesis[tesis["anio"] >= year]
-    return tesis_year
+    chart_tesis_ministro

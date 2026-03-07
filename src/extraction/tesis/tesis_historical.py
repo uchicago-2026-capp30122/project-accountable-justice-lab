@@ -78,8 +78,6 @@ def load_tesis_csv():
     output_file_csv = TESIS_DIR / "tesis_historical_clean.csv"
     tesis.to_csv(output_file_csv, index=False)
 
-    return tesis
-
 
 def convert_to_json(df, dir_name, filename):
     """

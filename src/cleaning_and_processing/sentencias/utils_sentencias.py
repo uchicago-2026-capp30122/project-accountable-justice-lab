@@ -53,7 +53,11 @@ def remove_missing_dates(date: str):
     """
 
     if date == "00:00.0":
-        return "1900-01-01"
+        return "01/01/85"
+    elif date == "00:00.3":
+        return "01/01/85"
+    elif date == "23:12.1":
+        return "01/01/85"
     else:
         return date
 

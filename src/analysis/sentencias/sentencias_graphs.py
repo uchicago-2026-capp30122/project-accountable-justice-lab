@@ -8,65 +8,137 @@ from datetime import datetime as dt
 
 BASE_DIR = Path(__file__).parent.parent
 
-SENTENCIAS_DATA = BASE_DIR / "data" / "sentencias" / "sentencias_data"
+SENTENCIAS_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
 
-sentencias_complete_path = SENTENCIAS_DATA / "sentencias_joined_data_full.csv"
-sentencias_2015_path = SENTENCIAS_DATA / "sentencias_joined_data_2015.csv"
+sentencias = SENTENCIAS_DATA / "sentencias_joined_data.csv"
 
 
-sentencias_complete = pd.read_csv(sentencias_complete_path, dtype=str)
-sentencias_2015 = pd.read_csv(sentencias_2015_path, dtype=str)
+sentencias_complete = pd.read_csv(sentencias, dtype=str)
+sentencias_2015 = sentencias[sentencias["anio"].astype("Int64") >= 2015]
 
 
 def return_totals():
+    """
+    Returns total sentencias
+    """
 
-    return len(sentencias_complete)
+    return len(sentencias)
 
 
-def return_materias_chart():
+def sentencias_timeline():
+    """
+    Returns timeline of sentencias over time
 
+    """
     counts_sentencias = (
-        sentencias_complete.groupby("anio", "mes")["expediente"]
-        .count()
-        .to_frame()
-        .reset_index()
+        sentencias.groupby("anio")["expediente"].count().to_frame().reset_index()
     )
 
-    return chart
+    chart_timeline = (
+        alt.Chart(counts_sentencias)
+        .mark_line(point=True, color="#2b6cb0")
+        .encode(
+            x=alt.X("anio:T", title="Año"),
+            y=alt.Y("expediente:Q", title="Sentencias"),
+            tooltip=[
+                alt.Tooltip("anio:T", title="Año"),
+                alt.Tooltip("expediente:Q", title="Sentencias emitidas"),
+            ],
+        )
+        .properties(
+            title=alt.Title("Sentencias emitidas a lo largo del tiempo"),
+            width=800,
+            height=500,
+        )
+        .configure_title(fontSize=15)
+        .configure_view(strokeWidth=0)
+        .configure_axis(gridColor="#eeeeee")
+    )
+
+    return chart_timeline
 
 
 def return_votacion_percentages():
+    """
+
+    Returns bar graph sentencias
+
+    """
 
     counts_sentencias = (
-        sentencias_complete.groupby(["anio", "votos"])["expediente"]
+        sentencias.groupby(["anio", "votos"])["expediente"]
         .count()
         .to_frame()
         .reset_index()
     )
-    counts_sentencias["percentage"] = (
-        counts_sentencias["expediente"]
-        / counts_sentencias.groupby("anio")["expediente"].transform("sum")
-    ) * 100
+    counts_sentencias["percentage"] = counts_sentencias[
+        "expediente"
+    ] / counts_sentencias.groupby("anio")["expediente"].transform("sum")
 
-    chart_sentencias = (
+    votacion_sentencias = (
         alt.Chart(counts_sentencias)
         .mark_bar(point=True)
         .encode(
-            x=alt.X("anio:O", title="Year"),
-            y=alt.Y("percentage:Q", title="Number of rulings"),
-            color=alt.Color("votos:N", title="Vote type"),
-            tooltip=["anio", "votos", "percentage:Q"],
+            x=alt.X("anio:O", title="Año"),
+            y=alt.Y("percentage:Q", title="Total de sentencias"),
+            color=alt.Color("votos:N", title="Tipo votación"),
+            tooltip=[
+                alt.Tooltip("anio", title="año"),
+                alt.Tooltip("votos", title="tipo votación"),
+                alt.Tooltip("percentage:Q", title="porcentaje", format=".2%"),
+            ],
         )
+        .properties(
+            title=alt.Title(
+                "Proporción de votación en las sentencias",
+                subtitle="Entendiendo la integridad de los datos",
+            ),
+            width=500,
+            height=300,
+        )
+        .configure_title(
+            fontSize=15,
+        )
+        .configure_view(strokeWidth=0)
+        .configure_axis(gridColor="#eeeeee")
     )
 
-    return chart_sentencias
+    return votacion_sentencias
 
 
-# def filter_by_year(sentencias, year: int):
-#     # Filter by column anio
-#     sentencias_year = sentencias[sentencias["anio"] >= year]
-#     return sentencias_year
+def return_ministros_chart():
+    """
+    Returns heat map ministros
 
-#     sentencias_scjn_2015 = filter_by_year(joined_sentencias, 2015)
-#     output_file_csv = SENTENCIAS_DATA / "sentencias_joined_data_2015.csv"
-#     sentencias_scjn_2015.to_csv(output_file_csv, index=False)
+    """
+    sentencias_ministro = (
+        sentencias_2015.groupby(["anio", "ministro"])["expediente"]
+        .count()
+        .to_frame()
+        .reset_index()
+    )
+
+    chart_ministro = (
+        alt.Chart(sentencias_ministro)
+        .mark_rect()
+        .encode(
+            x="anio:O",
+            y=alt.Y("ministro:N", sort="-x"),
+            color=alt.Color("expediente:Q", title="Rulings"),
+            tooltip=[
+                alt.Tooltip("anio:N", title="Año"),
+                alt.Tooltip("ministro:N", title="Ministra/o"),
+                alt.Tooltip("expediente:Q", title="Sentencias emitidas"),
+            ],
+        )
+        .properties(
+            title=alt.Title("Sentencias emitidas por ministra/o a lo largo del tiempo"),
+            width=800,
+            height=500,
+        )
+        .configure_title(fontSize=15)
+        .configure_view(strokeWidth=0)
+        .configure_axis(gridColor="#eeeeee")
+    )
+
+    return chart_ministro

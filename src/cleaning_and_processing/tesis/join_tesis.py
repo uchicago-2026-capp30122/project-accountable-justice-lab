@@ -73,7 +73,7 @@ def join_tesis_sources():
     )
 
     output_file_csv = TESIS_CLEAN_DATA / "tesis_joined_data_scjn.csv"
-    joined_tesis.to_csv(output_file_csv, index=False)
+    tesis_scjn.to_csv(output_file_csv, index=False)
 
 
 def filter_by_instancia(tesis, instancia: str):

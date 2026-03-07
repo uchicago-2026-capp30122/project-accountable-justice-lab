@@ -5,7 +5,7 @@ import json
 import time
 from datetime import datetime
 from pathlib import Path
-from http_tesis import cached_get
+from .http_tesis import cached_get
 
 """
 This file gets tesis (legal precedents) most recent information from the Supreme
@@ -79,8 +79,6 @@ def build_tesis_csv():
         writer = csv.DictWriter(f, fieldnames=TESIS_CSV_COLUMNS)
         writer.writeheader()
         writer.writerows(general_tesis_scjn)
-
-    return general_tesis
 
 
 def get_all_tesis():

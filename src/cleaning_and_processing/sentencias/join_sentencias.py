@@ -39,12 +39,12 @@ def join_sentencias_sources():
     )
 
     # Lowercase name of justices
-    joined_sentencias["ministro"].str.lower()
+    joined_sentencias["ministro"] = joined_sentencias["ministro"].str.lower()
 
     # Get voting outcome
     joined_sentencias["votos"] = joined_sentencias["votacion"].apply(get_votacion)
 
-    # Add cleanDate column to extract as much information of years as possible
+    # # Add cleanDate column to extract as much information of years as possible
     joined_sentencias["cleanDate"] = joined_sentencias["fechaResolucion"].apply(
         remove_missing_dates
     )
@@ -54,17 +54,18 @@ def join_sentencias_sources():
         format="mixed",
         dayfirst=True,
     )
-    # Create year column ('anio')
+
+    # # Create year column ('anio')
     joined_sentencias["anio"] = joined_sentencias["cleanDate"].dt.year.astype("Int64")
-    # For rulings that don't have dates, extract date in file number
-    mask = joined_sentencias["anio"] == 1900
+    # # For rulings that don't have dates, extract date in file number
+    mask = joined_sentencias["anio"] == 1985
     joined_sentencias.loc[mask, "anio"] = (
         joined_sentencias.loc[mask, "expediente"]
         .str.extract(r"\b\d{1,4}/(19\d{2}|20\d{2})")[0]
         .astype("Int64")
     )
 
-    # Save cleaned dataset
+    # # Save cleaned dataset
     output_file_csv = SENTENCIAS_CLEAN_DATA / "sentencias_joined_data.csv"
     joined_sentencias.to_csv(output_file_csv, index=False)
 
