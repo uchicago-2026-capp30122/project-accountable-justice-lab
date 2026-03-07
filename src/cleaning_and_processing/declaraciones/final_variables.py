@@ -17,9 +17,9 @@ import pandas as pd
 import json
 from extract_inmuebles import extract_inmuebles
 
-INPUT_XLSX = Path("data/declaraciones/compiled_dataset_filtered.xlsx")
-TEXT_DIR = Path("processing/declaraciones/pdf_text")
-OUTPUT_XLSX = Path("frontend/declaraciones/final_variables.xlsx")
+INPUT_XLSX = Path("data/clean_data/declaraciones/compiled_dataset_filtered.xlsx")
+TEXT_DIR = Path("data/raw_data/declaraciones/pdf_text")
+OUTPUT_XLSX = Path("data/clean_data/declaraciones/final_variables.xlsx")
 
 # Remuneration section
 

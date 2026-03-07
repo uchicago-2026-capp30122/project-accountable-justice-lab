@@ -3,7 +3,7 @@ import pandas as pd
 import re
 
 # Must match your setup
-INPUT_XLSX = Path("data/declaraciones/compiled_dataset_filtered.xlsx")
+INPUT_XLSX = Path("data/clean_data/declaraciones/compiled_dataset_filtered.xlsx")
 TEXT_DIR = Path("pdf_text")
 
 COMMON_TYPES = {"CASA","DEPARTAMENTO","TERRENO","LOCAL","OFICINA","BODEGA","RANCHO","PARCELA"}
