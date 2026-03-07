@@ -2,8 +2,8 @@ import pandas as pd
 import subprocess
 from pathlib import Path
 
-INPUT_FILE = "data/declaraciones/compiled_dataset_filtered.xlsx"
-OUT_DIR = Path("processing/declaraciones/pdf_text")
+INPUT_FILE = "data/clean_data/declaraciones/compiled_dataset_filtered.xlsx"
+OUT_DIR = Path("data/raw_data/declaraciones/pdf_text")
 OUT_DIR.mkdir(exist_ok=True)
 
 df = pd.read_excel(INPUT_FILE, dtype=str)

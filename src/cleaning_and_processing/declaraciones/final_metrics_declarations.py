@@ -1,6 +1,6 @@
 import pandas as pd
 
-df = pd.read_excel("frontend/declaraciones/final_variables.xlsx")
+df = pd.read_excel("data/clean_data/declaraciones/final_variables.xlsx")
 
 print(df.head())
 print(df)
