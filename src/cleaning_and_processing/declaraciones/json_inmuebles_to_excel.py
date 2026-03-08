@@ -3,10 +3,10 @@ import pandas as pd
 from pathlib import Path
 
 # Folder with JSON files
-JSON_DIR = Path("processing/declaraciones/inmuebles_json")
+JSON_DIR = Path("data/raw_data/declaraciones/inmuebles_json")
 
 # Output file
-OUT_XLSX = Path("processing/declaraciones/total_inmuebles.xlsx")
+OUT_XLSX = Path("data/clean_data/declaraciones/total_inmuebles.xlsx")
 
 rows = []
 
