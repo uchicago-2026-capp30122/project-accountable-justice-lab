@@ -86,7 +86,8 @@ def get_productivity_ministros_app():
 
     sentencias = pd.read_csv(sentencias_data, dtype=str)
     sentencias_2015 = sentencias[sentencias["anio"].astype("Int64") >= 2015]
-    tesis = sentencias[sentencias["anio"].astype("Int64") >= 2015]
+
+    tesis = pd.read_csv(tesis_data, dtype=str)
     tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]
 
     prod_ministros = generate_productivity_index_table(sentencias_2015, tesis_2015)

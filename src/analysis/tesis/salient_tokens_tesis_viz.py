@@ -2,7 +2,7 @@ import streamlit as st
 import pandas as pd
 import sys
 from pathlib import Path
-from salient_tokens_tesis import ORDER, analyze_themes, main_ngrams
+from .salient_tokens_tesis import ORDER, analyze_themes, main_ngrams
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
@@ -56,7 +56,9 @@ def render_ngrams_tesis_tab():
                     "score": "Relevancia",
                 }
             )
-            st.dataframe(display_temas, hide_index=True, use_container_width=True)
+            return st.dataframe(
+                display_temas, hide_index=True, use_container_width=True
+            )
 
         except FileNotFoundError:
             st.error("Error: archivo de datos no encontrado")
