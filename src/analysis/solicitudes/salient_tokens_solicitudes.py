@@ -541,9 +541,10 @@ STOPWORDS = {
 
 
 def is_mentioning(text, target_name, threshold=0.92):
-    """checks if target_name (or parts of it)
-    appears in text via fuzzy match
-    eg is a ministers name appears in a folio request"""
+    """
+    Checks if target_name (or parts of it)
+    appears in text (folio/request) via fuzzy match
+    """
     normalized_target = normalize_text(target_name)
     target_parts = normalized_target.split()
 
@@ -563,13 +564,13 @@ def is_mentioning(text, target_name, threshold=0.92):
 
 def normalize_text(text):
     """
-    clean text by lowercasing, removing accents and striping punctuation
+    Clean text by lowercasing, removing accents and striping punctuation
     normalizing things like Constitución to constitucion so same word
     """
     if not text:
         return ""
     text = text.lower()
-    ## this is where accents are removed
+    # this is where accents are removed
     text = "".join(
         c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn"
     )
@@ -580,22 +581,23 @@ def normalize_text(text):
 
 def get_ngrams(text, n):
     """
-    turn text to list of ngrams
-    fikters stopwords and words shorter than 3 letters
+    Creates ngrams after removing stopwords and very short tokens.
+    Turn text to list of ngrams
+    filters stopwords and words shorter than 3 letters
     """
     words = [w for w in text.split() if w not in STOPWORDS and len(w) > 2]
     return [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
 
 
-# MAIN ANALISIS!!
+# main analysis function 
 def analyze_themes(csv_path, n_size, top_k, filter_name=None):
     """
-    groups text by year and applies TF-IDF formula for salient tokens.
-    includes a time-series counter for the filtered minister/word.
-    Genera output en terminal y guarda CSVs para Streamlit.
+    Groups text (requests) by year and applies TF-IDF formula for salient tokens
+    so we get phrases that are distinctive not just frequent. 
     """
     year_docs = {}
     mentions_per_year = Counter()
+    # to keep a yearly counter of rows that mention the filtered minister/topic
 
     print(f"Reading CSV, filtering by {filter_name if filter_name else 'None'}")
 
@@ -634,9 +636,10 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
     for year, ngrams in year_docs.items():
         for gram in set(ngrams):
             ngram_year_counts[gram] = ngram_year_counts.get(gram, 0) + 1
-
+    
+    # this is for later use in streamlit
     minister_data = []
-
+    
     # CLI
     title = f"SALIENT {n_size}-GRAM THEMES"
     if filter_name:
@@ -676,9 +679,7 @@ def main():
     parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
     parser.add_argument("-n", "--ngram-size", type=int, default=2)
     parser.add_argument("-k", "--top", type=int, default=8)
-    parser.add_argument(
-        "--filter", type=str, help="Minister name to filter by (eg 'Lenia Batres')"
-    )
+    parser.add_argument("--filter", type=str)
 
     args = parser.parse_args()
     analyze_themes(args.csv, args.ngram_size, args.top, args.filter)

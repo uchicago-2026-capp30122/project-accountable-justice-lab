@@ -155,26 +155,36 @@ INTEGRACION_POR_ANIO = {
     ],
 }
 
-
 def run_count():
+    """
+    Count membership changes over time, 
+    so each year uses its own correct list of ministers 
+    """
+    # creat nested dict structure
+    # first key is minister name, second one is year and then value = count
     conteos = defaultdict(lambda: defaultdict(int))
-    with open(DEFAULT_CSV, "r", encoding="utf-8") as f:
+    # nested counter: minister - year - number of matching solicitudes
+
+    with open(DEFAULT_CSV, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
             year = row.get("year")
             if year not in INTEGRACION_POR_ANIO:
                 continue
-
-            # Usamos las funciones importadas
+            # skip rows for years outside the court composition dict
+            # normalize request text before checking mentions of minsiter
             clean_text = normalize_text(f"{row.get('DescripcionSolicitud', '')}")
 
+            # only compare against ministers who belonged to court in that year 
             ministros_del_anio = INTEGRACION_POR_ANIO[year]
             for min_name in ministros_del_anio:
                 if is_mentioning(clean_text, min_name):
                     conteos[min_name][year] += 1
 
     print(f"Writing output file ngrams streamlit {OUTPUT_CSV}")
-    with open(OUTPUT_CSV, "w", encoding="utf-8", newline="") as f:
+    # one row per year minister combination
+    # include all minister year pais, even if 0 so viz data is complete
+    with open(OUTPUT_CSV, "w", newline="") as f:
         writer = csv.writer(f)
         writer.writerow(["year", "minister", "count"])
         for yr in sorted(INTEGRACION_POR_ANIO.keys(), key=int):

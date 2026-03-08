@@ -52,7 +52,7 @@ CORE_FIELDS = [
     "Queja",
 ]
 
-# add an ISO version YYYY-MM-DD to make time analysis easier on pandas
+# add an ISO version YYYY-MM-DD for easier analysis on pandas
 DATE_FIELDS = [
     "FechaSolicitud",
     "FechaLimite",
@@ -63,7 +63,7 @@ DATE_FIELDS = [
 FLAG_FIELDS = ["Prorroga", "Prevencion", "Disponibilidad", "Queja"]
 
 
-# FIRST FIND INPUT FILES
+# first find all input files
 def find_year_files():
     """
     Find all yearly files named like 'solicitudes2017.JSON'
@@ -71,7 +71,7 @@ def find_year_files():
     return sorted(DATA_DIR.glob("solicitudes20*.JSON"))
 
 
-# CLEAN TEXT FOR CSV
+# Clean text for csv
 def clean_text(text: str):
     """
     clean a text value so it won't break CSV output
@@ -95,7 +95,6 @@ def parse_date_ddmmyyyy(date_str: str):
     """
     Convert dates like '31/12/2020' to '2020-12-31' (ISO)
     - ISO sorts correctly as strings
-    - Easy to group/filter by year/month in pandas
     """
     date_str = (date_str or "").strip()
     if date_str == "":
@@ -105,7 +104,7 @@ def parse_date_ddmmyyyy(date_str: str):
 
 def yes_no_to_bin(flag_str: str):
     """
-    Convert "Si"/"Sí" -> 1 and "No" -> 0.
+    Convert "Si"/"Sí" to 1 and "No" to 0
     """
     flag_str = (flag_str or "").strip().lower()
     if flag_str in ("si", "sí"):
@@ -115,7 +114,7 @@ def yes_no_to_bin(flag_str: str):
     return ""
 
 
-# DECODE BYTES WITHOUT LOSING ACCENTS!! (mojibake etc)
+# decode bytes without losing accents (mojibake etc)
 def decode_bytes_best(raw: bytes):
     """
     Decode the raw file bytes into text without losing spanish characters.
@@ -178,7 +177,8 @@ def build_field_regex(key: str, all_keys: list[str]):
     )
     return re.compile(pattern, re.DOTALL)
 
-
+# pre makes the regex for each field once 
+# so we can reuse for every record
 FIELD_REGEX = {}
 for key in CORE_FIELDS:
     FIELD_REGEX[key] = build_field_regex(key, CORE_FIELDS)
@@ -186,8 +186,7 @@ for key in CORE_FIELDS:
 
 def parse_record(block: str):
     """
-    block is str
-    extract all CORE_FIELDS from one record block
+    Extract all CORE_FIELDS from one record block
     if a field is missing, we return "" so the CSV stays 'rectangular'
     """
     rec = {}
@@ -200,7 +199,7 @@ def parse_record(block: str):
     return rec
 
 
-# NORMALIZE RECORDS (final columns)
+# Turn extracted record into final clean row for csv
 def normalize_record(rec: dict, year: int) -> dict:
     """
     final row of csv
@@ -223,9 +222,6 @@ def normalize_record(rec: dict, year: int) -> dict:
 def write_csv(rows: list[dict], out_path: Path):
     """
     Write rows to a CSV in UTF-8 (it preserves spanish accents and ñ in output)
-    parameters:
-    rows - list of dics
-    out_path is a path
     """
     out_path.parent.mkdir(parents=True, exist_ok=True)
     cols = ["year"] + CORE_FIELDS

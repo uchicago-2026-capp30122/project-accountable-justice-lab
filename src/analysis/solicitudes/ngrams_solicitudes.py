@@ -1,6 +1,6 @@
 """
 ngrams_solicitudes.py
-This file is a raw ngrams counter,
+This file is a basic, raw ngrams counter,
 it uses raw frequency vs the salient_tokens_solicitudes.py
 file that does saliency comparison.
 This was the first ngrams file we did, but opted to use the salient_tokens
