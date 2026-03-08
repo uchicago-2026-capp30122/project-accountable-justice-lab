@@ -29,15 +29,42 @@ from analysis.sentencias.sentencias_graphs import (
     get_all_sentencias_charts
 )
 
+from analysis.tesis.salient_tokens_tesis_viz import render_ngrams_tesis_tab
+
 #Import rendering function for Solicitudes tab
 from analysis.solicitudes.viz_solicitudes_2 import render_solicitudes_tab
 
-# Page configuration 
+import streamlit as st
+
 st.set_page_config(page_title="Accountable Justice Lab", layout="wide")
 
-st.title("⚖️ OJO PIOJO")
-st.write("Accountable Justice Lab")
-st.image("src/app/ojopiojo.jpeg", width=120)
+# Outer columns to center the whole block
+left_space, center, right_space = st.columns([1, 3, 1])
+
+with center:
+    title_col, logo_col = st.columns([4, 1])
+
+    with title_col:
+        st.markdown(
+            """
+            <h1 style='font-size: 100px; margin: 0; text-align: right; font-family: Arial;'>
+                OJO PIOJO
+            </h1>
+            """,
+            unsafe_allow_html=True
+        )
+
+    with logo_col:
+        st.image("src/app/ojopiojo.jpeg", width=120)
+
+st.markdown(
+    """
+    <p style='text-align: center; font-size: 32px; font-weight: 500; margin-top: 10px;'>
+        Accountable Justice Lab
+    </p>
+    """,
+    unsafe_allow_html=True
+)
 
 # File paths
 DECLARACIONES_INMUEBLES_XLSX = "data/clean_data/declaraciones/total_inmuebles.xlsx"
@@ -111,7 +138,7 @@ declaraciones_inmuebles = load_declaraciones_inmuebles()
 solicitudes_counts = load_solicitudes_counts()
 solicitudes_index = load_solicitudes_index()
 
-total_tesis, tesis_timeline_chart, tesis_materias_chart, tesis_heatmap = get_all_tesis_charts()
+total_tesis, tesis_timeline_chart,tesis_por_tipo_chart, tesis_materias_chart, tesis_heatmap = get_all_tesis_charts()
 total_sentencias, sentencias_timeline_chart, sentencias_votacion_chart, sentencias_heatmap = get_all_sentencias_charts()
 
 # Clean text columns
@@ -127,7 +154,7 @@ m2 = metrica_completitud_inmuebles(declaraciones_inmuebles)
 
 # App tabs
 tab_general, tab_solicitudes, tab_sentencias, tab_tesis, tab_declaraciones = st.tabs(
-    ["General", "Solicitudes", "Sentencias", "Tesis", "Declaraciones"]
+    ["General", "Solicitudes (Requests)", "Sentencias (Rulings)", "Tesis (Precedents)", "Declaraciones (Disclosures)"]
 )
 
 # General tabls
@@ -138,34 +165,34 @@ with tab_general:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric("Total tesis", total_tesis)
+        st.metric("Total tesis (Total precendents)", total_tesis)
 
     with col2:
-        st.metric("Total sentencias", total_sentencias)
+        st.metric("Total sentencias (Total rulings)", total_sentencias)
 
-    st.subheader("Tesis timeline")
+    st.subheader("Línea de tiempo tesis (Tesis timeline)")
     st.altair_chart(tesis_timeline_chart, use_container_width=True)
 
-    st.subheader("Sentencias timeline")
+    st.subheader("Línea de tiempo sentencias (Rulings timeline)")
     st.altair_chart(sentencias_timeline_chart, use_container_width=True)
 
-    st.subheader("Completitud de declaraciones")
+    st.subheader("Completitud de declaraciones (Disclosure completeness)")
 
     col3, col4 = st.columns(2)
 
     with col3:
         st.metric(
-            "Ministros con máximo nivel de educación declarado",
+            "Ministros con máximo nivel de educación declarado (Judges with declared maximum level of education)",
             f"{m1['con_educacion_declarada']} / {m1['total_ministros']}"
         )
-        st.write(f"Porcentaje: {m1['porcentaje']:.1%}")
+        st.write(f"Porcentaje (Percentage): {m1['porcentaje']:.1%}")
 
     with col4:
         st.metric(
-            "Ministros con al menos un inmueble declarado",
+            "Ministros con al menos un inmueble declarado (Judges with at least one asset declared)",
             f"{m2['con_al_menos_un_inmueble']} / {m2['total_ministros']}"
         )
-        st.write(f"Porcentaje: {m2['porcentaje']:.1%}")
+        st.write(f"Porcentaje (Percentage): {m2['porcentaje']:.1%}")
 
 # Solicitudes tab
 with tab_solicitudes:
@@ -174,59 +201,58 @@ with tab_solicitudes:
 # Sentencias tab
 with tab_sentencias:
 
-    st.header("Sentencias")
+    st.header("Sentencias (Rulings)")
 
-    sub1, sub2, sub3 = st.tabs(
-        ["Timeline", "Votaciones", "Ministros"]
+    sub1, sub2 = st.tabs(
+        ["Votaciones (Votings)", "Ministros (Justices)"]
     )
-
+    
     with sub1:
-        st.altair_chart(sentencias_timeline_chart, use_container_width=True)
-
-    with sub2:
         st.altair_chart(sentencias_votacion_chart, use_container_width=True)
 
-    with sub3:
+    with sub2:
         st.altair_chart(sentencias_heatmap, use_container_width=True)
 
 # Tesis tab
 with tab_tesis:
 
-    st.header("Tesis")
+    st.header("Tesis (Precedents)")
 
-    sub1, sub2, sub3 = st.tabs(
-        ["Timeline", "Materias", "Ministros"]
+    sub1, sub2, sub3, sub4 = st.tabs(
+        ["Materias (Areas)", "Ministros (Justices)","Por tipo (By type)", "Conceptos"]
     )
-
     with sub1:
-        st.altair_chart(tesis_timeline_chart, use_container_width=True)
-
-    with sub2:
         st.altair_chart(tesis_materias_chart, use_container_width=True)
 
-    with sub3:
+    with sub2:
         st.altair_chart(tesis_heatmap, use_container_width=True)
+    
+    with sub3:
+        st.altair_chart(tesis_por_tipo_chart, use_container_width=True)
+        
+    with sub4:
+        render_ngrams_tesis_tab()
 
 # Declaraciones tab
 with tab_declaraciones:
 
-    st.header("Declaraciones")
+    st.header("Declaraciones (Disclosures)")
 
     sub1, sub2, sub3 = st.tabs(
-        ["Nivel educativo", "Bienes inmuebles", "Salarios"]
+        ["Nivel educativo (Educational level)", "Bienes inmuebles (Assets)", "Salarios (Salaries)"]
     )
 
     with sub1:
-        st.subheader("Nivel educativo más alto declarado por persona")
+        st.subheader("Nivel educativo más alto declarado por persona (Highest educational level declared)")
         edu_table = build_edu_table(declaraciones)
         st.dataframe(edu_table, use_container_width=True, hide_index=True)
 
     with sub2:
-        st.subheader("Bienes inmuebles")
+        st.subheader("Bienes inmuebles (Assets)")
         inmuebles_table = build_inmuebles_table(declaraciones_inmuebles)
         st.dataframe(inmuebles_table, use_container_width=True, hide_index=True)
 
     with sub3:
-        st.subheader("Salario declarado")
+        st.subheader("Salario declarado (Declared salary)")
         salary_table = build_salary_table(declaraciones)
         st.dataframe(salary_table, use_container_width=True, hide_index=True)
