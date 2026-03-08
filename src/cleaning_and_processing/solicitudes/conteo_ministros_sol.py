@@ -1,3 +1,11 @@
+"""
+conteo_ministros_sol.py
+This file generates reads all the requests (solicitudes) and for each row,
+it checks if a certain minister is mentioned in a certain year.
+It generates a file called: todos_los_ministros_timeseries.csv
+This file is used for the bar chart solicitudes visualization.
+"""
+
 import csv
 from pathlib import Path
 import sys
@@ -10,24 +18,143 @@ sys.path.append(str(ROOT / "src" / "analysis" / "solicitudes"))
 
 from salient_tokens_solicitudes import normalize_text, is_mentioning
 
-DEFAULT_CSV = ROOT / "data" / "clean_data" / "solicitudes" / "clean_solicitudes_2017_2026.csv"
+DEFAULT_CSV = (
+    ROOT / "data" / "clean_data" / "solicitudes" / "clean_solicitudes_2017_2026.csv"
+)
 OUT_DIR = ROOT / "data" / "viz_data"
 OUTPUT_CSV = OUT_DIR / "todos_los_ministros_timeseries.csv"
 
 
-# scjn members per year 
+# scjn members per year
 INTEGRACION_POR_ANIO = {
-    "2017": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "José Ramón Cossío Díaz", "Margarita Beatriz Luna Ramos", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Eduardo Medina Mora", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández"],
-    "2018": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "José Ramón Cossío Díaz", "Margarita Beatriz Luna Ramos", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Eduardo Medina Mora", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández"],
-    "2019": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
-    "2020": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "José Fernando Franco González Salas", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
-    "2021": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
-    "2022": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
-    "2023": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Arturo Zaldívar Lelo de Larrea", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
-    "2024": ["Luis María Aguilar Morales", "Alfredo Gutiérrez Ortiz Mena", "Juan Luis González Alcántara Carrancá", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "Lenia Batres Guadarrama", "Jorge Mario Pardo Rebolledo", "Javier Laynez Potisek", "Alberto Pérez Dayán", "Norma Lucía Piña Hernández", "Margarita Ríos Farjat"],
-    "2025": ["Hugo Aguilar Ortiz", "Lenia Batres Guadarrama", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "María Estela Ríos González", "Sara Irene Herrerías Guerra", "Giovanni Azael Figueroa Mejía", "Irving Espinosa Betanzo", "Arístides Rodrigo Guerrero García"],
-    "2026": ["Hugo Aguilar Ortiz", "Lenia Batres Guadarrama", "Yasmín Esquivel Mossa", "Loretta Ortiz Ahlf", "María Estela Ríos González", "Sara Irene Herrerías Guerra", "Giovanni Azael Figueroa Mejía", "Irving Espinosa Betanzo", "Arístides Rodrigo Guerrero García"]
+    "2017": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "José Ramón Cossío Díaz",
+        "Margarita Beatriz Luna Ramos",
+        "José Fernando Franco González Salas",
+        "Arturo Zaldívar Lelo de Larrea",
+        "Jorge Mario Pardo Rebolledo",
+        "Eduardo Medina Mora",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+    ],
+    "2018": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "José Ramón Cossío Díaz",
+        "Margarita Beatriz Luna Ramos",
+        "José Fernando Franco González Salas",
+        "Arturo Zaldívar Lelo de Larrea",
+        "Jorge Mario Pardo Rebolledo",
+        "Eduardo Medina Mora",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+    ],
+    "2019": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "Juan Luis González Alcántara Carrancá",
+        "Yasmín Esquivel Mossa",
+        "José Fernando Franco González Salas",
+        "Arturo Zaldívar Lelo de Larrea",
+        "Jorge Mario Pardo Rebolledo",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+        "Margarita Ríos Farjat",
+    ],
+    "2020": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "Juan Luis González Alcántara Carrancá",
+        "Yasmín Esquivel Mossa",
+        "José Fernando Franco González Salas",
+        "Arturo Zaldívar Lelo de Larrea",
+        "Jorge Mario Pardo Rebolledo",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+        "Margarita Ríos Farjat",
+    ],
+    "2021": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "Juan Luis González Alcántara Carrancá",
+        "Yasmín Esquivel Mossa",
+        "Loretta Ortiz Ahlf",
+        "Arturo Zaldívar Lelo de Larrea",
+        "Jorge Mario Pardo Rebolledo",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+        "Margarita Ríos Farjat",
+    ],
+    "2022": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "Juan Luis González Alcántara Carrancá",
+        "Yasmín Esquivel Mossa",
+        "Loretta Ortiz Ahlf",
+        "Arturo Zaldívar Lelo de Larrea",
+        "Jorge Mario Pardo Rebolledo",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+        "Margarita Ríos Farjat",
+    ],
+    "2023": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "Juan Luis González Alcántara Carrancá",
+        "Yasmín Esquivel Mossa",
+        "Loretta Ortiz Ahlf",
+        "Arturo Zaldívar Lelo de Larrea",
+        "Jorge Mario Pardo Rebolledo",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+        "Margarita Ríos Farjat",
+    ],
+    "2024": [
+        "Luis María Aguilar Morales",
+        "Alfredo Gutiérrez Ortiz Mena",
+        "Juan Luis González Alcántara Carrancá",
+        "Yasmín Esquivel Mossa",
+        "Loretta Ortiz Ahlf",
+        "Lenia Batres Guadarrama",
+        "Jorge Mario Pardo Rebolledo",
+        "Javier Laynez Potisek",
+        "Alberto Pérez Dayán",
+        "Norma Lucía Piña Hernández",
+        "Margarita Ríos Farjat",
+    ],
+    "2025": [
+        "Hugo Aguilar Ortiz",
+        "Lenia Batres Guadarrama",
+        "Yasmín Esquivel Mossa",
+        "Loretta Ortiz Ahlf",
+        "María Estela Ríos González",
+        "Sara Irene Herrerías Guerra",
+        "Giovanni Azael Figueroa Mejía",
+        "Irving Espinosa Betanzo",
+        "Arístides Rodrigo Guerrero García",
+    ],
+    "2026": [
+        "Hugo Aguilar Ortiz",
+        "Lenia Batres Guadarrama",
+        "Yasmín Esquivel Mossa",
+        "Loretta Ortiz Ahlf",
+        "María Estela Ríos González",
+        "Sara Irene Herrerías Guerra",
+        "Giovanni Azael Figueroa Mejía",
+        "Irving Espinosa Betanzo",
+        "Arístides Rodrigo Guerrero García",
+    ],
 }
+
 
 def run_count():
     conteos = defaultdict(lambda: defaultdict(int))
@@ -35,11 +162,12 @@ def run_count():
         reader = csv.DictReader(f)
         for row in reader:
             year = row.get("year")
-            if year not in INTEGRACION_POR_ANIO: continue
-            
+            if year not in INTEGRACION_POR_ANIO:
+                continue
+
             # Usamos las funciones importadas
             clean_text = normalize_text(f"{row.get('DescripcionSolicitud', '')}")
-            
+
             ministros_del_anio = INTEGRACION_POR_ANIO[year]
             for min_name in ministros_del_anio:
                 if is_mentioning(clean_text, min_name):
@@ -54,6 +182,7 @@ def run_count():
                 cuenta = conteos[min_name].get(yr, 0)
                 writer.writerow([yr, min_name, cuenta])
     print("Done")
+
 
 if __name__ == "__main__":
     run_count()

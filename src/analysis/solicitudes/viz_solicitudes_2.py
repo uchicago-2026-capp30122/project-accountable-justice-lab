@@ -1,29 +1,22 @@
 import streamlit as st
 import pandas as pd
 import altair as alt
-import csv
-import math
-import unicodedata
 import sys
 from pathlib import Path
-from collections import Counter
 
 root_path = Path(__file__).resolve().parents[3]
 sys.path.append(str(root_path))
 
-from src.analysis.solicitudes.salient_tokens_solicitudes import (
-    analyze_themes, 
-    normalize_text, 
-    get_ngrams,
-    is_mentioning,
-    STOPWORDS
-)
+from src.analysis.solicitudes.salient_tokens_solicitudes import analyze_themes
+
 SOLICITUDES_COUNTS_CSV = Path("data/viz_data/todos_los_ministros_timeseries.csv")
-SOLICITUDES_TEXT_CSV = Path("data/clean_data/solicitudes/clean_solicitudes_2017_2026.csv")
+SOLICITUDES_TEXT_CSV = Path(
+    "data/clean_data/solicitudes/clean_solicitudes_2017_2026.csv"
+)
 
 
 def return_ministers_bar_chart(df, selected_year):
-    """Genera la gráfica de barras de menciones por ministro."""
+    """Bar chart of counts a minister is mentioned in a request"""
     df_year = df[df["year"] == str(selected_year)].copy()
 
     if df_year.empty:
@@ -38,15 +31,15 @@ def return_ministers_bar_chart(df, selected_year):
         .encode(
             x=alt.X("count:Q", title="Menciones"),
             y=alt.Y("minister:N", sort="-x", title="Ministro/a"),
-            color=alt.Color("count:Q", scale=alt.Scale(scheme='viridis'), legend=None),
+            color=alt.Color("count:Q", scale=alt.Scale(scheme="viridis"), legend=None),
             tooltip=["minister", "count"],
         )
         .properties(height=500)
     )
     return chart
 
+
 def render_solicitudes_tab(solicitudes_counts):
-    """Renderiza las pestañas de la aplicación."""
     st.header("⚖️ Análisis de Solicitudes SCJN")
 
     subtab_mentions, subtab_themes = st.tabs(
@@ -56,13 +49,13 @@ def render_solicitudes_tab(solicitudes_counts):
     # Grafica de barras
     with subtab_mentions:
         st.subheader("¿A qué ministros mencionan más los ciudadanos?")
-        
+
         available_years = sorted(
             solicitudes_counts["year"].dropna().unique(), reverse=True
         )
-        
+
         col_filter, col_metric = st.columns([1, 2])
-        
+
         with col_filter:
             selected_year = st.selectbox(
                 "Selecciona el año:",
@@ -73,7 +66,9 @@ def render_solicitudes_tab(solicitudes_counts):
         df_year = solicitudes_counts[solicitudes_counts["year"] == str(selected_year)]
 
         if not df_year.empty and df_year["count"].sum() > 0:
-            chart_ministers = return_ministers_bar_chart(solicitudes_counts, selected_year)
+            chart_ministers = return_ministers_bar_chart(
+                solicitudes_counts, selected_year
+            )
             top_row = df_year.sort_values("count", ascending=False).iloc[0]
 
             with col_metric:
@@ -97,9 +92,13 @@ def render_solicitudes_tab(solicitudes_counts):
         )
 
         with col1:
-            selected_year_themes = st.selectbox("Año:", available_years, key="themes_year")
+            selected_year_themes = st.selectbox(
+                "Año:", available_years, key="themes_year"
+            )
         with col2:
-            selected_minister = st.selectbox("Ministro:", available_ministers, key="themes_minister")
+            selected_minister = st.selectbox(
+                "Ministro:", available_ministers, key="themes_minister"
+            )
         with col3:
             n_size = st.selectbox("Tamaño (n-gram):", [1, 2, 3], index=1)
 
@@ -107,18 +106,19 @@ def render_solicitudes_tab(solicitudes_counts):
 
         if st.button("Ejecutar Análisis de Temas"):
             try:
-                # Llamamos a la función de tu archivo maestro
                 data_list = analyze_themes(
                     csv_path=SOLICITUDES_TEXT_CSV,
                     n_size=n_size,
                     top_k=top_k,
-                    filter_name=selected_minister
+                    filter_name=selected_minister,
                 )
 
                 if data_list:
                     themes_df = pd.DataFrame(data_list)
-                    # Filtramos el resultado por el año seleccionado en la UI
-                    themes_year = themes_df[themes_df["year"] == str(selected_year_themes)]
+                    # filter result by year
+                    themes_year = themes_df[
+                        themes_df["year"] == str(selected_year_themes)
+                    ]
 
                     if themes_year.empty:
                         st.info("None for this minister")
@@ -130,7 +130,9 @@ def render_solicitudes_tab(solicitudes_counts):
                                 "score": "Relevancia (Score)",
                             }
                         )
-                        st.dataframe(display_df, hide_index=True, use_container_width=True)
+                        st.dataframe(
+                            display_df, hide_index=True, use_container_width=True
+                        )
                 else:
                     st.warning("No requests for this filter")
 
@@ -146,4 +148,3 @@ if __name__ == "__main__":
         render_solicitudes_tab(df_counts)
     else:
         st.error(f"Missing count ministros file: {SOLICITUDES_COUNTS_CSV}")
-
