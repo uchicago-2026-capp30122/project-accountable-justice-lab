@@ -23,10 +23,7 @@ def return_dfs():
     return sentencias_pd, sentencias_2015
 
 
-sentencias, sentencias_2015 = return_dfs()
-
-
-def return_totals():
+def return_totals_sentencias(sentencias):
     """
     Returns total sentencias
     """
@@ -34,7 +31,7 @@ def return_totals():
     return len(sentencias)
 
 
-def sentencias_timeline():
+def sentencias_timeline(sentencias):
     """
     Returns timeline of sentencias over time
 
@@ -67,7 +64,7 @@ def sentencias_timeline():
     return chart_timeline
 
 
-def return_votacion_percentages():
+def return_votacion_percentages(sentencias):
     """
 
     Returns bar graph sentencias
@@ -115,7 +112,7 @@ def return_votacion_percentages():
     return votacion_sentencias
 
 
-def return_ministros_chart():
+def return_heatmap_sentencias(sentencias_2015):
     """
     Returns heat map ministros
 
@@ -151,3 +148,20 @@ def return_ministros_chart():
     )
 
     return chart_ministro
+
+
+def get_all_sentencias_charts():
+
+    sentencias, sentencias_2015 = return_dfs()
+
+    total_sentencias = return_totals_sentencias(sentencias)
+    sentencias_timeline_chart = sentencias_timeline(sentencias)
+    sentencias_votacion_chart = return_votacion_percentages(sentencias)
+    sentencias_heatmap = return_heatmap_sentencias(sentencias_2015)
+
+    return (
+        total_sentencias,
+        sentencias_timeline_chart,
+        sentencias_votacion_chart,
+        sentencias_heatmap,
+    )

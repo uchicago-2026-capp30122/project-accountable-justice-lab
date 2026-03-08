@@ -25,11 +25,8 @@ def return_dfs():
 
     return tesis_pd, tesis_2015
 
-# pon
-tesis, tesis_2015 = return_dfs()
 
-
-def return_totals(tesis):
+def return_totals_tesis(tesis):
     """
     Returns total tesis
     """
@@ -144,3 +141,15 @@ def return_heatmap_tesis(tesis_2015):
     )
 
     return chart_tesis_ministro
+
+
+def get_all_tesis_charts():
+
+    tesis, tesis_2015 = return_dfs()
+
+    total_tesis = return_totals_tesis(tesis)
+    tesis_timeline_chart = tesis_timeline(tesis)
+    tesis_materias_chart = return_materias_chart(tesis_2015)
+    tesis_heatmap = return_heatmap_tesis(tesis_2015)
+
+    return total_tesis, tesis_timeline_chart, tesis_materias_chart, tesis_heatmap
