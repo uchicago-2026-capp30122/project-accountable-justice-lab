@@ -62,7 +62,7 @@ def get_ngrams(text, n):
     return [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
 
 
-def analyze_themes(n_size, top_k):
+def analyze_themes(filename=tesis_data_file, n_size=1, top_k=10):
     """
     groups text by year and applies TF-IDF formula for salient tokens.
     includes a time-series counter for the filtered minister/word.
@@ -70,7 +70,7 @@ def analyze_themes(n_size, top_k):
     """
     epoca_docs = {}
 
-    with open(tesis_data_file, "r", encoding="utf-8") as f:
+    with open(filename, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             epoca = row.get("epoca")
@@ -126,28 +126,12 @@ def analyze_themes(n_size, top_k):
     return ngrams_df.sort_values(by="epoca")
 
 
-def main():
-    parser = argparse.ArgumentParser()
-    parser.add_argument("-n", "--ngram-size", type=int, default=1)
-    parser.add_argument("-k", "--top", type=int, default=10)
+def main_ngrams():
 
-    args = parser.parse_args()
-    analyze_themes(args.ngram_size, args.top)
+    epoca_ngrams = analyze_themes(tesis_data_file)
+
+    return epoca_ngrams
 
 
 if __name__ == "__main__":
-    main()
-
-# uv run salient_tokens_solicitudes.py -n 2
-# uv run salient_tokens_solicitudes.py --filter "Zaldivar" -n 2
-# uv run salient_tokens_solicitudes.py -n 2 -k 5 ## top 5 results
-
-
-# some of the links used
-"""
-https://docs.python.org/3/library/unicodedata.html
-https://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-normalize-in-a-python-unicode-string
-https://kleinembedded.com/creating-a-python-command-line-tool/
-
-
-"""
+    main_ngrams()

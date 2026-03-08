@@ -1,19 +1,15 @@
 import streamlit as st
 import pandas as pd
-import altair as alt
-import csv
 import sys
 from pathlib import Path
-from collections import Counter
-from salient_tokens_tesis import ORDER, analyze_themes
+from salient_tokens_tesis import ORDER, analyze_themes, main_ngrams
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
+tesis_data_file = TESIS_DATA / "tesis_joined_data_scjn.csv"
 
-SOLICITUDES_COUNTS_CSV = Path("data/viz_data/todos_los_ministros_timeseries.csv")
 
-
-def render_solicitudes_tab():
+def render_ngrams_tesis_tab():
     """Renderiza las pestañas de la aplicación."""
     st.header("⚖️ Conceptos más mencionados en tesis")
 
@@ -21,40 +17,52 @@ def render_solicitudes_tab():
 
     st.subheader("Conoce la(s) palabra(s) más mencionadas en los rubros de las tesis")
 
-    col1, col2 = st.columns(2)
+    col1, col2, col3 = st.columns(3)
 
     with col1:
-        selected_epoca_themes = st.selectbox("Época:", ORDER, key="themes_epoca")
+        selected_epoca = st.selectbox("Época:", ORDER, key="themes_epoca")
 
     with col2:
-        n_size = st.selectbox("Tamaño (n-gram):", [1, 2, 3], index=1)
+        n_size = st.selectbox("Tamaño del (n-gram):", [1, 2, 3], index=0)
 
-        top_k = st.slider("Número de conceptos a mostrar:", 3, 15, 8)
+    with col3:
+        top_k = st.slider("Número de resultados", 5, 10, 15)
 
-        if st.button("Ejecutar Análisis de Temas"):
-            try:
-                # Llamamos a la función de tu archivo maestro
-                data_list = analyze_themes(n_size=n_size, top_k=top_k)
+    if st.button("Ejecutar Análisis de Temas", key="run_themes"):
+        try:
+            temas_tesis = analyze_themes(
+                filename=tesis_data_file,
+                n_size=n_size,
+                top_k=top_k,
+            )
 
-                if data_list:
-                    themes_df = pd.DataFrame(data_list)
-                    # Filtramos el resultado por el año seleccionado en la UI
-                    themes_epoca = themes_df[
-                        themes_df["epoca"] == str(selected_epoca_themes)
-                    ]
+            if temas_tesis.empty:
+                st.warning("No se encontraron resultados.")
+                return
 
-                    display_df = themes_epoca[["ngram", "count", "score"]].rename(
-                        columns={
-                            "ngram": "Tema (N-gram)",
-                            "count": "Frecuencia",
-                            "score": "Relevancia (Score)",
-                        }
-                    )
-                    st.dataframe(display_df, hide_index=True, use_container_width=True)
-            except FileNotFoundError:
-                st.error("Error: missing file")
+            temas_epoca = temas_tesis[temas_tesis["epoca"] == selected_epoca].copy()
+            # Llamamos a la función de tu archivo maestro
+
+            if temas_epoca.empty:
+                st.warning(f"No hay resultados para {selected_epoca}.")
+                return
+
+            temas_epoca = temas_epoca.sort_values("score", ascending=False)
+
+            display_temas = temas_epoca[["ngram", "count", "score"]].rename(
+                columns={
+                    "ngram": "Concepto(s)",
+                    "count": "Frecuencia",
+                    "score": "Relevancia",
+                }
+            )
+            st.dataframe(display_temas, hide_index=True, use_container_width=True)
+
+        except FileNotFoundError:
+            st.error("Error: archivo de datos no encontrado")
+        except Exception as e:
+            st.error(f"Ocurrió un error: {e}")
 
 
 if __name__ == "__main__":
-    # load ngrams
-    render_solicitudes_tab()
+    render_ngrams_tesis_tab()
