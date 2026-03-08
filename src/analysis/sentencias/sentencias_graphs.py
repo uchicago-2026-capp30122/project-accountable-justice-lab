@@ -31,7 +31,7 @@ def return_totals_sentencias(sentencias):
     return len(sentencias)
 
 
-def sentencias_timeline(sentencias):
+def return_sentencias_timeline(sentencias):
     """
     Returns timeline of sentencias over time
 
@@ -155,7 +155,7 @@ def get_all_sentencias_charts():
     sentencias, sentencias_2015 = return_dfs()
 
     total_sentencias = return_totals_sentencias(sentencias)
-    sentencias_timeline_chart = sentencias_timeline(sentencias)
+    sentencias_timeline_chart = return_sentencias_timeline(sentencias)
     sentencias_votacion_chart = return_votacion_percentages(sentencias)
     sentencias_heatmap = return_heatmap_sentencias(sentencias_2015)
 
