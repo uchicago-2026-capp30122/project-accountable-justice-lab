@@ -240,7 +240,7 @@ def get_all_tesis_charts():
 
     total_tesis = return_totals_tesis(tesis)
     tesis_timeline_chart = return_tesis_timeline(tesis)
-    tesis_por_tipo_chart = return_tesis_por_tipo_chart()
+    tesis_por_tipo_chart = return_tesis_por_tipo_chart(tesis_2015)
     tesis_materias_chart = return_tesis_materias_chart(tesis_2015)
     tesis_heatmap = return_tesis_heatmap(tesis_2015)
 
