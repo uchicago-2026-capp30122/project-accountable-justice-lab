@@ -3,32 +3,32 @@ import pandas as pd
 df = pd.read_excel("data/clean_data/declaraciones/final_variables.xlsx")
 
 
-def build_edu_table(declaraciones_df):
+def build_salary_table(declaraciones_df):
     """
     Build the declarations table showing highest education level per person.
     """
     
     # Remove rows with missing education information
     declaraciones_df = declaraciones_df.dropna(
-        subset=["edu_highest_level", "edu_highest_institution"]
+        subset=["salary_mxn"]
     )
     
-    edu_por_persona = (
+    salario_por_persona = (
         declaraciones_df.groupby(["nombre", "primer_apellido", "segundo_apellido"])[
-            ["edu_highest_level", "edu_highest_institution"]
+            ["salary_mxn","source_file"]
         ]
         .first()
         .reset_index()
     )
 
-    edu_por_persona = edu_por_persona.rename(
+    salario_por_persona = salario_por_persona.rename(
         columns={
             "nombre": "Nombre",
             "primer_apellido": "Primer apellido",
             "segundo_apellido": "Segundo apellido",
-            "edu_highest_level": "Mayor nivel educativo alcanzado",
-            "edu_highest_institution": "Institución académica"
+            "salary_mxn": "Salario",
+            "source_file": "Fecha archivo"
         }
     )
 
-    return edu_por_persona
+    return salario_por_persona
