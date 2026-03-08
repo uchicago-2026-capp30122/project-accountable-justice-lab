@@ -6,21 +6,11 @@ import re
 from pathlib import Path
 from datetime import datetime as dt
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
 
 SENTENCIAS_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
 
 sentencias_data = SENTENCIAS_DATA / "sentencias_joined_data.csv"
-
-
-def return_dfs():
-    """
-    Returns total sentencias
-    """
-    sentencias_pd = pd.read_csv(sentencias_data, dtype=str)
-    sentencias_2015 = sentencias_pd[sentencias_pd["anio"].astype("Int64") >= 2015]
-
-    return sentencias_pd, sentencias_2015
 
 
 def return_totals_sentencias(sentencias):
@@ -44,15 +34,20 @@ def return_sentencias_timeline(sentencias):
         alt.Chart(counts_sentencias)
         .mark_line(point=True, color="#2b6cb0")
         .encode(
-            x=alt.X("anio:T", title="Año"),
-            y=alt.Y("expediente:Q", title="Sentencias"),
+            x=alt.X("anio:T", title="Año (Year)"),
+            y=alt.Y("expediente:Q", title="Sentencias (Rulings)"),
             tooltip=[
                 alt.Tooltip("anio:T", title="Año"),
-                alt.Tooltip("expediente:Q", title="Sentencias emitidas"),
+                alt.Tooltip(
+                    "expediente:Q", title="Sentencias emitidas (Emitted rulings)"
+                ),
             ],
         )
         .properties(
-            title=alt.Title("Sentencias emitidas a lo largo del tiempo"),
+            title=alt.TitleParams(
+                text="Sentencias emitidas por la SCJN (totales)",
+                subtitle="Emitted rulings by the Supreme Court (totals)",
+            ),
             width=800,
             height=500,
         )
@@ -85,19 +80,24 @@ def return_votacion_percentages(sentencias):
         alt.Chart(counts_sentencias)
         .mark_bar(point=True)
         .encode(
-            x=alt.X("anio:O", title="Año"),
-            y=alt.Y("percentage:Q", title="Total de sentencias"),
-            color=alt.Color("votos:N", title="Tipo votación"),
+            x=alt.X("anio:O", title="Año (Year)"),
+            y=alt.Y("percentage:Q", title="Sentencias (Rulings)"),
+            color=alt.Color("votos:N", title="Tipo votación (kind of vote)"),
             tooltip=[
-                alt.Tooltip("anio", title="año"),
-                alt.Tooltip("votos", title="tipo votación"),
-                alt.Tooltip("percentage:Q", title="porcentaje", format=".2%"),
+                alt.Tooltip("anio", title="Año (Year)"),
+                alt.Tooltip("votos", title="Tipo votación (kind of vote)"),
+                alt.Tooltip(
+                    "percentage:Q", title="Porcentaje (percentage)", format=".2%"
+                ),
             ],
         )
         .properties(
-            title=alt.Title(
-                "Proporción de votación en las sentencias",
-                subtitle="Entendiendo la integridad de los datos",
+            title=alt.TitleParams(
+                text="Proporción de votación en las sentencias",
+                subtitle=[
+                    "Entendiendo la integridad de los datos",
+                    "Voting proportions in rulings (understanding data integrity)",
+                ],
             ),
             width=500,
             height=300,
@@ -132,13 +132,18 @@ def return_heatmap_sentencias(sentencias_2015):
             y=alt.Y("ministro:N", sort="-x"),
             color=alt.Color("expediente:Q", title="Rulings"),
             tooltip=[
-                alt.Tooltip("anio:N", title="Año"),
-                alt.Tooltip("ministro:N", title="Ministra/o"),
-                alt.Tooltip("expediente:Q", title="Sentencias emitidas"),
+                alt.Tooltip("anio:N", title="Año (Year)"),
+                alt.Tooltip("ministro:N", title="Ministra/o (Justice)"),
+                alt.Tooltip(
+                    "expediente:Q", title="Sentencias emitidas (Emitted rulings)"
+                ),
             ],
         )
         .properties(
-            title=alt.Title("Sentencias emitidas por ministra/o a lo largo del tiempo"),
+            title=alt.TitleParams(
+                text="Sentencias emitidas por ministra/o",
+                subtitle="Emitted rulings by justice",
+            ),
             width=800,
             height=500,
         )
@@ -152,7 +157,8 @@ def return_heatmap_sentencias(sentencias_2015):
 
 def get_all_sentencias_charts():
 
-    sentencias, sentencias_2015 = return_dfs()
+    sentencias = pd.read_csv(sentencias_data, dtype=str)
+    sentencias_2015 = sentencias[sentencias["anio"].astype("Int64") >= 2015]
 
     total_sentencias = return_totals_sentencias(sentencias)
     sentencias_timeline_chart = return_sentencias_timeline(sentencias)

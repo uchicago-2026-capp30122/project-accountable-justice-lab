@@ -7,23 +7,11 @@ from pathlib import Path
 from datetime import datetime as dt
 
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
 
-SENTENCIAS_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 
-sentencias = SENTENCIAS_DATA / "sentencias_joined_data.csv"
 tesis_data = TESIS_DATA / "tesis_joined_data_scjn.csv"
-
-
-def return_dfs():
-    """
-    Returns total tesis
-    """
-    tesis_pd = pd.read_csv(tesis_data, dtype=str)
-    tesis_2015 = tesis_pd[tesis_pd["anio"].astype("Int64") >= 2015]
-
-    return tesis_pd, tesis_2015
 
 
 def return_totals_tesis(tesis):
@@ -42,17 +30,22 @@ def return_tesis_timeline(tesis):
 
     chart_timeline = (
         alt.Chart(counts_tesis)
-        .mark_line(point=True, color="#2b6cb0")
+        .mark_line(point=True, color="#255487")
         .encode(
-            x=alt.X("anio:T", title="Año"),
+            x=alt.X("anio:T", title="Año (Year)"),
             y=alt.Y("idTesis:Q", title="Tesis"),
             tooltip=[
-                alt.Tooltip("anio:T", title="Año", format="%Y"),
-                alt.Tooltip("idTesis:Q", title="Sentencias emitidas", format=","),
+                alt.Tooltip("anio:T", title="Año (Year)", format="%Y"),
+                alt.Tooltip(
+                    "idTesis:Q", title="Tesis emitidas (Emitted Tesis)", format=","
+                ),
             ],
         )
         .properties(
-            title=alt.Title("Tesis emitidas por la SCJN a lo largo del tiempo"),
+            title=alt.TitleParams(
+                text="Tesis emitidas por la SCJN (totales)",
+                subtitle="Emitted tesis by the Supreme Court (totals)",
+            ),
             width=800,
             height=500,
         )
@@ -87,21 +80,25 @@ def return_tesis_por_tipo_chart(tesis):
         alt.Chart(counts_tesis_tipo_2025)
         .mark_area(opacity=0.5)
         .encode(
-            x=alt.X("anio:O", title="Año"),
-            y=alt.Y("idTesis:Q", stack=True, title="Tesis emitidas"),
+            x=alt.X("anio:O", title="Año (Year)"),
+            y=alt.Y("idTesis:Q", stack=True, title="Tesis emitidas (Emitted Tesis)"),
             color=alt.Color(
                 "tipoTesis:N",
                 legend=alt.Legend(
-                    orient="right", title="Tipo de tesis", labelFontSize=10
+                    orient="right",
+                    title="Tipo de tesis (Type of Tesis)",
+                    labelFontSize=10,
                 ),
                 title="Tipo de tesis",
                 scale=alt.Scale(range=["#08283a", "#2D7CC6"]),
             ),
             order=alt.Order("tipoTesis:N"),
             tooltip=[
-                alt.Tooltip("anio:O", title="Año"),
-                alt.Tooltip("tipoTesis:N", title="Tipo"),
-                alt.Tooltip("idTesis:Q", title="Tesis emitidas", format=","),
+                alt.Tooltip("anio:O", title="Año (Year)"),
+                alt.Tooltip("tipoTesis:N", title="Tipo (Type)"),
+                alt.Tooltip(
+                    "idTesis:Q", title="Tesis emitidas (Emitted Tesis)", format=","
+                ),
             ],
         )
     )
@@ -121,9 +118,11 @@ def return_tesis_por_tipo_chart(tesis):
             y=alt.Y("idTesis:Q"),
             color=alt.Color("tipoTesis:N", legend=None),
             tooltip=[
-                alt.Tooltip("anio:O", title="Año"),
-                alt.Tooltip("tipoTesis:N", title="Tipo"),
-                alt.Tooltip("idTesis:Q", title="Tesis emitidas", format=","),
+                alt.Tooltip("anio:O", title="Año, Year"),
+                alt.Tooltip("tipoTesis:N", title="Tipo (Type)"),
+                alt.Tooltip(
+                    "idTesis:Q", title="Tesis emitidas (Emitted Tesis)", format=","
+                ),
             ],
         )
     )
@@ -131,8 +130,9 @@ def return_tesis_por_tipo_chart(tesis):
     chart_tesis_por_tipo = (
         (area_tipo_2025 + point_tipo_2026)
         .properties(
-            title=alt.Title(
-                "Tesis emitidas por la SCJN a lo largo del tiempo por tipo"
+            title=alt.TitleParams(
+                text="Tesis emitidas por la SCJN (por tipo)",
+                subtitle="Emitted tesis by the Supreme Court (by type)",
             ),
             width=800,
             height=500,
@@ -163,21 +163,26 @@ def return_tesis_materias_chart(tesis_2015):
         )
         .mark_line(point=alt.OverlayMarkDef(size=70))
         .encode(
-            x=alt.X("anio:T", title="Año"),
+            x=alt.X("anio:T", title="Año (Year)"),
             y=alt.Y("rank:Q", title="Ranking", scale=alt.Scale(reverse=True)),
             color=alt.Color(
                 "main_materia:N",
-                legend=alt.Legend(title="Materias", symbolSize=50, labelFontSize=10),
+                legend=alt.Legend(
+                    title="Materias (Areas)", symbolSize=50, labelFontSize=10
+                ),
             ),
             tooltip=[
-                alt.Tooltip("anio:T", title="Año", format="%Y"),
-                alt.Tooltip("main_materia:N", title="Materia"),
-                alt.Tooltip("idTesis:Q", title="Número de tesis"),
-                alt.Tooltip("rank:Q", title="Ranking materia"),
+                alt.Tooltip("anio:T", title="Año (Year)", format="%Y"),
+                alt.Tooltip("main_materia:N", title="Materia (Area)"),
+                alt.Tooltip("idTesis:Q", title="Número de tesis (Number of Tesis)"),
+                alt.Tooltip("rank:Q", title="Ranking materia (Area ranking)"),
             ],
         )
         .properties(
-            title=alt.Title("Ranking de materias por año"),
+            title=alt.TitleParams(
+                text="Ranking de materias por año",
+                subtitle="Area ranking by year",
+            ),
             width=650,
             height=400,
             padding={"left": 50, "right": 100, "top": 50, "bottom": 10},
@@ -207,13 +212,16 @@ def return_tesis_heatmap(tesis_2015):
             y=alt.Y("ministro:N", sort="-x"),
             color=alt.Color("idTesis:Q", title="Tesis"),
             tooltip=[
-                alt.Tooltip("anio:N", title="Año"),
-                alt.Tooltip("ministro:N", title="Ministra/o"),
-                alt.Tooltip("idTesis:Q", title="Sentencias emitidas"),
+                alt.Tooltip("anio:N", title="Año (Year)"),
+                alt.Tooltip("ministro:N", title="Ministra/o (Justice)"),
+                alt.Tooltip("idTesis:Q", title="Tesis emitidas (Emitted rulings)"),
             ],
         )
         .properties(
-            title=alt.Title("Sentencias emitidas por ministra/o a lo largo del tiempo"),
+            title=alt.TitleParams(
+                text="Tesis emitidas por ministra/o",
+                subtitle="Emitted tesis by justice",
+            ),
             width=800,
             height=500,
         )
@@ -227,7 +235,8 @@ def return_tesis_heatmap(tesis_2015):
 
 def get_all_tesis_charts():
 
-    tesis, tesis_2015 = return_dfs()
+    tesis = pd.read_csv(tesis_data, dtype=str)
+    tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]
 
     total_tesis = return_totals_tesis(tesis)
     tesis_timeline_chart = return_tesis_timeline(tesis)
