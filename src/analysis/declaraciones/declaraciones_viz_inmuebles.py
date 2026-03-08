@@ -17,7 +17,7 @@ def build_inmuebles_table(inmuebles_df):
                 "valor_adquisicion_mxn"
             ]
         )
-        [["nombre", "primer_apellido", "superficie_construccion_m2", "valor_adquisicion_mxn","usd"]]
+        [["nombre", "primer_apellido", "superficie_construccion_m2", "valor_adquisicion_mxn"]]
         .reset_index(drop=True)
     )
 
