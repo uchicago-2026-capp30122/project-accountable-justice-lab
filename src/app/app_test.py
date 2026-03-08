@@ -1,91 +1,151 @@
-import streamlit as st
-import pandas as pd
-import altair as alt
+## streamlit run src/app/app_test.py
+
+import sys
 from pathlib import Path
 
-from viz_solicitudes_test import render_solicitudes_tab
-from table_declaraciones import render_declaraciones_tab
+# Allow imports from src/
+sys.path.append(str(Path(__file__).resolve().parents[1]))
 
-# Page configuration
+import streamlit as st
+import pandas as pd
+
+from analysis.declaraciones.declaraciones_viz_educ import build_edu_table
+from analysis.declaraciones.declaraciones_viz_inmuebles import build_inmuebles_table
+
+from analysis.sentencias.sentencias_graphs import (
+    return_totals as sentencias_total,
+    sentencias_timeline,
+    return_votacion_percentages,
+    return_ministros_chart,
+)
+
+from analysis.tesis.tesis_graphs import (
+    return_totals as tesis_total,
+    tesis_timeline,
+    return_materias_chart,
+    return_heatmap_tesis,
+)
+
+from analysis.solicitudes.viz_solicitudes_2 import render_solicitudes_tab
+
+# PAGE CONFIG
 st.set_page_config(page_title="Accountable Justice Lab", layout="wide")
 
 st.title("⚖️ OJO PIOJO")
 st.write("Accountable Justice Lab")
-##st.image("frontend/ojopiojo.jpeg", width=100)
+##st.image("frontend/ojopiojo.jpeg", width=120)
 
-# File paths
-SOLICITUDES_COUNTS_CSV = "todos_los_ministros_timeseries.csv"
-TESIS_CSV = "frontend/tesis_joined_data.csv"
-SENTENCIAS_CSV = "frontend/sentencias_joined_data.csv"
-DECLARACIONES_XLSX = "frontend/declaraciones/final_variables.xlsx"
+
+# DATA PATHS
+
+DECLARACIONES_XLSX = "data/clean_data/declaraciones/final_variables.xlsx"
+SOLICITUDES_COUNTS_CSV = "data/viz_data/todos_los_ministros_timeseries.csv"
+
+# DATA LOADERS
+@st.cache_data
+def load_declaraciones():
+    return pd.read_excel(DECLARACIONES_XLSX)
 
 
 @st.cache_data
-def load_main_data():
-    """Load all dashboard datasets only once."""
-    tesis = pd.read_csv(TESIS_CSV, dtype=str, index_col=0)
-    sentencias = pd.read_csv(SENTENCIAS_CSV, dtype=str, index_col=0)
-    declaraciones = pd.read_excel(DECLARACIONES_XLSX)
-    solicitudes_counts = pd.read_csv(SOLICITUDES_COUNTS_CSV)
-
-    solicitudes_counts["year"] = solicitudes_counts["year"].astype(str)
-
-    return tesis, sentencias, declaraciones, solicitudes_counts
+def load_solicitudes_counts():
+    df = pd.read_csv(SOLICITUDES_COUNTS_CSV)
+    df["year"] = df["year"].astype(str)
+    return df
 
 
-def return_materias_chart(tesis_df):
-    """
-    Build the tesis chart showing the ranking of main topics by year.
-    """
-    materias = (
-        tesis_df.groupby(["anio", "main_materia"])["idTesis"]
-        .count()
-        .reset_index(name="n_tesis")
-    )
+declaraciones = load_declaraciones()
+solicitudes_counts = load_solicitudes_counts()
 
-    chart = (
-        alt.Chart(materias)
-        .transform_window(
-            rank="rank()",
-            sort=[alt.SortField("n_tesis", order="descending")],
-            groupby=["anio"],
-        )
-        .mark_line(point=True)
-        .encode(
-            x=alt.X("anio:O", title="Year"),
-            y=alt.Y("rank:O", title="Rank"),
-            color="main_materia:N",
-            tooltip=["anio:N", "main_materia:N", "n_tesis:Q", "rank:Q"],
-        )
-        .properties(width=500, height=500)
-        .interactive()
-    )
-
-    return chart
+# MAIN TABS
 
 
-tesis, sentencias, declaraciones, solicitudes_counts = load_main_data()
-
-# Main tabs
 tab_general, tab_solicitudes, tab_sentencias, tab_tesis, tab_declaraciones = st.tabs(
     ["General", "Solicitudes", "Sentencias", "Tesis", "Declaraciones"]
 )
 
+# GENERAL TAB
 with tab_general:
+
     st.header("General")
-    chart_general = return_materias_chart(tesis)
-    st.altair_chart(chart_general, use_container_width=True)
+
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Total tesis", tesis_total())
+
+    with col2:
+        st.metric("Total sentencias", sentencias_total())
+
+    st.subheader("Tesis timeline")
+    st.altair_chart(tesis_timeline(), use_container_width=True)
+
+    st.subheader("Sentencias timeline")
+    st.altair_chart(sentencias_timeline(), use_container_width=True)
+
+
+# SOLICITUDES TAB
 
 with tab_solicitudes:
+
     render_solicitudes_tab(solicitudes_counts)
 
+# SENTENCIAS TAB
+
 with tab_sentencias:
+
     st.header("Sentencias")
-    st.write("Here you can add the visualizations for sentencias.")
+
+    sub1, sub2, sub3 = st.tabs(
+        ["Timeline", "Votaciones", "Ministros"]
+    )
+
+    with sub1:
+        st.altair_chart(sentencias_timeline(), use_container_width=True)
+
+    with sub2:
+        st.altair_chart(return_votacion_percentages(), use_container_width=True)
+
+    with sub3:
+        st.altair_chart(return_ministros_chart(), use_container_width=True)
+
+
+# TESIS TAB
 
 with tab_tesis:
+
     st.header("Tesis")
-    st.write("Here you can add the visualizations for tesis.")
+
+    sub1, sub2, sub3 = st.tabs(
+        ["Timeline", "Materias", "Ministros"]
+    )
+
+    with sub1:
+        st.altair_chart(tesis_timeline(), use_container_width=True)
+
+    with sub2:
+        st.altair_chart(return_materias_chart(), use_container_width=True)
+
+    with sub3:
+        st.altair_chart(return_heatmap_tesis(), use_container_width=True)
+
+
+# DECLARACIONES TAB
 
 with tab_declaraciones:
-    render_declaraciones_tab(declaraciones)
+
+    st.header("Declaraciones")
+
+    sub1, sub2 = st.tabs(
+        ["Nivel educativo", "Bienes inmuebles"]
+    )
+
+    with sub1:
+        st.subheader("Nivel educativo por persona")
+        edu_table = build_edu_table(declaraciones)
+        st.dataframe(edu_table, use_container_width=True)
+
+    with sub2:
+        st.subheader("Bienes inmuebles")
+        inmuebles_table = build_inmuebles_table(declaraciones)
+        st.dataframe(inmuebles_table, use_container_width=True)

@@ -14,8 +14,3 @@ def build_inmuebles_table(inmuebles_df):
     )
 
     return inmuebles_table
-
-
-inmuebles_table = build_inmuebles_table(df)
-
-print(inmuebles_table)

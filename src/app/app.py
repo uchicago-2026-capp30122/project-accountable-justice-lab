@@ -6,7 +6,7 @@ import math
 import unicodedata
 from pathlib import Path
 from collections import Counter
-from viz_solicitudes import return_ministers_bar_chart
+from analysis.solicitudes.viz_solicitudes_2 import return_ministers_bar_chart
 
 # Page configuration
 st.set_page_config(page_title="Accountable Justice Lab", layout="wide")
