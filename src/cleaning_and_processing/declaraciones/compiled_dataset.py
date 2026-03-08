@@ -14,7 +14,7 @@ for f in files:
 
 compiled = pd.concat(dfs, ignore_index=True)
 
-# Save compiled inside data/declaraciones
+# Save compiled inside data
 compiled_path = BASE_DIR /"clean_data"/"declaraciones"/ "compiled_all_quarters.xlsx"
 compiled.to_excel(compiled_path, index=False)
 print("Compiled:", compiled.shape)
