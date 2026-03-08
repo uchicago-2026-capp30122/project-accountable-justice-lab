@@ -12,14 +12,10 @@ from collections import Counter
 from datatypes import STOPWORDS
 
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 
 tesis_data_file = TESIS_DATA / "tesis_joined_data_scjn.csv"
-
-# tesis = pd.read_csv(tesis_data, dtype=str)
-# tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]
-
 
 # THIS IS BASICALLY TEXT PROCESSING
 

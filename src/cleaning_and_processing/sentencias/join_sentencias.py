@@ -9,7 +9,7 @@ from utils_sentencias import (
     clean_file_number,
 )
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
 
 SENTENCIAS_RAW_DATA = BASE_DIR / "data" / "raw_data" / "sentencias_data"
 SENTENCIAS_CLEAN_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
@@ -55,9 +55,9 @@ def join_sentencias_sources():
         dayfirst=True,
     )
 
-    # # Create year column ('anio')
+    # Create year column ('anio')
     joined_sentencias["anio"] = joined_sentencias["cleanDate"].dt.year.astype("Int64")
-    # # For rulings that don't have dates, extract date in file number
+    # For rulings that don't have dates, extract date in file number
     mask = joined_sentencias["anio"] == 1985
     joined_sentencias.loc[mask, "anio"] = (
         joined_sentencias.loc[mask, "expediente"]
@@ -65,7 +65,7 @@ def join_sentencias_sources():
         .astype("Int64")
     )
 
-    # # Save cleaned dataset
+    # Save cleaned dataset
     output_file_csv = SENTENCIAS_CLEAN_DATA / "sentencias_joined_data.csv"
     joined_sentencias.to_csv(output_file_csv, index=False)
 
@@ -74,3 +74,5 @@ def join_sentencias_sources():
 
 if __name__ == "__main__":
     join_sentencias_sources()
+
+# uv run python src/cleaning_and_processing/tesis/join_sentencias.py

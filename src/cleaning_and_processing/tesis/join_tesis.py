@@ -21,7 +21,7 @@ courts (such as: "ministro/ministra", types of voting, etc.)
 
 """
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
 
 TESIS_RAW_DATA = BASE_DIR / "data" / "raw_data" / "tesis_data"
 TESIS_CLEAN_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
@@ -94,3 +94,5 @@ def filter_by_instancia(tesis, instancia: str):
 
 if __name__ == "__main__":
     join_tesis_sources()
+
+# uv run python src/cleaning_and_processing/tesis/join_tesis.py

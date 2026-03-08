@@ -25,11 +25,11 @@ def return_dfs():
 
     return tesis_pd, tesis_2015
 
-
+# pon
 tesis, tesis_2015 = return_dfs()
 
 
-def return_totals():
+def return_totals(tesis):
     """
     Returns total tesis
     """
@@ -37,7 +37,7 @@ def return_totals():
     return len(tesis)
 
 
-def tesis_timeline():
+def tesis_timeline(tesis):
     """
     Returns timeline of tesis
     """
@@ -67,7 +67,7 @@ def tesis_timeline():
     return chart_timeline
 
 
-def return_materias_chart():
+def return_materias_chart(tesis_2015):
     materias = (
         tesis_2015.groupby(["anio", "main_materia"])["idTesis"]
         .count()
@@ -111,7 +111,7 @@ def return_materias_chart():
     return chart_materias
 
 
-def return_heatmap_tesis():
+def return_heatmap_tesis(tesis_2015):
 
     tesis_ministro = (
         tesis_2015.groupby(["anio", "ministro"])["idTesis"]
