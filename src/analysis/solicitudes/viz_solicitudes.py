@@ -26,7 +26,8 @@ def return_ministers_bar_chart(df, selected_year):
         return alt.Chart(pd.DataFrame({"minister": [], "count": []})).mark_bar()
 
     df_year["minister"] = df_year["minister"].astype(str).str.title()
-    df_year = df_year.sort_values("count", ascending=False)
+    df_year = df_year.sort_values("count", ascending=False).reset_index(drop=True)
+    df_year['highlight'] = df_year.index == 0
 
     chart = (
         alt.Chart(df_year)
@@ -36,8 +37,8 @@ def return_ministers_bar_chart(df, selected_year):
             y=alt.Y("minister:N", sort="-x", title="Ministro (Justice)"),
             color=alt.condition(
                 alt.datum.highlight,
-                alt.value("#043c64"),  
-                alt.value("#0B78FD")  
+                alt.value("#005897"),  
+                alt.value("#336DB4")  
             ),
             tooltip=["minister", "count"],
         )
