@@ -3,7 +3,7 @@ import numpy as np
 import pandas as pd
 import re
 from pathlib import Path
-from utils_sentencias import (
+from .utils_sentencias import (
     get_votacion,
     remove_missing_dates,
     clean_file_number,
