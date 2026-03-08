@@ -425,4 +425,11 @@ STOPWORDS = {
     "aplicacion",
     "ciudad",
     "mexico",
+    "marcarios",
+    "sentenciadas",
+    "sentenciados",
+    "numeral",
+    "ese",
+    "accion",
+    "actualiza",
 }

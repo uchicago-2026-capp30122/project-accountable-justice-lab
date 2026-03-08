@@ -18,15 +18,17 @@ sys.path.append(str(ROOT / "src" / "cleaning_and_processing" / "solicitudes"))
 
 from salient_tokens_solicitudes import analyze_themes
 from conteo_ministros_sol import INTEGRACION_POR_ANIO
-
+# reuse the same analysis function and the same yearly minister lists 
+# so dashboard is consistent 
 
 def main():
     csv_path = (
         ROOT / "data" / "clean_data" / "solicitudes" / "clean_solicitudes_2017_2026.csv"
     )
     output_path = ROOT / "data" / "viz_data" / "ngrams_por_ministro.csv"
-
+    # store all minister level ngram results, then they will be turned into data frame
     all_minister_results = []
+    # collect unique set of ministers across all yearly court compositions 
     todos_los_ministros = set()
     for lista in INTEGRACION_POR_ANIO.values():
         todos_los_ministros.update(lista)
@@ -34,7 +36,8 @@ def main():
     print(f"Begin ngrams counts by minister by year in file {csv_path.name}")
 
     for ministro in sorted(todos_los_ministros):
-        # 10 ngrams per minister
+        # run the main salience analysis for each minister
+        # 10 bigrams per minister
         resultados = analyze_themes(csv_path, n_size=2, top_k=10, filter_name=ministro)
 
         if resultados:
@@ -42,6 +45,7 @@ def main():
                 dato["minister"] = ministro
                 all_minister_results.append(dato)
         else:
+            # if minister not in any solicitudes descriptions
             print(f"Nothing found for this minister {ministro}")
 
     # file for streamlit
