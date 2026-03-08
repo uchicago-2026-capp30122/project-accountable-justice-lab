@@ -6,23 +6,32 @@ import re
 from pathlib import Path
 from datetime import datetime as dt
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent.parent
 
 SENTENCIAS_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
 
-sentencias = SENTENCIAS_DATA / "sentencias_joined_data.csv"
+sentencias_data = SENTENCIAS_DATA / "sentencias_joined_data.csv"
 
 
-sentencias_complete = pd.read_csv(sentencias, dtype=str)
-sentencias_2015 = sentencias[sentencias["anio"].astype("Int64") >= 2015]
+def return_dfs():
+    """
+    Returns total sentencias
+    """
+    sentencias_pd = pd.read_csv(sentencias_data, dtype=str)
+    sentencias_2015 = sentencias_pd[sentencias_pd["anio"].astype("Int64") >= 2015]
+
+    return sentencias_pd, sentencias_2015
 
 
-def return_totals():
+def return_totals(sentencias_pd):
     """
     Returns total sentencias
     """
 
-    return len(sentencias)
+    return len(sentencias_pd)
+
+
+sentencias, sentencias_2015 = return_dfs()
 
 
 def sentencias_timeline():
