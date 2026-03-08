@@ -1,10 +1,19 @@
 import csv
 from pathlib import Path
+import sys
 from collections import defaultdict
+
+PROJECT_DIR = Path(__file__).resolve().parents[3]
+
+ROOT = Path(__file__).resolve().parents[3]
+sys.path.append(str(ROOT / "src" / "analysis" / "solicitudes"))
+
 from salient_tokens_solicitudes import normalize_text, is_mentioning
 
-DEFAULT_CSV = Path("clean_output") / "clean_solicitudes_2017_2026.csv"
-OUTPUT_CSV = "todos_los_ministros_timeseries.csv"
+DEFAULT_CSV = ROOT / "data" / "clean_data" / "solicitudes" / "clean_solicitudes_2017_2026.csv"
+OUT_DIR = ROOT / "data" / "viz_data"
+OUTPUT_CSV = OUT_DIR / "todos_los_ministros_timeseries.csv"
+
 
 # scjn members per year 
 INTEGRACION_POR_ANIO = {
@@ -48,3 +57,5 @@ def run_count():
 
 if __name__ == "__main__":
     run_count()
+
+    # uv run src/cleaning_and_processing/solicitudes/conteo_ministros_sol.py
