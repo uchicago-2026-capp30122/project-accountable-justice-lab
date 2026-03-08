@@ -17,9 +17,9 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-PROJECT_DIR = Path(__file__).resolve().parent
-DATA_DIR = PROJECT_DIR / "solicitudes"
-OUT_DIR = PROJECT_DIR / "clean_output"
+PROJECT_DIR = Path(__file__).resolve().parents[3]
+DATA_DIR = PROJECT_DIR / "data" / "raw_data" / "solicitudes"
+OUT_DIR = PROJECT_DIR / "data" / "clean_data" / "solicitudes"
 
 
 # Columns we want for wach year
@@ -236,3 +236,6 @@ def main():
 
 if __name__ == "__main__":
     main()
+
+
+    # uv run src/cleaning_and_processing/solicitudes/clean_solicitudes.py  

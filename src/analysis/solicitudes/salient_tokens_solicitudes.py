@@ -9,7 +9,8 @@ import csv
 from pathlib import Path
 from collections import Counter
 
-DEFAULT_CSV = Path("clean_output") / "clean_solicitudes_2017_2026.csv"
+ROOT = Path(__file__).resolve().parents[3]
+DEFAULT_CSV = ROOT / "data" / "clean_data" / "solicitudes" / "clean_solicitudes_2017_2026.csv"
 
 STOPWORDS = {
     "el","la","los","las","un","una","unos","unas","y","o","u","e","de","del","al","a","en","por", "denominado",
@@ -196,16 +197,9 @@ def main():
 if __name__ == "__main__":
     main()
 
-# uv run salient_tokens_solicitudes.py -n 2
-# uv run salient_tokens_solicitudes.py --filter "Zaldivar" -n 2
-# uv run salient_tokens_solicitudes.py -n 2 -k 5 (top 5 results) 
+# uv run src/analysis/solicitudes/salient_tokens_solicitudes.py -n 2
+# uv run src/analysis/solicitudes/salient_tokens_solicitudes.py --filter "Zaldivar" -n 2
+# uv run src/analysis/solicitudes/salient_tokens_solicitudes.py -n 2 -k 5 (top 5 results) 
 
 
-# some of the links used 
-"""
-https://docs.python.org/3/library/unicodedata.html
-https://stackoverflow.com/questions/517923/what-is-the-best-way-to-remove-accents-normalize-in-a-python-unicode-string
-https://kleinembedded.com/creating-a-python-command-line-tool/
 
-
-"""
