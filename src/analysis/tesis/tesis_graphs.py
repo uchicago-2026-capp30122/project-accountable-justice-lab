@@ -143,4 +143,4 @@ def return_heatmap_tesis():
         .configure_axis(gridColor="#eeeeee")
     )
 
-    chart_tesis_ministro
+    return chart_tesis_ministro
