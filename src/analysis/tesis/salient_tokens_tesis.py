@@ -5,21 +5,34 @@ import argparse
 import math
 import unicodedata
 import csv
+import re
 import pandas as pd
 from pathlib import Path
 from collections import Counter
+from datatypes import STOPWORDS
 
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent.parent
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 
-tesis_data = TESIS_DATA / "tesis_joined_data_scjn.csv"
+tesis_data_file = TESIS_DATA / "tesis_joined_data_scjn.csv"
 
-tesis = pd.read_csv(tesis_data, dtype=str)
-tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]
+# tesis = pd.read_csv(tesis_data, dtype=str)
+# tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]
 
 
 # THIS IS BASICALLY TEXT PROCESSING
+
+ORDER = [
+    "Quinta Época",
+    "Sexta Época",
+    "Séptima Época",
+    "Octava Época",
+    "Novena Época",
+    "Décima Época",
+    "Undécima Época",
+    "Duodécima Época",
+]
 
 
 def normalize_text(text):
@@ -34,7 +47,7 @@ def normalize_text(text):
     text = "".join(
         c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn"
     )
-    for char in ".,?!():;\"'¿¡":
+    for char in "[]-.,?!():;\"'¿¡":
         text = text.replace(char, " ")
     return " ".join(text.split())
 
@@ -44,31 +57,30 @@ def get_ngrams(text, n):
     turn text to list of ngrams
     fikters stopwords and words shorter than 3 letters
     """
-    words = [w for w in text.split() if w not in STOPWORDS and len(w) > 2]
+    words = [
+        w
+        for w in re.findall(r"[a-záéíóúüñ]+", text)
+        if w not in STOPWORDS and len(w) > 2
+    ]
+
     return [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
 
 
-# MAIN ANALISIS!!
-
-
-def analyze_themes(csv_path, n_size, top_k, filter_name=None):
+def analyze_themes(n_size, top_k):
     """
     groups text by year and applies TF-IDF formula for salient tokens.
     includes a time-series counter for the filtered minister/word.
     Genera output en terminal y guarda CSVs para Streamlit.
     """
     epoca_docs = {}
-    # mentions_per_epoca = Counter()
 
-    #  print(f"Reading CSV, filtering by {filter_name if filter_name else 'None'}")
-
-    with open(csv_path, "r", encoding="utf-8") as f:
+    with open(tesis_data_file, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
             epoca = row.get("epoca")
             if not epoca:
                 continue
-            raw_text = row.get("Precedentes", "")
+            raw_text = row.get("rubro", "")
             clean_text = normalize_text(raw_text)
 
             ngrams = get_ngrams(clean_text, n_size)
@@ -84,16 +96,9 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
         for gram in set(ngrams):
             ngram_epoca_counts[gram] = ngram_epoca_counts.get(gram, 0) + 1
 
-    minister_data = []
+    epoca_data = []
 
-    # CLI
-    title = f"SALIENT {n_size}-GRAM THEMES"
-    if filter_name:
-        title += f" FOR: {filter_name.upper()}"
-    print(f"\n{'YEAR':<6} | {title}")
-    print("-" * 100)
-
-    for epoca in sorted(all_epocas, key=int):
+    for epoca in all_epocas:
         ngrams_in_epoca = epoca_docs[epoca]
         if not ngrams_in_epoca:
             continue
@@ -111,28 +116,27 @@ def analyze_themes(csv_path, n_size, top_k, filter_name=None):
             scores.append((gram, tf * idf, count))
 
         top_themes = sorted(scores, key=lambda x: x[1], reverse=True)[:top_k]
-        #     print(f"{year:<6} | {', '.join([t[0] for t in top_themes])}")
 
-        # save for the minister_data set and tables for streamlit
         for gram, score, count in top_themes:
-            minister_data.append(
+            epoca_data.append(
                 {"epoca": epoca, "ngram": gram, "count": count, "score": score}
             )
 
-    return minister_data
+    # convert to dataframe
+    ngrams_df = pd.DataFrame(epoca_data)
+    ngrams_df["epoca"] = pd.Categorical(
+        ngrams_df["epoca"], categories=ORDER, ordered=True
+    )
+    return ngrams_df.sort_values(by="epoca")
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("--csv", type=Path, default=DEFAULT_CSV)
-    parser.add_argument("-n", "--ngram-size", type=int, default=2)
-    parser.add_argument("-k", "--top", type=int, default=8)
-    parser.add_argument(
-        "--filter", type=str, help="Minister name to filter by (eg 'Lenia Batres')"
-    )
+    parser.add_argument("-n", "--ngram-size", type=int, default=1)
+    parser.add_argument("-k", "--top", type=int, default=10)
 
     args = parser.parse_args()
-    analyze_themes(args.csv, args.ngram_size, args.top, args.filter)
+    analyze_themes(args.ngram_size, args.top)
 
 
 if __name__ == "__main__":

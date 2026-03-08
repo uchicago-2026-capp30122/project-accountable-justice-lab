@@ -103,6 +103,7 @@ def get_ngrams(text, n):
     words = [w for w in text.split() if w not in STOPWORDS and len(w) > 2]
     return [" ".join(words[i:i+n]) for i in range(len(words)-n+1)]
 
+
 # MAIN ANALISIS!! 
 def analyze_themes(csv_path, n_size, top_k, filter_name=None):
     """
