@@ -30,11 +30,15 @@ def return_ministers_bar_chart(df, selected_year):
 
     chart = (
         alt.Chart(df_year)
-        .mark_bar()
+        .mark_bar(cornerRadiusEnd=4)
         .encode(
-            x=alt.X("count:Q", title="Mentions"),
-            y=alt.Y("minister:N", sort="-x", title="Minister"),
-            color=alt.Color("count:Q", scale=alt.Scale(scheme="viridis"), legend=None),
+            x=alt.X("count:Q", title="Menciones (Mentions)"),
+            y=alt.Y("minister:N", sort="-x", title="Ministro (Justice)"),
+            color=alt.condition(
+                alt.datum.highlight,
+                alt.value("#043c64"),  
+                alt.value("#0B78FD")  
+            ),
             tooltip=["minister", "count"],
         )
         .properties(height=500)
@@ -52,11 +56,11 @@ def return_no_response_line_chart(df):
         alt.Chart(chart_df)
         .mark_line(point=True)
         .encode(
-            x=alt.X("year:O", title="Año"),
-            y=alt.Y("no_response_percent:Q", title="No respuesta (%)"),
+            x=alt.X("year:O", title="Año (Year)"),
+            y=alt.Y("no_response_percent:Q", title="No respuesta (%) (No response)"),
             tooltip=[
                 alt.Tooltip("year:O", title="Año"),
-                alt.Tooltip("no_response_percent:Q", title="No respuesta (%)", format=".2f"),
+                alt.Tooltip("no_response_percent:Q", title="No response rate (%) (No response)", format=".2f"),
             ],
         )
         .properties(height=250)
@@ -65,14 +69,16 @@ def return_no_response_line_chart(df):
     return chart
 
 def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_index):
-    st.header("Análisis de Solicitudes SCJN")
+    st.header("Análisis de Solicitudes de Información de la SCJN")
+    st.caption("Mexican Supreme Court Information Request Analysis")
 
     subtab_mentions, subtab_themes, subtab_index= st.tabs(
-        ["Menciones a Ministros", "Temas Principales (N-grams)", "Indice de No Respuesta"]
+        ["Menciones a Ministros (Justices Counter)", "Temas Principales (N-grams)", "Indice de No Respuesta (No response rate)"]
     )
     # Bar chart of mentions
     with subtab_mentions:
         st.subheader("¿A qué ministros mencionan más los ciudadanos?")
+        st.caption("Which ministers are mentioned the most by citizens?")
 
         available_years = sorted(
             solicitudes_counts["year"].dropna().astype(str).unique(),
@@ -83,7 +89,7 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_i
 
         with col_filter:
             selected_year = st.selectbox(
-                "Selecciona el año:",
+                "Selecciona el año: (Year)",
                 available_years,
                 key="solicitudes_mentions_year",
             )
@@ -98,18 +104,19 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_i
 
             with col_metric:
                 st.metric(
-                    label=f"Líder en menciones ({selected_year})",
+                    label=f"Líder en menciones (most mentioned) ({selected_year})",
                     value=str(top_row["minister"]).title(),
                     delta=f"{int(top_row['count'])} registros",
                 )
 
             st.altair_chart(chart_ministers, use_container_width=True)
         else:
-            st.warning("No hay datos disponibles para este año.")
+            st.warning("No hay datos disponibles para este año. No data available for this year")
     
     # Ngrams 
     with subtab_themes:
-        st.subheader("Temas salientes (TF-IDF) por ministro")
+        st.subheader("Temas salientes (TF-IDF) por ministro por año")
+        st.caption("Salient tokens by justice by year")
 
         available_years_themes = sorted(
             solicitudes_ngrams["year"].dropna().astype(str).unique(),
@@ -124,14 +131,14 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_i
 
         with col1:
             selected_year_themes = st.selectbox(
-                "Año:",
+                "Año: (Year)",
                 available_years_themes,
                 key="themes_year",
             )
 
         with col2:
             selected_minister = st.selectbox(
-                "Ministro:",
+                "Ministro: (Justice)",
                 available_ministers,
                 key="themes_minister",
             )
@@ -142,14 +149,14 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_i
         ].copy()
 
         if themes_year.empty:
-            st.info("No hay temas disponibles para ese ministro en ese año.")
+            st.info("No hay temas disponibles para ese ministro en ese año. No tokens for this minister for this year")
         else:
             themes_year = themes_year.sort_values("score", ascending=False)
 
             display_df = themes_year[["ngram", "count", "score"]].rename(
                 columns={
                     "ngram": "Tema (N-gram)",
-                    "count": "Frecuencia",
+                    "count": "Frecuencia (Frequency)",
                     "score": "Relevancia (Score)",
                 }
             )
@@ -159,9 +166,10 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_i
     # No response index
     with subtab_index:
         st.subheader("Índice de no respuesta por año")
+        st.caption("No Response Rate per year")
 
         if solicitudes_index.empty:
-            st.info("No hay datos disponibles para el índice.")
+            st.info("No hay datos disponibles para el índice. No data available.")
         else:
             display_index = solicitudes_index.copy()
             display_index["year"] = display_index["year"].astype(str)
@@ -180,7 +188,7 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_i
 
             with col_metric:
                 st.metric(
-                    label=f"No respuesta en {metric_row['year']}",
+                    label=f"No respuesta en {metric_row['year']} (No response)",
                     value=f"{metric_row['no_response_percent']:.2f}%"
                 )
 
@@ -190,8 +198,8 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_i
 
             table_df = display_index[["year", "no_response_percent"]].rename(
                 columns={
-                    "year": "Año",
-                    "no_response_percent": "Índice de No Respuesta (%)",
+                    "year": "Año (Year)",
+                    "no_response_percent": "Índice de No Respuesta (No response rate) (%)",
                 }
             )
 
