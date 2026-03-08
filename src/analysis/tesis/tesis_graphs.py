@@ -7,23 +7,34 @@ from pathlib import Path
 from datetime import datetime as dt
 
 
-BASE_DIR = Path(__file__).parent.parent
+BASE_DIR = Path(__file__).parent.parent.parent.parent
+
 SENTENCIAS_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 
 sentencias = SENTENCIAS_DATA / "sentencias_joined_data.csv"
 tesis_data = TESIS_DATA / "tesis_joined_data_scjn.csv"
 
-tesis = pd.read_csv(tesis_data, dtype=str)
-tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]
+
+def return_dfs():
+    """
+    Returns total tesis
+    """
+    tesis_pd = pd.read_csv(tesis_data, dtype=str)
+    tesis_2015 = tesis_pd[tesis_pd["anio"].astype("Int64") >= 2015]
+
+    return tesis_pd, tesis_2015
 
 
-def return_totals():
+def return_totals(tesis_pd):
     """
     Returns total tesis
     """
 
-    return len(tesis)
+    return len(tesis_pd)
+
+
+tesis, tesis_2015 = return_dfs()
 
 
 def tesis_timeline():
