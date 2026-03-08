@@ -5,7 +5,7 @@ import re
 # Must match your setup
 INPUT_XLSX = Path("data/clean_data/declaraciones/compiled_dataset_filtered.xlsx")
 TEXT_DIR = Path("pdf_text")
-
+xs
 COMMON_TYPES = {"CASA","DEPARTAMENTO","TERRENO","LOCAL","OFICINA","BODEGA","RANCHO","PARCELA"}
 
 start_inmuebles = re.compile(r"^\s*(9|10)\.\s*BIENES\s+INMUEBLES\b.*", re.IGNORECASE)
