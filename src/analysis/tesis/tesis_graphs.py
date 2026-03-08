@@ -26,15 +26,15 @@ def return_dfs():
     return tesis_pd, tesis_2015
 
 
-def return_totals(tesis_pd):
+tesis, tesis_2015 = return_dfs()
+
+
+def return_totals():
     """
     Returns total tesis
     """
 
-    return len(tesis_pd)
-
-
-tesis, tesis_2015 = return_dfs()
+    return len(tesis)
 
 
 def tesis_timeline():
