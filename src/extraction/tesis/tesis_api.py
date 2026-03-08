@@ -16,7 +16,8 @@ This number is written as a global variable for the code.
 
 """
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
+
 
 DATA_DIR = BASE_DIR / "data"
 RAW_DATA = DATA_DIR / "raw_data"

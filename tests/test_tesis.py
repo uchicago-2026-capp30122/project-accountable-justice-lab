@@ -1,19 +1,36 @@
-import pandas as pd
-import json
 from pathlib import Path
+import sys
+import pytest
+
+SRC_PATH = Path(__file__).resolve().parents[1] / "src"
+sys.path.insert(0, str(SRC_PATH))
+
+from cleaning_and_processing.tesis.utils_tesis import get_ministro, simplify_materia
 
 
-BASE_DIR = Path(__file__).parent
+def test_get_ministro():
+    """
+    Check function that extracts the name of the justice that drafted the ruling
 
-TESIS_DIR = BASE_DIR / "tesis_data"
+    Example used: 2030679
+
+    """
+
+    precedentes = "Amparo en revisión 576/2024. 9 de abril de 2025. Cinco votos de las Ministras y los Ministros Jorge Mario Pardo Rebolledo, Juan Luis González Alcántara Carrancá, quien está con el sentido, pero se separa de los párrafos noventa y uno, noventa y cuatro, noventa y seis al noventa y nueve y ciento nueve, y formuló voto concurrente, Ana Margarita Ríos Farjat, Alfredo Gutiérrez Ortiz Mena, quien está con el sentido, pero se separa de todas las consideraciones y formuló voto concurrente y Loretta Ortiz Ahlf. Ponente: Ana Margarita Ríos Farjat. Secretaria: Irlanda Denisse Ávalos Núñez.\r\n\r\nTesis de jurisprudencia 113/2025 (11a.). Aprobada por la Primera Sala de este Alto Tribunal, en sesión privada de veinticinco de junio de dos mil veinticinco."
+
+    ministro = get_ministro(precedentes)
+
+    assert ministro == "ana margarita ríos farjat"
 
 
-def test_correct_load(filename):
+def test_simplify_materia():
+    """
+    Check function that extracts the first materia (subject) found in a list
+    of subjects for a given tesis.
 
-    # Check that json loaded correctly. this will be a test
+    Example used: tesis 2031119
 
-    # filename to check: tesis_scjn_2015
-    with open(TESIS_DIR / "tesis_scjn_2015.json") as t:
-        tesis_json_2025 = json.load(t)
-
-    assert len(tesis_json_2015) == 5374
+    """
+    materias = "[Civil, Constitucional]"
+    main_materia = simplify_materia(materias)
+    assert main_materia == "Civil"

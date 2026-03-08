@@ -6,7 +6,7 @@ import time
 from datetime import datetime
 from pathlib import Path
 import pandas as pd
-from http_sentencias import cached_get
+from .http_sentencias import cached_get
 
 """
 This file gets sentencias (court rulings) most recent information from the Supreme
@@ -24,7 +24,7 @@ saved in our csv file "Sentencia.csv" provided by the Supreme Court.
 
 """
 
-BASE_DIR = Path(__file__).parent.parent.parent.parent
+BASE_DIR = Path(__file__).resolve().parents[3]
 
 DATA_DIR = BASE_DIR / "data"
 RAW_DATA = DATA_DIR / "raw_data"

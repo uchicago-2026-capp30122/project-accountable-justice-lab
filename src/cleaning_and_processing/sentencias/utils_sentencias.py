@@ -90,8 +90,3 @@ def clean_file_number(file: str):
     else:
         # If file starts with number, there is nothing to be done
         return file
-
-
-def clean_ministro_name(ministro: str):
-
-    return str(ministro.lower().strip())
