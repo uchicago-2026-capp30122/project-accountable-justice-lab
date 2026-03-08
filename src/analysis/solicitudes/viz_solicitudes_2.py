@@ -40,8 +40,8 @@ def return_ministers_bar_chart(df, selected_year):
         alt.Chart(df_year)
         .mark_bar()
         .encode(
-            x=alt.X("count:Q", title="Menciones"),
-            y=alt.Y("minister:N", sort="-x", title="Ministro/a"),
+            x=alt.X("count:Q", title="Menciones (Counts)"),
+            y=alt.Y("minister:N", sort="-x", title="Ministro (Justice)"),
             color=alt.Color("count:Q", scale=alt.Scale(scheme="viridis"), legend=None),
             tooltip=["minister", "count"],
         )
@@ -60,11 +60,11 @@ def return_no_response_line_chart(df):
         alt.Chart(chart_df)
         .mark_line(point=True)
         .encode(
-            x=alt.X("year:O", title="Año"),
-            y=alt.Y("no_response_percent:Q", title="No respuesta (%)"),
+            x=alt.X("year:O", title="Año (Year)"),
+            y=alt.Y("no_response_percent:Q", title="No respuesta (no response) (%)"),
             tooltip=[
                 alt.Tooltip("year:O", title="Año"),
-                alt.Tooltip("no_response_percent:Q", title="No respuesta (%)", format=".2f"),
+                alt.Tooltip("no_response_percent:Q", title="No respuesta (no response) (%)", format=".2f"),
             ],
         )
         .properties(height=250)
@@ -74,16 +74,18 @@ def return_no_response_line_chart(df):
 
 
 def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
-    st.header("⚖️ Análisis de Solicitudes SCJN")
-    
+    st.header("Análisis de Solicitudes SCJN")
+    st.caption("Mexican Supreme Court Information Request Analysis")
+
     # subtabs within solicitudes viz
     subtab_mentions, subtab_themes, subtab_index = st.tabs(
-        ["📊 Menciones a Ministros", "🔤 Temas Principales (N-grams)", 
+        ["Menciones a Ministros", "Temas Principales (N-grams)", 
          "Índice de No Respuesta"])
 
     # bar chart 
     with subtab_mentions:
-        st.subheader("Which SCJN ministers are mentioned the most by citizens?")
+        st.subheader("¿A qué ministros mencionan más los ciudadanos?")
+        st.caption("Which ministers are mentioned the most by citizens?")
         # build year selector from values that actually exist in the data
         available_years = sorted(
             solicitudes_counts["year"].dropna().unique(), reverse=True
@@ -94,7 +96,7 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
         # dropdown to choose which year to display in the mentions chart 
         with col_filter:
             selected_year = st.selectbox(
-                "Select year:",
+                "Seleccionar año (Year):",
                 available_years,
                 key="solicitudes_mentions_year",
             )
@@ -109,7 +111,7 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
             # highlight most mentioned 
             with col_metric:
                 st.metric(
-                    label=f"Most mentioned ({selected_year})",
+                    label=f"Líder en menciones (most mentioned) ({selected_year})",
                     value=str(top_row["minister"]).title(),
                     delta=f"{int(top_row['count'])} registros",
                 )
@@ -120,7 +122,9 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
 
     # Ngrams
     with subtab_themes:
-        st.subheader("Salient N-grams (TF-IDF) by minister")
+        st.subheader("Temas salientes (TF-IDF) por ministro por año")
+        st.caption("Salient tokens by justice by year")
+
         # main controls 
         col1, col2, col3 = st.columns(3)
         # use ministers in data as the selectbox options
@@ -129,19 +133,19 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
         )
         with col1:
             selected_year_themes = st.selectbox(
-                "Year:", available_years, key="themes_year"
+                "Año (Year):", available_years, key="themes_year"
             )
         with col2:
             selected_minister = st.selectbox(
-                "Minister:", available_ministers, key="themes_minister"
+                "Ministro (Justice):", available_ministers, key="themes_minister"
             )
         with col3:
-            n_size = st.selectbox("Size (n-gram):", [1, 2, 3], index=1)
+            n_size = st.selectbox("Tamaño (n-gram):", [1, 2, 3], index=1)
 
-        top_k = st.slider("Number of themes to show:", 3, 15, 8)
+        top_k = st.slider("Numero de ngrams:", 3, 15, 8)
 
         # call the ngram analysis when the parameters are selected by user
-        if st.button("Execute theme analysis"):
+        if st.button("Ejecutar análisis (Execute n-gram analysis)"):
             try:
                 data_list = analyze_themes(
                     csv_path=SOLICITUDES_TEXT_CSV,
@@ -163,8 +167,8 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
                         display_df = themes_year[["ngram", "count", "score"]].rename(
                             columns={
                                 "ngram": "N-gram",
-                                "count": "Frequency",
-                                "score": "Relevancy (Score)",
+                                "count": "Frequencia (Frequency)",
+                                "score": "Relevancia (Score)",
                             }
                         )
                         st.dataframe(
@@ -176,12 +180,13 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
             except FileNotFoundError:
                 st.error(f"Error: missing file {SOLICITUDES_TEXT_CSV}")
 
-        # No response index
+    # No response index
     with subtab_index:
         st.subheader("Índice de no respuesta por año")
+        st.caption("No Response Rate per year")
 
         if solicitudes_index.empty:
-            st.info("No hay datos disponibles para el índice.")
+            st.info("No hay datos disponibles, no avaliable data.")
         else:
             display_index = solicitudes_index.copy()
             display_index["year"] = display_index["year"].astype(str)
