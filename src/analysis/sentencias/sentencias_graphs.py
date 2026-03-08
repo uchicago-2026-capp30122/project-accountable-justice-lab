@@ -23,15 +23,15 @@ def return_dfs():
     return sentencias_pd, sentencias_2015
 
 
-def return_totals(sentencias_pd):
+sentencias, sentencias_2015 = return_dfs()
+
+
+def return_totals():
     """
     Returns total sentencias
     """
 
-    return len(sentencias_pd)
-
-
-sentencias, sentencias_2015 = return_dfs()
+    return len(sentencias)
 
 
 def sentencias_timeline():
