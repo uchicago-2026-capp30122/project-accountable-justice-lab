@@ -15,7 +15,6 @@ We accessed information from two different types of data sources:
     This is historical information of court rulings by Mexico's Supreme Court of Justice. 
 
     ### Tesis (judicial criteria / precedents)
-
     
     Both types of information had two different forms of accessing. 
     Information pre august: bulk data
@@ -24,7 +23,10 @@ We accessed information from two different types of data sources:
 2. Plataforma Nacional de Transparencia 
 
     ### Solicitudes de información (Jimena)
-        2015-2026
+        The solicitudes dataset contains transparency requests submitted to Mexico’s National Transparency Platform requesting information from the Supreme Court of Justice of the Nation (SCJN).
+        These requests are obtained from: https://www.plataformadetransparencia.org.mx/Inicio
+        The platform allows downloading yearly transparency request records. For this project, the data covers from 2017 to January 2026. Each year must be downloaded separately as a JSON export from the platform.
+        
 
     ### Declaraciones (Dani)
        In data/declaraciones, we used the bulk download option to import CSV files for each quarter.

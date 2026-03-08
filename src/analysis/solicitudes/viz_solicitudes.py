@@ -1,3 +1,10 @@
+"""
+This file was to test the solicitudes tab for the streamlit dashboard. 
+It does 3 main things: shows a bar chart of how many times each minister is mentioned 
+in solicitudes for a selected year, shows the salient ngrams analysis in a table
+ by minister and year, and finally shows in a third tab the no response index graph and chart. 
+"""
+
 import streamlit as st
 import pandas as pd
 import altair as alt
@@ -9,7 +16,7 @@ sys.path.append(str(root_path))
 
 SOLICITUDES_COUNTS_CSV = Path("data/viz_data/todos_los_ministros_timeseries.csv")
 SOLICITUDES_NGRAMS_CSV = Path("data/viz_data/ngrams_por_ministro.csv")
-
+SOLICITUDES_INDEX_CSV = Path("data/viz_data/noresponse_index_solicitudes.csv")
 
 def return_ministers_bar_chart(df, selected_year):
     """Bar chart of counts a minister is mentioned in a request"""
@@ -34,12 +41,34 @@ def return_ministers_bar_chart(df, selected_year):
     )
     return chart
 
+def return_no_response_line_chart(df):
+    """time series chart of non-response index by year"""
+    chart_df = df.copy()
+    chart_df["year"] = pd.to_numeric(chart_df["year"], errors="coerce")
+    chart_df["no_response_percent"] = chart_df["no_response_index"] * 100
+    chart_df = chart_df.dropna(subset=["year", "no_response_percent"]).sort_values("year")
 
-def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams):
+    chart = (
+        alt.Chart(chart_df)
+        .mark_line(point=True)
+        .encode(
+            x=alt.X("year:O", title="Año"),
+            y=alt.Y("no_response_percent:Q", title="No respuesta (%)"),
+            tooltip=[
+                alt.Tooltip("year:O", title="Año"),
+                alt.Tooltip("no_response_percent:Q", title="No respuesta (%)", format=".2f"),
+            ],
+        )
+        .properties(height=250)
+    )
+
+    return chart
+
+def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams, solicitudes_index):
     st.header("Análisis de Solicitudes SCJN")
 
-    subtab_mentions, subtab_themes = st.tabs(
-        ["📊 Menciones a Ministros", "🔤 Temas Principales (N-grams)"]
+    subtab_mentions, subtab_themes, subtab_index= st.tabs(
+        ["Menciones a Ministros", "Temas Principales (N-grams)", "Indice de No Respuesta"]
     )
     # Bar chart of mentions
     with subtab_mentions:
@@ -77,8 +106,7 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams):
             st.altair_chart(chart_ministers, use_container_width=True)
         else:
             st.warning("No hay datos disponibles para este año.")
-
-
+    
     # Ngrams 
     with subtab_themes:
         st.subheader("Temas salientes (TF-IDF) por ministro")
@@ -127,14 +155,56 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_ngrams):
             )
 
             st.dataframe(display_df, hide_index=True, use_container_width=True)
+    
+    # No response index
+    with subtab_index:
+        st.subheader("Índice de no respuesta por año")
 
+        if solicitudes_index.empty:
+            st.info("No hay datos disponibles para el índice.")
+        else:
+            display_index = solicitudes_index.copy()
+            display_index["year"] = display_index["year"].astype(str)
+            display_index["no_response_percent"] = (
+                display_index["no_response_index"] * 100
+            ).round(2)
+
+            row_2025 = display_index[display_index["year"] == "2025"]
+
+            if not row_2025.empty:
+                metric_row = row_2025.iloc[0]
+            else:
+                metric_row = display_index.sort_values("year", ascending=False).iloc[0]
+
+            col_metric, col_chart = st.columns([1, 2])
+
+            with col_metric:
+                st.metric(
+                    label=f"No respuesta en {metric_row['year']}",
+                    value=f"{metric_row['no_response_percent']:.2f}%"
+                )
+
+            with col_chart:
+                chart_no_response = return_no_response_line_chart(display_index)
+                st.altair_chart(chart_no_response, use_container_width=True)
+
+            table_df = display_index[["year", "no_response_percent"]].rename(
+                columns={
+                    "year": "Año",
+                    "no_response_percent": "Índice de No Respuesta (%)",
+                }
+            )
+
+            st.dataframe(table_df, hide_index=True, use_container_width=True)
 
 if __name__ == "__main__":
     if not SOLICITUDES_COUNTS_CSV.exists():
-        st.error(f"Missing count ministros file: {SOLICITUDES_COUNTS_CSV}")
+        st.error(f"Missing count ministros file")
 
     elif not SOLICITUDES_NGRAMS_CSV.exists():
-        st.error(f"Missing ngrams file: {SOLICITUDES_NGRAMS_CSV}")
+        st.error(f"Missing ngrams file")
+    elif not SOLICITUDES_INDEX_CSV.exists():
+        st.error(f"Missing no response index file")
 
     else:
         df_counts = pd.read_csv(SOLICITUDES_COUNTS_CSV)
@@ -143,5 +213,10 @@ if __name__ == "__main__":
         df_ngrams = pd.read_csv(SOLICITUDES_NGRAMS_CSV)
         df_ngrams["year"] = df_ngrams["year"].astype(str)
         df_ngrams["minister"] = df_ngrams["minister"].astype(str)
+        
+        df_index = pd.read_csv(SOLICITUDES_INDEX_CSV)
+        df_index['year'] = df_index['year'].astype(str)
 
-        render_solicitudes_tab(df_counts, df_ngrams)
+        render_solicitudes_tab(df_counts, df_ngrams, df_index)
+
+   
