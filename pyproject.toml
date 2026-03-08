@@ -10,6 +10,7 @@ dependencies = [
     "jellyfish>=1.2.1",
     "pandas<3",
     "pathlib>=1.0.1",
+    "ruff>=0.15.5",
     "streamlit>=1.30",
 ]
 
