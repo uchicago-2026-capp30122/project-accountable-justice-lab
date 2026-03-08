@@ -9,7 +9,7 @@ import re
 import pandas as pd
 from pathlib import Path
 from collections import Counter
-from datatypes import STOPWORDS
+from .datatypes import STOPWORDS
 
 
 BASE_DIR = Path(__file__).resolve().parents[3]
