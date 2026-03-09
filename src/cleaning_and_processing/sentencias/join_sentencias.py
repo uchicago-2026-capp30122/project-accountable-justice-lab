@@ -13,6 +13,8 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 
 SENTENCIAS_RAW_DATA = BASE_DIR / "data" / "raw_data" / "sentencias_data"
 SENTENCIAS_CLEAN_DATA = BASE_DIR / "data" / "clean_data" / "sentencias_data"
+if not SENTENCIAS_CLEAN_DATA.is_dir():
+    SENTENCIAS_CLEAN_DATA.mkdir(parents=True, exist_ok=True)
 
 csv_sourcefile = SENTENCIAS_RAW_DATA / "sentencias_historical_clean.csv"
 api_sourcefile = SENTENCIAS_RAW_DATA / "sentencias_data_api.csv"

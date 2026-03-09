@@ -25,6 +25,9 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 
 TESIS_RAW_DATA = BASE_DIR / "data" / "raw_data" / "tesis_data"
 TESIS_CLEAN_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
+if not TESIS_CLEAN_DATA.is_dir():
+    TESIS_CLEAN_DATA.mkdir(parents=True, exist_ok=True)
+
 
 csv_sourcefile = TESIS_RAW_DATA / "tesis_historical_clean.csv"
 api_sourcefile = TESIS_RAW_DATA / "tesis_data_api.csv"

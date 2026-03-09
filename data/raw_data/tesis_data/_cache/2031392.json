@@ -1,0 +1,21 @@
+{
+    "idTesis": 2031392,
+    "rubro": "PAGARÉ DIGITAL. SU ENDOSO DEBE INCLUIRSE EN EL PROPIO MENSAJE DE DATOS Y CONTENER LOS REQUISITOS DEL ARTÍCULO 29 DE LA LEY GENERAL DE TÍTULOS Y OPERACIONES DE CRÉDITO.",
+    "texto": "Hechos: En amparo directo se reclamó la resolución que desechó un juicio ejecutivo mercantil oral. La persona juzgadora estimó que no se acreditó la legitimación procesal de quienes se ostentaron endosatarios en procuración de la parte actora, ya que al tratarse de un documento electrónico, el endoso debía constar en el propio mensaje de datos en el cual se encontraba el pagaré digital.\r\n\r\nCriterio jurídico: Este Tribunal Colegiado de Circuito determina que cuando se endosa un pagaré digital el endoso debe incluirse en el propio mensaje de datos y contener los requisitos establecidos en el artículo 29 de la Ley General de Títulos y Operaciones de Crédito.\r\n\r\nJustificación: Al tratarse de documentos electrónicos el endoso debe suscribirse con la firma electrónica avanzada del endosante, pues sólo así se cumple con el principio de equivalencia funcional del pagaré y del endoso electrónico. Ello, porque pueden imprimirse de manera numéricamente ilimitada con la evidencia de la firma electrónica avanzada de los suscriptores y realizarse multiplicidad de endosos en relación con el mismo documento, lo que pudiera derivar en la constitución de diversos endosos en garantía, o bien, en la transmisión del título de crédito a diversas personas, ya sea en propiedad, en procuración o en garantía, lo cual no puede permitirse, pues sería contrario al principio de seguridad jurídica, al dar lugar a que se transmitiera el derecho a diferentes personas simultáneamente –dando lugar a que no se pueda garantizar la continuidad de los endosos–, o que se pudiera exigir su cobro varias veces. Tratándose de pagarés emitidos por medios electrónicos, ópticos o cualquier tecnología a través de un sistema de información para generar, transmitir, recibir, entregar o procesar de alguna u otra forma mensajes de datos, en términos del artículo 89 del Código de Comercio, el endoso debe realizarse por el mismo sistema por el que se emitió el pagaré y no de forma física, a fin de que se pueda relacionar de manera indubitable con el pagaré en cuestión. Entonces, el endoso digital debe cumplir con los requisitos previstos en el citado artículo 29, esto es, debe contener: 1) el nombre del endosatario; 2) la firma del endosante o de la persona que suscriba el endoso a su ruego o en su nombre; 3) la clase de endoso; y 4) el lugar y la fecha. Además, el endoso debe realizarse de forma electrónica en el que la hoja de firmas mostrará un mensaje indicando que el pagaré cumple con la Ley General de Títulos y Operaciones de Crédito y se mostrará la cadena de endosos con la siguiente información de cada endoso: a) número de endoso, para poder seguir la secuencia ininterrumpida del endoso; y b) leyenda de endoso, que es un espacio donde luego de vincular a la cuenta de determinada persona, predetermina el nombre del endosatario –quien recibe el pagaré– y que se trata de un valor en propiedad o en procuración.\r\n\r\nDÉCIMO PRIMER TRIBUNAL COLEGIADO EN MATERIA CIVIL DEL PRIMER CIRCUITO.",
+    "precedentes": "Amparo directo 572/2024. Red Amigo Dal, S.A.P.I. de C.V., SOFOM, E.N.R. 22 de enero de 2025. Unanimidad de votos. Ponente: Fernando Rangel Ramírez. Secretaria: Hilce Lizeth Villa Jaimes.",
+    "epoca": "Duodécima Época",
+    "instancia": "Tribunales Colegiados de Circuito",
+    "organoJuris": "DÉCIMO PRIMER TRIBUNAL COLEGIADO EN MATERIA CIVIL DEL PRIMER CIRCUITO.",
+    "fuente": "Gaceta del Semanario Judicial de la Federación",
+    "tesis": "I.11o.C.82 C (11a.)",
+    "tipoTesis": "Aislada",
+    "localizacion": " [TA]; 12a. Época; T.C.C.; Gaceta S.J.F.; Libro 2, Octubre de 2025; Tomo IV, Volumen 1; Pág. 390",
+    "anio": 2025,
+    "mes": "Octubre",
+    "notaPublica": "Esta tesis se publicó el viernes 24 de octubre de 2025 a las 10:34 horas en el Semanario Judicial de la Federación.",
+    "anexos": "",
+    "huellaDigital": "ac7e21e458ddb3e3727f4a241424d01f1145ec002bd047dee29c254c3475b28b",
+    "materias": [
+        "Civil"
+    ]
+}

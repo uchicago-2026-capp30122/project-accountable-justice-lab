@@ -1,0 +1,21 @@
+{
+    "idTesis": 2031391,
+    "rubro": "PAGARÉ DIGITAL. DEBE SER FIRMADO A TRAVÉS DE FIRMA ELECTRÓNICA AVANZADA PARA PRODUCIR LOS EFECTOS DE UN TÍTULO DE CRÉDITO.",
+    "texto": "Hechos: Una sociedad mercantil demandó en la vía ejecutiva mercantil el pago de un pagaré digital. Se desechó la demanda al estimar que el pagaré electrónico incumple con los requerimientos necesarios para garantizar la autenticidad de la firma del suscriptor o de la persona que firme a su ruego o en su nombre, porque la firma electrónica no fue generada a través de un prestador de servicios de certificación.\r\n\r\nCriterio jurídico: Este Tribunal Colegiado de Circuito determina que los pagarés digitales deben ser firmados mediante la firma electrónica avanzada generada por un prestador de servicios de certificación.\r\n\r\nJustificación: Con motivo de la implementación de la tecnología en los actos de comercio, se ha establecido el principio de equivalencia funcional recogido en los artículos 89, 93 y 97 del Código de Comercio, conforme al cual, los documentos electrónicos o mensajes de datos tienen el mismo valor y efectos jurídicos que los documentos físicos, siempre y cuando cumplan los principios aplicables a los mensajes de datos, que les dan certeza y valor probatorio frente a terceros, los cuales consisten en que: 1) la información en ellos contenida siempre habrá de estar disponible; 2) el mensaje de datos ha de mantenerse íntegro en el tiempo, es decir, sin posibilidad de modificación; y 3) cuando se requiera firma, ésta se realice a través de la firma electrónica avanzada; lo anterior fue recogido por el legislador en los artículos 5o., 5o. Bis y 17 de la Ley General de Títulos y Operaciones de Crédito. Conforme al diverso 170, fracción VI, de dicha ley, uno de los requisitos o elementos esenciales del pagaré es la \"firma del suscriptor, o de la persona que firme a su ruego o en su nombre\", por lo que tratándose de pagarés que constan en mensajes de datos o digitales, ese requisito debe cumplirse mediante la firma electrónica avanzada, la cual en términos del precepto 9 de la Ley Modelo de la Comisión de las Naciones Unidas para el Derecho Mercantil Internacional sobre Documentos Transmisibles Electrónicos, debe producirse con un método fiable para determinar la identidad de la persona que externa su voluntad. Para ello, la Norma Oficial Mexicana NOM-151-SCFI-2016 establece los requisitos necesarios para la conservación de mensajes de datos al firmar documentos electrónicos, y conforme a ella, una constancia de conservación de mensajes de datos es una serie de sellos digitales emitidos por un prestador de servicios de certificación que permiten verificar la fecha y hora de firma del documento electrónico, para acreditar ante cualquier tercero la integridad del documento desde que se generaron los sellos, para lo cual el prestador de servicios de certificación formará una constancia siguiendo el formato que señala la Norma, que se conformará de uno o más sellos digitales de tiempo.\r\n\r\nSEGUNDO TRIBUNAL COLEGIADO EN MATERIA CIVIL DEL PRIMER CIRCUITO.",
+    "precedentes": "Amparo directo 27/2025. 3 de abril de 2025. Unanimidad de votos. Ponente: Mónica Cacho Maldonado. Secretario: Rodolfo Tlapaya Alvarado.",
+    "epoca": "Duodécima Época",
+    "instancia": "Tribunales Colegiados de Circuito",
+    "organoJuris": "SEGUNDO TRIBUNAL COLEGIADO EN MATERIA CIVIL DEL PRIMER CIRCUITO.",
+    "fuente": "Gaceta del Semanario Judicial de la Federación",
+    "tesis": "I.2o.C.38 C (11a.)",
+    "tipoTesis": "Aislada",
+    "localizacion": " [TA]; 12a. Época; T.C.C.; Gaceta S.J.F.; Libro 2, Octubre de 2025; Tomo IV, Volumen 1; Pág. 389",
+    "anio": 2025,
+    "mes": "Octubre",
+    "notaPublica": "Esta tesis se publicó el viernes 24 de octubre de 2025 a las 10:34 horas en el Semanario Judicial de la Federación.",
+    "anexos": "",
+    "huellaDigital": "ce112e94e0a15686966b029bcf7ff7ffc7a591aee2ea3dacd793f1ec59d2c3ef",
+    "materias": [
+        "Civil"
+    ]
+}
