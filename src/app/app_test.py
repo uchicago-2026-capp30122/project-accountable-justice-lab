@@ -21,17 +21,13 @@ from analysis.declaraciones.metrica_de_completitud import (
 )
 
 # Import chart-building functions for Tesis and Sentencias
-from analysis.tesis.tesis_graphs import (
-    get_all_tesis_charts
-)
+from analysis.tesis.tesis_graphs import get_all_tesis_charts
 
-from analysis.sentencias.sentencias_graphs import (
-    get_all_sentencias_charts
-)
+from analysis.sentencias.sentencias_graphs import get_all_sentencias_charts
 
 from analysis.tesis.salient_tokens_tesis_viz import render_ngrams_tesis_tab
 
-#Import rendering function for Solicitudes tab
+# Import rendering function for Solicitudes tab
 from analysis.solicitudes.viz_solicitudes_2 import render_solicitudes_tab
 
 import streamlit as st
@@ -47,11 +43,17 @@ with center:
     with title_col:
         st.markdown(
             """
-            <h1 style='font-size: 100px; margin: 0; text-align: right; font-family: Arial;'>
+            <h1 style='
+            font-size: 100px; 
+            margin: 0; 
+            text-align: 
+            right; 
+            font-family:Montserrat;
+            color:#4682B4;'>
                 OJO PIOJO
             </h1>
             """,
-            unsafe_allow_html=True
+            unsafe_allow_html=True,
         )
 
     with logo_col:
@@ -59,11 +61,11 @@ with center:
 
 st.markdown(
     """
-    <p style='text-align: center; font-size: 32px; font-weight: 500; margin-top: 10px;'>
+    <h2 style='text-align: center; font-size: 32px; font-weight: 500; margin-top: 10px;'>
         Accountable Justice Lab
-    </p>
+    </h2>
     """,
-    unsafe_allow_html=True
+    unsafe_allow_html=True,
 )
 
 # File paths
@@ -72,20 +74,17 @@ DECLARACIONES_XLSX = "data/clean_data/declaraciones/final_variables.xlsx"
 SOLICITUDES_COUNTS_CSV = "data/viz_data/todos_los_ministros_timeseries.csv"
 SOLICITUDES_INDEX_CSV = "data/viz_data/noresponse_index_solicitudes.csv"
 
+
 # Cached data loaders
 @st.cache_data
 def load_declaraciones():
-    return pd.read_excel(
-        DECLARACIONES_XLSX,
-        engine="openpyxl"
-    )
+    return pd.read_excel(DECLARACIONES_XLSX, engine="openpyxl")
+
 
 @st.cache_data
 def load_declaraciones_inmuebles():
-    return pd.read_excel(
-        DECLARACIONES_INMUEBLES_XLSX,
-        engine="openpyxl"
-    )
+    return pd.read_excel(DECLARACIONES_INMUEBLES_XLSX, engine="openpyxl")
+
 
 @st.cache_data
 def load_solicitudes_counts():
@@ -93,11 +92,13 @@ def load_solicitudes_counts():
     df["year"] = df["year"].astype(str)
     return df
 
+
 @st.cache_data
 def load_solicitudes_index():
     df = pd.read_csv(SOLICITUDES_INDEX_CSV)
     df["year"] = df["year"].astype(str)
     return df
+
 
 # Text cleaning helper for encoding issues in declaration files
 def clean_text(text):
@@ -132,14 +133,26 @@ def clean_text(text):
 
     return text
 
+
 # Load datasets
 declaraciones = load_declaraciones()
 declaraciones_inmuebles = load_declaraciones_inmuebles()
 solicitudes_counts = load_solicitudes_counts()
 solicitudes_index = load_solicitudes_index()
 
-total_tesis, tesis_timeline_chart,tesis_por_tipo_chart, tesis_materias_chart, tesis_heatmap = get_all_tesis_charts()
-total_sentencias, sentencias_timeline_chart, sentencias_votacion_chart, sentencias_heatmap = get_all_sentencias_charts()
+(
+    total_tesis,
+    tesis_timeline_chart,
+    tesis_por_tipo_chart,
+    tesis_materias_chart,
+    tesis_heatmap,
+) = get_all_tesis_charts()
+(
+    total_sentencias,
+    sentencias_timeline_chart,
+    sentencias_votacion_chart,
+    sentencias_heatmap,
+) = get_all_sentencias_charts()
 
 # Clean text columns
 for col in declaraciones.select_dtypes(include="object").columns:
@@ -154,12 +167,17 @@ m2 = metrica_completitud_inmuebles(declaraciones_inmuebles)
 
 # App tabs
 tab_general, tab_solicitudes, tab_sentencias, tab_tesis, tab_declaraciones = st.tabs(
-    ["General", "Solicitudes (Requests)", "Sentencias (Rulings)", "Tesis (Precedents)", "Declaraciones (Disclosures)"]
+    [
+        "General",
+        "Solicitudes (Requests)",
+        "Sentencias (Rulings)",
+        "Tesis (Precedents)",
+        "Declaraciones (Disclosures)",
+    ]
 )
 
 # General tabls
 with tab_general:
-
     st.header("General")
 
     col1, col2 = st.columns(2)
@@ -183,14 +201,14 @@ with tab_general:
     with col3:
         st.metric(
             "Ministros con máximo nivel de educación declarado (Judges with declared maximum level of education)",
-            f"{m1['con_educacion_declarada']} / {m1['total_ministros']}"
+            f"{m1['con_educacion_declarada']} / {m1['total_ministros']}",
         )
         st.write(f"Porcentaje (Percentage): {m1['porcentaje']:.1%}")
 
     with col4:
         st.metric(
             "Ministros con al menos un inmueble declarado (Judges with at least one asset declared)",
-            f"{m2['con_al_menos_un_inmueble']} / {m2['total_ministros']}"
+            f"{m2['con_al_menos_un_inmueble']} / {m2['total_ministros']}",
         )
         st.write(f"Porcentaje (Percentage): {m2['porcentaje']:.1%}")
 
@@ -200,13 +218,10 @@ with tab_solicitudes:
 
 # Sentencias tab
 with tab_sentencias:
-
     st.header("Sentencias (Rulings)")
 
-    sub1, sub2 = st.tabs(
-        ["Votaciones (Votings)", "Ministros (Justices)"]
-    )
-    
+    sub1, sub2 = st.tabs(["Votaciones (Votings)", "Ministros (Justices)"])
+
     with sub1:
         st.altair_chart(sentencias_votacion_chart, use_container_width=True)
 
@@ -215,35 +230,39 @@ with tab_sentencias:
 
 # Tesis tab
 with tab_tesis:
-
     st.header("Tesis (Precedents)")
 
     sub1, sub2, sub3, sub4 = st.tabs(
-        ["Materias (Areas)", "Ministros (Justices)","Por tipo (By type)", "Conceptos"]
+        ["Materias (Areas)", "Ministros (Justices)", "Por tipo (By type)", "Conceptos"]
     )
     with sub1:
         st.altair_chart(tesis_materias_chart, use_container_width=True)
 
     with sub2:
         st.altair_chart(tesis_heatmap, use_container_width=True)
-    
+
     with sub3:
         st.altair_chart(tesis_por_tipo_chart, use_container_width=True)
-        
+
     with sub4:
         render_ngrams_tesis_tab()
 
 # Declaraciones tab
 with tab_declaraciones:
-
     st.header("Declaraciones (Disclosures)")
 
     sub1, sub2, sub3 = st.tabs(
-        ["Nivel educativo (Educational level)", "Bienes inmuebles (Assets)", "Salarios (Salaries)"]
+        [
+            "Nivel educativo (Educational level)",
+            "Bienes inmuebles (Assets)",
+            "Salarios (Salaries)",
+        ]
     )
 
     with sub1:
-        st.subheader("Nivel educativo más alto declarado por persona (Highest educational level declared)")
+        st.subheader(
+            "Nivel educativo más alto declarado por persona (Highest educational level declared)"
+        )
         edu_table = build_edu_table(declaraciones)
         st.dataframe(edu_table, use_container_width=True, hide_index=True)
 
