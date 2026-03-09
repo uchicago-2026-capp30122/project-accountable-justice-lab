@@ -34,7 +34,8 @@ import streamlit as st
 
 st.set_page_config(page_title="Accountable Justice Lab", layout="wide")
 
-st.markdown("""
+st.markdown(
+    """
 <style>
 button[data-baseweb="tab"] {
     font-size: 0.95rem;
@@ -52,7 +53,9 @@ div[data-baseweb="tab-list"] {
     gap: 0.65rem;
 }
 </style>
-""", unsafe_allow_html=True)
+""",
+    unsafe_allow_html=True,
+)
 
 # Outer columns to center the whole block
 left_space, center, right_space = st.columns([1, 3, 1])
@@ -217,7 +220,14 @@ m2 = metrica_completitud_inmuebles(declaraciones_inmuebles)
 
 
 # App tabs
-tab_about, tab_general, tab_solicitudes, tab_sentencias, tab_tesis, tab_declaraciones = st.tabs(
+(
+    tab_about,
+    tab_general,
+    tab_solicitudes,
+    tab_sentencias,
+    tab_tesis,
+    tab_declaraciones,
+) = st.tabs(
     [
         "About",
         "General",
@@ -370,7 +380,6 @@ por cada ministra o ministro en el tiempo.<br><br>
 
 El análisis incluye información de 1989 a la fecha.<br><br>
 
-<em>* Nota: la SCJN no ha publicado información de sentencias de 2026.</em>
 </p>
 
 <hr style="margin:24px 0; opacity:0.20;">
@@ -445,7 +454,7 @@ En la pestaña <strong>“Temas Principales”</strong>, podrás seleccionar los
 contenidos en los rubros de las tesis por época judicial.<br><br>
 
 El análisis incluye información de 2015 a la fecha
-(excepto la pestaña de <strong>“Temas Principales”</strong>, que contiene todas las épocas judiciales desde 1920).
+(excepto la pestaña de <strong>“Temas Principales”</strong>, que contiene todas las épocas judiciales desde 1910).
 </p>
 
 <hr style="margin:24px 0; opacity:0.20;">
@@ -563,4 +572,3 @@ In <strong>“Salaries”</strong>, you will find the salaries reported by the j
         st.subheader("Salario declarado (Declared salary)")
         salary_table = build_salary_table(declaraciones)
         st.dataframe(salary_table, use_container_width=True, hide_index=True)
-

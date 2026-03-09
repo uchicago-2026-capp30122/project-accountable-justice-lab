@@ -6,8 +6,8 @@ install:
 fetch_data:
 	mkdir -p data/raw_data/sentencias_data
 	mkdir -p data/raw_data/tesis_data
-	curl -L -o data/raw_data/sentencias_data/Sentencia.csv https://github.com/uchicago-2026-capp30122/project-accountable-justice-lab/releases/download/v1.0/Sentencia.csv
-	curl -L -o data/raw_data/tesis_data/Tesis.csv https://github.com/uchicago-2026-capp30122/project-accountable-justice-lab/releases/download/v1.0/Tesis.csv
+	curl -fL -o data/raw_data/sentencias_data/Sentencia.csv https://github.com/mafermunoz94/project_accountable_justice_lab_data/releases/download/v1.0.0/Sentencia.csv
+	curl -fL -o data/raw_data/tesis_data/Tesis.csv https://github.com/mafermunoz94/project_accountable_justice_lab_data/releases/download/v1.0.0/Tesis.csv
 
 data_extraction:
 	uv run -m src.extraction

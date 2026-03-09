@@ -27,6 +27,7 @@ def return_tesis_timeline(tesis):
     Returns timeline of tesis
     """
     counts_tesis = tesis.groupby("anio")["idTesis"].count().to_frame().reset_index()
+    counts_tesis["anio"] = pd.to_datetime(counts_tesis["anio"], format="%Y")
 
     chart_timeline = (
         alt.Chart(counts_tesis)
@@ -153,6 +154,8 @@ def return_tesis_materias_chart(tesis_2015):
         .to_frame()
         .reset_index()
     )
+
+    materias["anio"] = pd.to_datetime(materias["anio"], format="%Y")
 
     chart_materias = (
         alt.Chart(materias)

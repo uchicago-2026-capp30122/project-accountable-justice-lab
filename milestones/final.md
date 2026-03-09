@@ -8,7 +8,7 @@ cleaned_data
 viz_data 
 
 
-* This is not the case of the csv files of "Sentencia.csv" and "Tesis.csv", due to their size. A link to the Drive where the information is stored is available in the README. 
+* This is not the case of the csv files of "Sentencia.csv" and "Tesis.csv", due to their size. The fetch_data element of the Makefile enables the user to fetch the information from a public release from Github. 
 
 ### Data Source #1: Sentencias (rulings) and Tesis (precedents)
 Person in charge: María Muñoz
@@ -101,6 +101,8 @@ Design web scrapping code to extract information from PDF (which we have not don
 
 ## Project structure
 
+We structurd
+
 Modules: 
 
 1. Extraction
@@ -120,7 +122,11 @@ join and extract data from csv files to add new fields relevant
 chart and table creation
 ngrams
 
+
 4. APP
+
+![](project_pipeline.jpg)
+
 
 ## Team responsibilities 
 
