@@ -8,6 +8,8 @@ BASE_DIR = Path(__file__).resolve().parents[3]
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 tesis_data_file = TESIS_DATA / "tesis_joined_data_scjn.csv"
 
+EPOCA_OPTIONS = ORDER[::-1]
+
 
 def render_ngrams_tesis_tab():
     """Renderiza las pestañas de la aplicación."""
@@ -20,7 +22,7 @@ def render_ngrams_tesis_tab():
     col1, col2, col3 = st.columns(3)
 
     with col1:
-        selected_epoca = st.selectbox("Época:", ORDER, key="themes_epoca")
+        selected_epoca = st.selectbox("Época:", EPOCA_OPTIONS, key="themes_epoca")
 
     with col2:
         n_size = st.selectbox("Tamaño del (n-gram):", [1, 2, 3], index=0)
