@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from utils_tesis import (
+from .utils_tesis import (
     get_ministro,
     get_votacion_pleno,
     get_votacion_salas,
