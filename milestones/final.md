@@ -102,7 +102,7 @@ The app.py file was mostly done by Daniela Avayú and Jimena Gómez.
 
 We were aware this would be a challenging project. Much of the information we sought was not readily available, and substantial data processing was required before meaningful analysis could begin. 
 
-The difficulty stremmed from two main factors. First, given the nature of the data, it required extensive cleaning and processing before it could be used effectively. Secondly, most of the value of this data lies within the text analysis realm.
+The difficulty stremmed from two main factors. First, given the nature of the data, it required extensive cleaning and processing before it could be used effectively. We also noticed a lot of opportunities in code reutilization that were only possible when looking at the big picture and would have hoped to have enough time to address this element (which we will do so). Secondly, most of the value of this data lies within the text analysis realm.
 
 We were able to extract extremely significant insights from our quantitative and qualitative analyses. For instance, seeing a reduction in activity and in judicial production, which raises several questions: are they not receiving as many cases or are they taking longer to solve them? In the qualitative part, we were able to see the justices that the citizens are more likely to mention and question through requests of information. And, finally, the extraction and analysis of their disclosures shows an opportunity for constant monitoring on justices (and public servants in general) to actively find possible irregularities and negative patterns regarding their wealth. 
 

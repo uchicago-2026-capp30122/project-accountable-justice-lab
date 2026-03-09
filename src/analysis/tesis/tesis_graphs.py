@@ -16,7 +16,14 @@ tesis_data = TESIS_DATA / "tesis_joined_data_scjn.csv"
 
 def return_totals_tesis(tesis):
     """
-    Returns total tesis
+
+    This function returns total tesis emitted.
+
+    Inputs:
+        tesis (df): dataframe of historical tesis emitted.
+
+    Returns:
+        len(tesis) (int): total number of tesis emitted
     """
 
     return len(tesis)
@@ -24,7 +31,16 @@ def return_totals_tesis(tesis):
 
 def return_tesis_timeline(tesis):
     """
-    Returns timeline of tesis
+
+    This function returns a timeline of total tesis emitted by year.
+
+    Inputs:
+        tesis (df): dataframe of historical tesis emitted.
+
+    Returns:
+        chart_timeline (chart): "mark_line" type chart that displays a
+            line graph of tesis over the years
+
     """
     counts_tesis = tesis.groupby("anio")["idTesis"].count().to_frame().reset_index()
     counts_tesis["anio"] = pd.to_datetime(counts_tesis["anio"], format="%Y")
@@ -59,17 +75,39 @@ def return_tesis_timeline(tesis):
 
 
 def return_tesis_por_tipo_chart(tesis):
+    """
+
+    This function filters a dataframe, grouping by type of tesis and year, getting
+    the total tesis emitted by type. The resulting graph is an area graph
+    that maps the number of tesis aisladas and jurisprudencias over the years.
+
+    To avoid a steep reduction in 2026, we added this data value as a point
+    rather than a line.
+
+    Inputs:
+        tesis (df): dataframe of historical tesis emitted.
+
+    Returns:
+        chart_tesis_por_tipo (chart): "mark_area" type chart that displays a
+            ranking of areas over the years and a point line corresponding to
+            2026.
+
+    """
+    # Create filtered dataframe until 2025
     tesis_2025 = tesis[
         (tesis["anio"].astype("Int64") >= 2010)
         & (tesis["anio"].astype("Int64") <= 2025)
     ]
+
     tesis_2026 = tesis[(tesis["anio"].astype("Int64") >= 2026)]
+
     counts_tesis_tipo_2025 = (
         tesis_2025.groupby(["anio", "tipoTesis"])["idTesis"]
         .count()
         .to_frame()
         .reset_index()
     )
+    # Create filtered dataframe for 2026
     counts_tesis_tipo_2026 = (
         tesis_2026.groupby(["anio", "tipoTesis"])["idTesis"]
         .count()
@@ -148,6 +186,21 @@ def return_tesis_por_tipo_chart(tesis):
 
 
 def return_tesis_materias_chart(tesis_2015):
+    """
+
+    This function filters a dataframe, grouping by main area and year, getting
+    the total tesis emitted by area. The resulting graph is a rank line graph
+    that maps the ranking of each area over the years.
+
+    Inputs:
+        tesis_2025 (df): dataframe of tesis emitted from 2015 to date.
+
+    Returns:
+        chart_materias (chart): "transform_window" type chart that displays a
+            ranking of areas over the years.
+
+    """
+    # Create filtered dataframe
     materias = (
         tesis_2015.groupby(["anio", "main_materia"])["idTesis"]
         .count()
@@ -155,6 +208,7 @@ def return_tesis_materias_chart(tesis_2015):
         .reset_index()
     )
 
+    # Convert "anio" to a year datatype
     materias["anio"] = pd.to_datetime(materias["anio"], format="%Y")
 
     chart_materias = (
@@ -199,7 +253,21 @@ def return_tesis_materias_chart(tesis_2015):
 
 
 def return_tesis_heatmap(tesis_2015):
+    """
 
+    This function filters a dataframe, grouping by justice and year, getting
+    the total tesis emitted by each justice. The resulting graph is a heatmap
+    that links total tesis per justice over time.
+
+    Inputs:
+        tesis_2015 (df): dataframe of tesis emitted from 2015 to date.
+
+    Returns:
+        chart_tesis_ministro (chart): "mark_rect" type chart that displays a
+            heatmap.
+
+    """
+    # Create filtered dataframe
     tesis_ministro = (
         tesis_2015.groupby(["anio", "ministro"])["idTesis"]
         .count()
@@ -207,6 +275,7 @@ def return_tesis_heatmap(tesis_2015):
         .reset_index()
     )
 
+    # Create chart
     chart_tesis_ministro = (
         alt.Chart(tesis_ministro)
         .mark_rect()
@@ -237,6 +306,20 @@ def return_tesis_heatmap(tesis_2015):
 
 
 def get_all_tesis_charts():
+    """
+    Function that returns all charts related to tesis, using as default the
+    tesis dataframe, which will be filtered for 2015 as default for certain
+    graphs that require a smaller range of values for years.
+
+    Returns:
+        - total_tesis (int): total tesis contained in database
+        - tesis_timeline_chart (alt chart): chart containing total tesis over the
+            years
+        - tesis_por_tipo_chart (alt chart): chart containing tesis per type
+        - tesis_materias_chart (alt chart): chart containing rank line of areas
+        - tesis_heatmap (alt chart): chart containing tesis by justice
+
+    """
 
     tesis = pd.read_csv(tesis_data, dtype=str)
     tesis_2015 = tesis[tesis["anio"].astype("Int64") >= 2015]

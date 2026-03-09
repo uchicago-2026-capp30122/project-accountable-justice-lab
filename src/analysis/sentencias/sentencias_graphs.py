@@ -15,7 +15,14 @@ sentencias_data = SENTENCIAS_DATA / "sentencias_joined_data.csv"
 
 def return_totals_sentencias(sentencias):
     """
-    Returns total sentencias
+
+    This function returns total sentencias emitted.
+
+    Inputs:
+        sentencias (df): dataframe of historical sentencias emitted.
+
+    Returns:
+        len(sentencias) (int): total number of sentencias emitted
     """
 
     return len(sentencias)
@@ -23,7 +30,15 @@ def return_totals_sentencias(sentencias):
 
 def return_sentencias_timeline(sentencias):
     """
-    Returns timeline of sentencias over time
+
+    This function returns a timeline of total sentencias emitted by year.
+
+    Inputs:
+        sentencias (df): dataframe of historical sentencias emitted.
+
+    Returns:
+        chart_timeline (chart): "mark_line" type chart that displays a
+            line graph of sentencias over the years
 
     """
     counts_sentencias = (
@@ -64,16 +79,25 @@ def return_sentencias_timeline(sentencias):
 def return_votacion_percentages(sentencias):
     """
 
-    Returns bar graph sentencias
+    This function filters a dataframe, grouping by voting outcome and year, getting
+    the total rulings emitted by type of vote.
+
+    Inputs:
+        sentencias (df): dataframe of historical sentencias emitted.
+
+    Returns:
+        chart_votacion_sentencias (chart): "mark_bar" type chart that displays
+        the three voting outcomes proportions over the years.
 
     """
-
+    # filtered dataframe
     counts_sentencias = (
         sentencias.groupby(["anio", "votos"])["expediente"]
         .count()
         .to_frame()
         .reset_index()
     )
+    # create percentages for each voting outcome
     counts_sentencias["percentage"] = counts_sentencias[
         "expediente"
     ] / counts_sentencias.groupby("anio")["expediente"].transform("sum")
@@ -120,9 +144,20 @@ def return_votacion_percentages(sentencias):
 
 def return_heatmap_sentencias(sentencias_2015):
     """
-    Returns heat map ministros
+
+    This function filters a dataframe, grouping by justice and year, getting
+    the total sentencias emitted by each justice. The resulting graph is a heatmap
+    that links total sentencias per justice over time.
+
+    Inputs:
+        sentencias_2015 (df): dataframe of sentencias emitted from 2015 to date.
+
+    Returns:
+        chart_ministro (chart): "mark_rect" type chart that displays a
+            heatmap.
 
     """
+    # Create filtered dataframe
     sentencias_ministro = (
         sentencias_2015.groupby(["anio", "ministro"])["expediente"]
         .count()
@@ -130,6 +165,7 @@ def return_heatmap_sentencias(sentencias_2015):
         .reset_index()
     )
 
+    # Create chart
     chart_ministro = (
         alt.Chart(sentencias_ministro)
         .mark_rect()
@@ -162,6 +198,20 @@ def return_heatmap_sentencias(sentencias_2015):
 
 
 def get_all_sentencias_charts():
+    """
+    Function that returns all charts related to sentencias, using as default the
+    sentencias dataframe, which will be filtered for 2015 as default for certain
+    graphs that require a smaller range of values for years.
+
+    Returns:
+        - total_sentencias (int): total sentencias contained in database
+        - sentencias_timeline_chart (alt chart): chart containing total sentencias over the
+            years
+        - sentencias_por_tipo_chart (alt chart): chart containing sentencias per type
+        - sentencias_materias_chart (alt chart): chart containing rank line of areas
+        - sentencias_heatmap (alt chart): chart containing sentencias by justice
+
+    """
 
     sentencias = pd.read_csv(sentencias_data, dtype=str)
     sentencias_2015 = sentencias[sentencias["anio"].astype("Int64") >= 2015]
