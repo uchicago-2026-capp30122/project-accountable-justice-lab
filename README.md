@@ -1,7 +1,18 @@
-# Accountable justice lab 
+# Accountable Justice Lab 
 
-## Introduction
+## Members
 
+- {Jimena Gómez <jimenagomez@uchicago.edu>} 
+- {Daniela Avayu <davayu@uchicago.edu>}
+- {Maria Fernanda Muñoz <mfmunoz@uchicago.edu>}
+
+## Abstract
+
+Our project focuses on metrics related to Mexico’s Supreme Court, with special emphasis on its justices. We have approached these metrics from two perspectives: transparency and access to public information and “judicial content production”. The first perspective (transparency and access to public information) will examine two elements. The first, corresponds to requests of information addressed to the Supreme Court, which we have linked to specific topics of interest, but particularly, when directly referencing justices. We analyze requests of public information linked to each of the Supreme Court justice and identify what kind of information (words or concepts) people are most interested in. Additionally, we added an index of no reponse that calculates the proportion of responses that fully addressed the requests or those that were discarded (and thus there was not a satisfactory answer). The second element related to transparency and access to justice will link justice’s annual income and asset disclosures, which we will process to identify each of the justice’s education, previous work experience and assets (personal property, real estate, vehicles, etc.). 
+
+For the second perspective (judicial content production), we generated a set of charts that identify trends and patterns for both court rulings (sentencias) and judicial precedents (tesis). In the case of rulings, one particular element of interest was the integrity of the data: we noticed there was a big difference between historical information and recent dates, which we believe is a valuable insight in itself, as it allows researchers and people to understand how reliable and complete the data is depending on the year of analysis. In addition to this, we have added charts related to total rulings and tesis emitted through the years, classifying by type, voting result. To complement the quantitative metrics, we have added a topic analysis component, that identifies the most mentioned words or set of words in the title of tesis (which we know have relevant legal content).
+
+Although the official name of our project is "Accountable Justice Lab", the name of our platform is "Ojo Piojo". This is a popular Chilean phrase that hints at being alert. We wanted a playful name because we believe the intersection of data analysis and social change needs an element of fun, creativity and playfulness - we believe this is how we find things out of the ordinary. 
 
 
 ## Data
