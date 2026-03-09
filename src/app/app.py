@@ -1,822 +1,566 @@
+## Run final app with: streamlit run src/app/app_test.py
+
+import sys
+from pathlib import Path
+
+# Allow imports from src/
+sys.path.append(str(Path(__file__).resolve().parents[1]))
+
 import streamlit as st
 import pandas as pd
-import altair as alt
-import csv
-import math
-import unicodedata
-from pathlib import Path
-from collections import Counter
-from analysis.solicitudes.viz_solicitudes_2 import return_ministers_bar_chart
 
-# Page configuration
+# Import table-building functions for the Declaraciones tab
+from analysis.declaraciones.declaraciones_viz_educ import build_edu_table
+from analysis.declaraciones.declaraciones_viz_inmuebles import build_inmuebles_table
+from analysis.declaraciones.declaraciones_viz_salario import build_salary_table
+
+# Import completeness metrics for the General tab
+from analysis.declaraciones.metrica_de_completitud import (
+    metrica_completitud_educacion,
+    metrica_completitud_inmuebles,
+)
+
+# Import chart-building functions for Tesis and Sentencias
+from analysis.tesis.tesis_graphs import get_all_tesis_charts
+
+from analysis.sentencias.sentencias_graphs import get_all_sentencias_charts
+
+from analysis.tesis.salient_tokens_tesis_viz import render_ngrams_tesis_tab
+
+# Import rendering function for Solicitudes tab
+from analysis.solicitudes.viz_solicitudes_2 import render_solicitudes_tab
+
+import streamlit as st
+
 st.set_page_config(page_title="Accountable Justice Lab", layout="wide")
 
-st.title("⚖️ OJO PIOJO")
-st.write("Accountable Justice Lab")
-st.image("frontend/ojopiojo.jpeg", width=100)
+st.markdown("""
+<style>
+button[data-baseweb="tab"] {
+    font-size: 0.95rem;
+    font-weight: 500;
+    color: #4b5563;
+    padding: 0.55rem 1.15rem;
+    margin-right: 0.35rem;
+}
+
+button[data-baseweb="tab"][aria-selected="true"] {
+    color: #2f3343;
+}
+
+div[data-baseweb="tab-list"] {
+    gap: 0.65rem;
+}
+</style>
+""", unsafe_allow_html=True)
+
+# Outer columns to center the whole block
+left_space, center, right_space = st.columns([1, 3, 1])
+
+with center:
+    title_col, logo_col = st.columns([4, 1])
+
+    with title_col:
+        st.markdown(
+            """
+<h1 style='
+    font-size: 90px; 
+    margin-bottom: 0px;
+    line-height: 1;
+    text-align: right;
+    font-family:Georgia;
+    color:#4682B4;
+'>
+    OJO PIOJO
+</h1>
+""",
+            unsafe_allow_html=True,
+        )
+
+    with logo_col:
+        st.image("src/app/ojopiojo.jpeg", width=120)
+
+    st.markdown(
+        """
+<h2 style='
+text-align: center;
+font-family:Montserrat;
+font-size: 30px;
+font-weight: 600;
+margin-top: -8px;
+margin-bottom: 8px;
+color:#2f3343;
+'>
+    Accountable Justice Lab
+</h2>
+""",
+        unsafe_allow_html=True,
+    )
+
+    st.markdown(
+        """
+<div style="max-width:1050px; margin:0 auto 24px auto; line-height:1.7;">
+
+<p style="text-align:justify; font-size:15px; color:#374151; margin-bottom:12px;">
+<em>Ojo Piojo</em> es una frase chilena que resonó con nosotras; significa estar alerta. 
+Queremos empoderar a la ciudadanía mexicana con más herramientas para vigilar y monitorear a las instituciones de su país. 
+Esta plataforma es nuestra manera de hacerlo.
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280; margin-top:0;">
+<em>Ojo Piojo</em> is a Chilean expression meaning “stay alert.” 
+Our goal is to empower Mexican citizens with tools to better observe and monitor public institutions.
+This platform is our contribution to that effort.
+</p>
+
+</div>
+""",
+        unsafe_allow_html=True,
+    )
 
 # File paths
-SOLICITUDES_COUNTS_CSV = "todos_los_ministros_timeseries.csv"
-SOLICITUDES_TEXT_CSV = Path("clean_output") / "clean_solicitudes_2017_2026.csv"
-TESIS_CSV = "frontend/tesis_joined_data.csv"
-SENTENCIAS_CSV = "frontend/sentencias_joined_data.csv"
-DECLARACIONES_XLSX = "frontend/declaraciones/final_variables.xlsx"
-
-
-# Stopwords for salient token analysis
-STOPWORDS = {
-    "el",
-    "la",
-    "los",
-    "las",
-    "un",
-    "una",
-    "unos",
-    "unas",
-    "y",
-    "o",
-    "u",
-    "e",
-    "de",
-    "del",
-    "al",
-    "a",
-    "en",
-    "por",
-    "para",
-    "con",
-    "sin",
-    "sobre",
-    "que",
-    "como",
-    "cuando",
-    "donde",
-    "cada",
-    "uno",
-    "este",
-    "esta",
-    "quien",
-    "se",
-    "su",
-    "sus",
-    "mi",
-    "mis",
-    "me",
-    "te",
-    "le",
-    "les",
-    "lo",
-    "nos",
-    "no",
-    "sí",
-    "si",
-    "ya",
-    "más",
-    "menos",
-    "muy",
-    "tan",
-    "también",
-    "tampoco",
-    "todo",
-    "toda",
-    "todos",
-    "todas",
-    "mismo",
-    "misma",
-    "así",
-    "asi",
-    "vez",
-    "día",
-    "dia",
-    "año",
-    "ano",
-    "parte",
-    "partes",
-    "estos",
-    "estas",
-    "esos",
-    "esas",
-    "aquello",
-    "aquella",
-    "enero",
-    "febrero",
-    "marzo",
-    "abril",
-    "mayo",
-    "junio",
-    "julio",
-    "agosto",
-    "septiembre",
-    "octubre",
-    "noviembre",
-    "diciembre",
-    "mes",
-    "meses",
-    "periodo",
-    "lapso",
-    "comprendido",
-    "durante",
-    "actual",
-    "pasado",
-    "presente",
-    "fecha",
-    "fechas",
-    "http",
-    "https",
-    "www",
-    "com",
-    "mx",
-    "html",
-    "php",
-    "aspx",
-    "url",
-    "sitio",
-    "web",
-    "enlace",
-    "link",
-    "archivo",
-    "pdf",
-    "formatos",
-    "imagen",
-    "jpg",
-    "png",
-    "clic",
-    "click",
-    "adjunto",
-    "adjunta",
-    "anexo",
-    "anexa",
-    "descargar",
-    "solicitud",
-    "solicito",
-    "solicita",
-    "solicitante",
-    "información",
-    "informacion",
-    "pública",
-    "publica",
-    "favor",
-    "pudieran",
-    "ser",
-    "ha",
-    "he",
-    "fue",
-    "son",
-    "es",
-    "unir",
-    "hacer",
-    "solicitar",
-    "atentamente",
-    "cordial",
-    "saludo",
-    "gracias",
-    "trasparencia",
-    "unidad",
-    "acceso",
-    "folio",
-    "respuesta",
-    "oficio",
-    "escrito",
-    "presentado",
-    "mediante",
-    "través",
-    "traves",
-    "medio",
-    "proporcione",
-    "entregue",
-    "haga",
-    "llegar",
-    "pueda",
-    "dar",
-    "conocer",
-    "copia",
-    "copias",
-    "versión",
-    "version",
-    "documento",
-    "documentos",
-    "expediente",
-    "número",
-    "numero",
-    "registrado",
-    "ingresado",
-    "scjn",
-    "suprema",
-    "corte",
-    "justicia",
-    "nación",
-    "nacion",
-    "poder",
-    "judicial",
-    "federal",
-    "ley",
-    "artículo",
-    "articulo",
-    "art",
-    "fracción",
-    "fraccion",
-    "inciso",
-    "párrafo",
-    "parrafo",
-    "tesis",
-    "jurisprudencia",
-    "rubro",
-    "sentencia",
-    "ejecutoria",
-    "amparo",
-    "directo",
-    "indirecto",
-    "revisión",
-    "revision",
-    "sala",
-    "tribunal",
-    "colegiado",
-    "circuito",
-    "asunto",
-    "asuntos",
-    "acuerdo",
-    "resolución",
-    "resolucion",
-    "votos",
-    "voto",
-    "ponente",
-    "ministro",
-    "ministra",
-    "secretario",
-    "actuaria",
-    "[…]",
-    "[...]",
-    "...",
-    "….",
-    "señala",
-    "señalada",
-    "senala",
-    "senalada",
-    "punto",
-    "puntos",
-    "literal",
-    "referencia",
-    "relación",
-    "relacion",
-    "respecto",
-    "dicho",
-    "dicha",
-    "mencionada",
-    "citada",
-    "tal",
-    "tales",
-    "sujeto",
-    "obligado",
-    "tiene",
-    "tienen",
-    "don",
-    "lic",
-    "está",
-    "esta",
-    "mexicanos",
-    "mexicano",
-    "mexicana",
-    "peso",
-    "pesos",
-    "dinero",
-    "adquirido",
-    "adquiridos",
-    "adquisicion",
-    "cual",
-    "cuales",
-    "quiere",
-    "quisiera",
-    "tipo",
-    "materia",
-    "versaron",
-    "pertenecientes",
-    "dictada",
-    "respectiva",
-    "fueron",
-    "presenta",
-    "ejercicio",
-    "posible",
-    "incluyendo",
-    "hayan",
-    "sea",
-    "manera",
-    "tambien",
-    "debidamente",
-    "caracter",
-    "respetuosamente",
-    "disponible",
-    "mensualmente",
-    "anual",
-    "mas",
-    "total",
-    "millones",
-    "mil",
-    "tomo",
-    "pagina",
-    "paginas",
-    "modulo",
-    "tramitada",
-    "derivo",
-    "tratar",
-    "danar",
-    "otro",
-    "otra",
-    "otros",
-    "otras",
-    "aquellos",
-    "aquellas",
-    "general",
-    "nacional",
-    "social",
-    "universidad",
-    "directora",
-    "director",
-    "escuela",
-    "comunicado",
-    "firmado",
-    "emision",
-    "digital",
-    "electronica",
-    "fisica",
-    "empresa",
-    "nombre",
-    "persona",
-    "personas",
-    "sentido",
-    "amplio",
-    "entradas",
-    "salidas",
-    "bienes",
-    "entregado",
-    "elementos",
-    "causas",
-    "procesos",
-    "presuntos",
-    "responsables",
-    "irregularidades",
-    "administrativas",
-    "ordenadoras",
-    "validez",
-    "mayor",
-    "autorizada",
-    "juridica",
-    "unifamiliar",
-    "identificacion",
-    "comparte",
-    "proyectado",
-    "corresponda",
-    "contradicción",
-    "criterio",
-    "criterios",
-    "usted",
-    "enviar",
-    "ponencia",
-    "tu",
-    "tus",
-    "realizado",
-    "estados",
-    "unidos",
-    "código",
-    "codigo",
-    "reglamento",
-    "constitucion",
-    "constitución",
-    "buenas",
-    "tardes",
-    "han",
-    "sido",
-    "¿cual",
-    "motivo",
-    "semanario",
-    "dirección",
-    "institución",
-    "legal",
-    "hasta",
-    "¿cuál",
-    "denominado",
-}
+DECLARACIONES_INMUEBLES_XLSX = "data/clean_data/declaraciones/total_inmuebles.xlsx"
+DECLARACIONES_XLSX = "data/clean_data/declaraciones/final_variables.xlsx"
+SOLICITUDES_COUNTS_CSV = "data/viz_data/todos_los_ministros_timeseries.csv"
+SOLICITUDES_INDEX_CSV = "data/viz_data/noresponse_index_solicitudes.csv"
 
 
 # Cached data loaders
 @st.cache_data
-def load_main_data():
-    """Load all dashboard datasets only once."""
-    tesis = pd.read_csv(TESIS_CSV, dtype=str, index_col=0)
-    sentencias = pd.read_csv(SENTENCIAS_CSV, dtype=str, index_col=0)
-    declaraciones = pd.read_excel(DECLARACIONES_XLSX)
-    solicitudes_counts = pd.read_csv(SOLICITUDES_COUNTS_CSV)
-
-    solicitudes_counts["year"] = solicitudes_counts["year"].astype(str)
-
-    return tesis, sentencias, declaraciones, solicitudes_counts
+def load_declaraciones():
+    return pd.read_excel(DECLARACIONES_XLSX, engine="openpyxl")
 
 
 @st.cache_data
-def load_solicitudes_text():
-    """Load the cleaned solicitudes text file used for salient token analysis."""
-    return pd.read_csv(SOLICITUDES_TEXT_CSV, dtype=str)
-
-
-tesis, sentencias, declaraciones, solicitudes_counts = load_main_data()
-
-
-# Text processing helpers
-def normalize_text(text):
-    """
-    Normalize text by:
-    - lowercasing
-    - removing accents
-    - removing selected punctuation
-    - collapsing multiple spaces
-    """
-    if pd.isna(text) or not text:
-        return ""
-
-    text = str(text).lower()
-
-    # Remove accents
-    text = "".join(
-        c for c in unicodedata.normalize("NFD", text) if unicodedata.category(c) != "Mn"
-    )
-
-    # Replace punctuation with spaces
-    for char in ".,?!():;\"'¿¡":
-        text = text.replace(char, " ")
-
-    return " ".join(text.split())
-
-
-def jaro_winkler(s1, s2):
-    """
-    Compute Jaro-Winkler similarity between two strings.
-    Returns a value between 0.0 and 1.0.
-    """
-    s1, s2 = s1.lower(), s2.lower()
-
-    if s1 == s2:
-        return 1.0
-
-    len1, len2 = len(s1), len(s2)
-    max_dist = max(len1, len2) // 2 - 1
-
-    match = 0
-    hash_s1 = [0] * len1
-    hash_s2 = [0] * len2
-
-    # Find matching characters
-    for i in range(len1):
-        for j in range(max(0, i - max_dist), min(len2, i + max_dist + 1)):
-            if s1[i] == s2[j] and hash_s2[j] == 0:
-                hash_s1[i] = 1
-                hash_s2[j] = 1
-                match += 1
-                break
-
-    if match == 0:
-        return 0.0
-
-    # Count transpositions
-    t = 0
-    point = 0
-    for i in range(len1):
-        if hash_s1[i]:
-            while hash_s2[point] == 0:
-                point += 1
-            if s1[i] != s2[point]:
-                t += 1
-            point += 1
-
-    t //= 2
-
-    # Jaro score
-    jaro = (1 / 3) * (match / len1 + match / len2 + (match - t) / match)
-
-    # Winkler prefix bonus
-    p = 0.1
-    l = 0
-    for i in range(min(len1, len2, 4)):
-        if s1[i] == s2[i]:
-            l += 1
-        else:
-            break
-
-    return jaro + (l * p * (1 - jaro))
-
-
-def is_mentioning(text, target_name, threshold=0.92):
-    """
-    Check whether a target name appears in text using:
-    1. exact substring match after normalization
-    2. fuzzy matching on individual name parts
-    """
-    normalized_target = normalize_text(target_name)
-
-    if normalized_target in text:
-        return True
-
-    target_parts = normalized_target.split()
-    words = text.split()
-
-    for part in target_parts:
-        if len(part) < 4:
-            continue
-        for word in words:
-            if jaro_winkler(word, part) >= threshold:
-                return True
-
-    return False
-
-
-def get_ngrams(text, n):
-    """
-    Build n-grams after removing stopwords and very short words.
-    """
-    words = [w for w in text.split() if w not in STOPWORDS and len(w) > 2]
-    return [" ".join(words[i : i + n]) for i in range(len(words) - n + 1)]
-
-
-# Dashboard helper functions
-def return_materias_chart(tesis_df):
-    """
-    Build the tesis chart showing the ranking of main topics by year.
-    """
-    materias = (
-        tesis_df.groupby(["anio", "main_materia"])["idTesis"]
-        .count()
-        .reset_index(name="n_tesis")
-    )
-
-    chart = (
-        alt.Chart(materias)
-        .transform_window(
-            rank="rank()",
-            sort=[alt.SortField("n_tesis", order="descending")],
-            groupby=["anio"],
-        )
-        .mark_line(point=True)
-        .encode(
-            x=alt.X("anio:O", title="Year"),
-            y=alt.Y("rank:O", title="Rank"),
-            color="main_materia:N",
-            tooltip=["anio:N", "main_materia:N", "n_tesis:Q", "rank:Q"],
-        )
-        .properties(width=500, height=500)
-        .interactive()
-    )
-
-    return chart
-
-
-def build_edu_table(declaraciones_df):
-    """
-    Build the declarations table showing highest education level per person.
-    """
-    edu_por_persona = (
-        declaraciones_df.groupby(["nombre", "primer_apellido", "segundo_apellido"])[
-            "edu_highest_level"
-        ]
-        .first()
-        .reset_index()
-    )
-
-    edu_por_persona = edu_por_persona.rename(
-        columns={
-            "nombre": "Nombre",
-            "primer_apellido": "Primer apellido",
-            "segundo_apellido": "Segundo apellido",
-            "edu_highest_level": "Nivel educativo",
-        }
-    )
-
-    return edu_por_persona
+def load_declaraciones_inmuebles():
+    return pd.read_excel(DECLARACIONES_INMUEBLES_XLSX, engine="openpyxl")
 
 
 @st.cache_data
-def analyze_themes(csv_path, n_size=2, top_k=8, filter_name=None):
-    """
-    Analyze salient themes by year using a TF-IDF-like approach.
-
-    Parameters:
-    - csv_path: path to the cleaned solicitudes CSV
-    - n_size: size of the n-gram
-    - top_k: number of top themes per year
-    - filter_name: minister to filter by
-
-    Returns:
-    - DataFrame with columns: year, ngram, count, score, minister
-    """
-    year_docs = {}
-
-    with open(csv_path, "r", encoding="utf-8") as f:
-        reader = csv.DictReader(f)
-
-        for row in reader:
-            year = row.get("year")
-            if not year or not year.isdigit() or int(year) < 2017:
-                continue
-
-            raw_text = row.get("DescripcionSolicitud", "")
-            clean_text = normalize_text(raw_text)
-
-            if len(clean_text) < 10:
-                continue
-
-            # If a minister filter is provided, keep only rows mentioning that minister
-            if filter_name:
-                if not is_mentioning(clean_text, filter_name):
-                    continue
-
-            ngrams = get_ngrams(clean_text, n_size)
-            if not ngrams:
-                continue
-
-            if year not in year_docs:
-                year_docs[year] = []
-
-            year_docs[year].extend(ngrams)
-
-    if not year_docs:
-        return pd.DataFrame(columns=["year", "ngram", "count", "score", "minister"])
-
-    all_years = list(year_docs.keys())
-    num_years = len(all_years)
-
-    # Count in how many years each n-gram appears
-    ngram_year_counts = {}
-    for year, ngrams in year_docs.items():
-        for gram in set(ngrams):
-            ngram_year_counts[gram] = ngram_year_counts.get(gram, 0) + 1
-
-    rows = []
-
-    for year in sorted(all_years, key=int):
-        ngrams_in_year = year_docs[year]
-        counts = Counter(ngrams_in_year)
-        total = len(ngrams_in_year)
-
-        scores = []
-        for gram, count in counts.items():
-            tf = count / total
-            idf = (
-                math.log(num_years / ngram_year_counts[gram]) if num_years > 1 else 1.0
-            )
-            scores.append((gram, tf * idf, count))
-
-        top_themes = sorted(scores, key=lambda x: x[1], reverse=True)[:top_k]
-
-        for gram, score, count in top_themes:
-            rows.append(
-                {
-                    "year": str(year),
-                    "ngram": gram,
-                    "count": count,
-                    "score": score,
-                    "minister": filter_name if filter_name else "All",
-                }
-            )
-
-    return pd.DataFrame(rows)
+def load_solicitudes_counts():
+    df = pd.read_csv(SOLICITUDES_COUNTS_CSV)
+    df["year"] = df["year"].astype(str)
+    return df
 
 
-# Main tabs
-tab_general, tab_solicitudes, tab_sentencias, tab_tesis, tab_declaraciones = st.tabs(
-    ["General", "Solicitudes", "Sentencias", "Tesis", "Declaraciones"]
+@st.cache_data
+def load_solicitudes_index():
+    df = pd.read_csv(SOLICITUDES_INDEX_CSV)
+    df["year"] = df["year"].astype(str)
+    return df
+
+
+# Text cleaning helper for encoding issues in declaration files
+def clean_text(text):
+    if not isinstance(text, str):
+        return text
+
+    replacements = {
+        "Ã¡": "á",
+        "Ã©": "é",
+        "Ã­": "í",
+        "Ã³": "ó",
+        "Ãº": "ú",
+        "Ã±": "ñ",
+        "Ã": "Á",
+        "Ã‰": "É",
+        "Ã": "Í",
+        "Ã“": "Ó",
+        "Ãš": "Ú",
+        "Ã‘": "Ñ",
+        "È": "é",
+        "Ì": "í",
+        "Ò": "ñ",
+        "Û": "ó",
+        "Õ": "í",
+        "·": "á",
+        "®": "í",
+        "ÔøΩ": "í",
+    }
+
+    for bad, good in replacements.items():
+        text = text.replace(bad, good)
+
+    return text
+
+
+# Load datasets
+declaraciones = load_declaraciones()
+declaraciones_inmuebles = load_declaraciones_inmuebles()
+solicitudes_counts = load_solicitudes_counts()
+solicitudes_index = load_solicitudes_index()
+
+(
+    total_tesis,
+    tesis_timeline_chart,
+    tesis_por_tipo_chart,
+    tesis_materias_chart,
+    tesis_heatmap,
+) = get_all_tesis_charts()
+(
+    total_sentencias,
+    sentencias_timeline_chart,
+    sentencias_votacion_chart,
+    sentencias_heatmap,
+) = get_all_sentencias_charts()
+
+# Clean text columns
+for col in declaraciones.select_dtypes(include="object").columns:
+    declaraciones[col] = declaraciones[col].apply(clean_text)
+
+for col in declaraciones_inmuebles.select_dtypes(include="object").columns:
+    declaraciones_inmuebles[col] = declaraciones_inmuebles[col].apply(clean_text)
+
+# Completeness metrics
+m1 = metrica_completitud_educacion(declaraciones)
+m2 = metrica_completitud_inmuebles(declaraciones_inmuebles)
+
+
+# App tabs
+tab_about, tab_general, tab_solicitudes, tab_sentencias, tab_tesis, tab_declaraciones = st.tabs(
+    [
+        "About",
+        "General",
+        "Solicitudes (Requests)",
+        "Sentencias (Rulings)",
+        "Tesis (Precedents)",
+        "Declaraciones (Disclosures)",
+    ]
 )
 
-# General tab
+# About tab
+with tab_about:
+    st.header("About")
+
+    st.markdown(
+        """
+<div style="max-width:1050px; margin:0 auto 30px auto; line-height:1.7;">
+
+<p style="text-align:center; font-size:18px; margin-bottom:10px;">
+<strong>¿Por qué Ojo Piojo?</strong>
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151;">
+<em>Ojo Piojo</em> es una frase chilena que resonó con nosotras; significa estar alerta. 
+Queremos empoderar a la ciudadanía con más herramientas para vigilar y monitorear a las instituciones de su país. 
+Esta plataforma es nuestra manera de hacerlo.
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151;">
+Ojo Piojo es una iniciativa que busca brindar mayor publicidad y transparencia a datos relacionados con la
+<strong>Suprema Corte de Justicia de la Nación (SCJN)</strong> de México. 
+Como equipo, nos dimos cuenta de que la información judicial muchas veces no se encuentra estandarizada 
+ni analizada a gran escala, lo que deja interrogantes sobre cómo funciona esta corte y sus integrantes.
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151;">
+En esta página encontrarás cifras y datos generales sobre cuatro elementos clave de la SCJN:
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151;">
+1. Solicitudes de información presentadas por la ciudadanía<br>
+2. Sentencias emitidas por la SCJN<br>
+3. Tesis (criterios judiciales orientadores) emitidas por la SCJN<br>
+4. Declaraciones de situación patrimonial y de intereses de las ministras y ministros
+</p>
+
+<p style="text-align:center; font-size:15px; color:#374151;">
+¡Te invitamos a explorar!
+</p>
+
+<hr style="margin:28px 0; opacity:0.25;">
+
+<p style="text-align:center; font-size:14px; margin-bottom:6px; color:#4b5563;">
+<strong>Why Ojo Piojo?</strong>
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280;">
+<em>Ojo Piojo</em> is a Chilean expression meaning “stay alert.” 
+Our goal is to empower citizens with tools to better observe and monitor public institutions.
+This platform is our contribution to that effort.
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280;">
+Ojo Piojo is an initiative that promotes transparency and accessibility of data related to the
+<strong>Mexican Supreme Court (SCJN)</strong>. We found that judicial information is often not standardized
+or analyzed at scale, leaving important questions about how the court and its members operate.
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280;">
+This site presents data and metrics on four key aspects of the SCJN:
+information requests, rulings, judicial precedents (tesis), and financial disclosures of the justices.
+</p>
+
+</div>
+""",
+        unsafe_allow_html=True,
+    )
+
+
+# General tabls
 with tab_general:
     st.header("General")
 
-    chart_general = return_materias_chart(tesis)
-    st.altair_chart(chart_general, use_container_width=True)
+    col1, col2 = st.columns(2)
+
+    with col1:
+        st.metric("Total tesis (Total precedents)", total_tesis)
+
+    with col2:
+        st.metric("Total sentencias (Total rulings)", total_sentencias)
+
+    st.subheader("Línea de tiempo tesis (Tesis timeline)")
+    st.altair_chart(tesis_timeline_chart, use_container_width=True)
+
+    st.subheader("Línea de tiempo sentencias (Rulings timeline)")
+    st.altair_chart(sentencias_timeline_chart, use_container_width=True)
+
+    st.subheader("Completitud de declaraciones (Disclosure completeness)")
+
+    col3, col4 = st.columns(2)
+
+    with col3:
+        st.metric(
+            "Ministros con máximo nivel de educación declarado (Judges with declared maximum level of education)",
+            f"{m1['con_educacion_declarada']} / {m1['total_ministros']}",
+        )
+        st.write(f"Porcentaje (Percentage): {m1['porcentaje']:.1%}")
+
+    with col4:
+        st.metric(
+            "Ministros con al menos un inmueble declarado (Judges with at least one asset declared)",
+            f"{m2['con_al_menos_un_inmueble']} / {m2['total_ministros']}",
+        )
+        st.write(f"Porcentaje (Percentage): {m2['porcentaje']:.1%}")
 
 # Solicitudes tab
 with tab_solicitudes:
-    st.header("Solicitudes")
-
-    # Create internal tabs only for the Solicitudes section
-    subtab_mentions, subtab_themes = st.tabs(
-        ["📊 Menciones a Ministros", "🔤 Temas Principales (N-grams)"]
-    )
-
-    # Subtab: Minister mentions
-    with subtab_mentions:
-        st.subheader("¿A qué ministros mencionan más los ciudadanos?")
-
-        col_filter, col_metric = st.columns([1, 2])
-
-        with col_filter:
-            available_years = sorted(
-                solicitudes_counts["year"].dropna().unique(), reverse=True
-            )
-            selected_year = st.selectbox(
-                "Selecciona el año a visualizar:",
-                available_years,
-                key="solicitudes_mentions_year",
-            )
-
-        df_year = solicitudes_counts[solicitudes_counts["year"] == str(selected_year)]
-
-        if not df_year.empty and df_year["count"].sum() > 0:
-            chart_ministers = return_ministers_bar_chart(
-                solicitudes_counts, selected_year
-            )
-            top_row = df_year.sort_values("count", ascending=False).iloc[0]
-
-            with col_metric:
-                st.metric(
-                    label=f"Ministro más mencionado en {selected_year}",
-                    value=str(top_row["minister"]).title(),
-                    delta=f"{int(top_row['count'])} menciones",
-                )
-
-            st.altair_chart(chart_ministers, use_container_width=True)
-        else:
-            st.warning("No hay datos de ministros para este año.")
-
-    # Subtab: Salient themes
-    with subtab_themes:
-        st.subheader("Temas principales por ministro")
-
-        col1, col2, col3 = st.columns(3)
-
-        available_years_themes = sorted(
-            solicitudes_counts["year"].dropna().unique(), reverse=True
-        )
-
-        available_ministers = sorted(
-            solicitudes_counts["minister"].dropna().astype(str).unique()
-        )
-
-        with col1:
-            selected_year_themes = st.selectbox(
-                "Year", available_years_themes, key="themes_year"
-            )
-
-        with col2:
-            selected_minister = st.selectbox(
-                "Minister", available_ministers, key="themes_minister"
-            )
-
-        with col3:
-            n_size = st.selectbox(
-                "N-gram size", [1, 2, 3], index=1, key="themes_ngram_size"
-            )
-
-        top_k = st.slider(
-            "Number of top themes", min_value=3, max_value=15, value=8, step=1
-        )
-
-        try:
-            themes_df = analyze_themes(
-                csv_path=SOLICITUDES_TEXT_CSV,
-                n_size=n_size,
-                top_k=top_k,
-                filter_name=selected_minister,
-            )
-
-            themes_year = themes_df[
-                themes_df["year"] == str(selected_year_themes)
-            ].copy()
-
-            if themes_year.empty:
-                st.warning(
-                    "No hay temas disponibles para esa combinación de año y ministro."
-                )
-            else:
-                themes_year = themes_year.sort_values(
-                    by=["score", "count"], ascending=False
-                )
-
-                display_df = themes_year[["ngram", "count", "score"]].rename(
-                    columns={
-                        "ngram": "Tema",
-                        "count": "Menciones",
-                        "score": "TF-IDF score",
-                    }
-                )
-
-                st.dataframe(display_df, hide_index=True, use_container_width=True)
-
-        except FileNotFoundError:
-            st.error(
-                "The file clean_output/clean_solicitudes_2017_2026.csv was not found."
-            )
+    render_solicitudes_tab(solicitudes_counts, solicitudes_index)
 
 # Sentencias tab
 with tab_sentencias:
-    st.header("Sentencias")
-    st.write("Here you can add the visualizations for sentencias.")
+    st.header("Sentencias (Rulings)")
+
+    sub0, sub1, sub2 = st.tabs(
+        [
+            "Overview",
+            "Votaciones (Votings)",
+            "Totales por Ministra(o) (Total by Justice)",
+        ]
+    )
+
+    with sub0:
+        st.markdown(
+            """<div style="max-width:1050px; margin:0 auto 24px auto; line-height:1.75;">
+
+<p style="text-align:center; font-size:20px; font-weight:600; color:#2f3343; margin-bottom:14px;">
+Sentencias
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151; margin-bottom:12px;">
+En esta pestaña podrás encontrar gráficas relacionadas con las sentencias dictadas por la Suprema Corte de Justicia.<br><br>
+
+En <strong>“Votaciones”</strong>, podrás identificar los patrones de votación en las sentencias.
+Esta gráfica también nos ayuda a entender la integridad de los datos: para información anterior a 2011,
+el registro de la votación no era común por lo que para esos casos nuestro proceso identificó la votación
+como <strong>“indeterminada”</strong>.<br><br>
+
+En <strong>“Totales por Ministra(o)”</strong>, encontrarás un mapa de calor con las sentencias emitidas
+por cada ministra o ministro en el tiempo.<br><br>
+
+El análisis incluye información de 1989 a la fecha.<br><br>
+
+<em>* Nota: la SCJN no ha publicado información de sentencias de 2026.</em>
+</p>
+
+<hr style="margin:24px 0; opacity:0.20;">
+
+<p style="text-align:center; font-size:15px; font-weight:600; color:#4b5563; margin-bottom:8px;">
+Rulings
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280; margin-top:0;">
+This section contains visualizations related to rulings issued by the Mexican Supreme Court.<br><br>
+
+In <strong>“Voting Patterns”</strong>, you can identify voting patterns in rulings.
+This chart also helps us understand data completeness: for information prior to 2011,
+voting records were not commonly published, so in those cases our process classified the vote
+as <strong>“undetermined”</strong>.<br><br>
+
+In <strong>“Totals by Justice”</strong>, you will find a heatmap showing rulings issued
+by each justice over time.<br><br>
+
+This analysis includes information from 1989 onward.<br><br>
+
+<em>* Note: the SCJN has not published rulings data for 2026.</em>
+</p>
+
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+    with sub1:
+        st.altair_chart(sentencias_votacion_chart, use_container_width=True)
+
+    with sub2:
+        st.altair_chart(sentencias_heatmap, use_container_width=True)
 
 # Tesis tab
 with tab_tesis:
-    st.header("Tesis")
-    st.write("Here you can add the visualizations for tesis.")
+    st.header("Tesis (Precedents)")
+
+    sub0, sub1, sub2, sub3, sub4 = st.tabs(
+        [
+            "Overview",
+            "Materias (Areas)",
+            "Totales por Ministra(o) (Total by Justice)",
+            "Por tipo (By type)",
+            "Temas Principales (N-grams)",
+        ]
+    )
+
+    with sub0:
+        st.markdown(
+            """<div style="max-width:1050px; margin:0 auto 24px auto; line-height:1.75;">
+
+<p style="text-align:center; font-size:20px; font-weight:600; color:#2f3343; margin-bottom:14px;">
+Tesis
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151; margin-bottom:12px;">
+En esta pestaña podrás encontrar información relacionada con las tesis emitidas por la SCJN.
+Las tesis corresponden a criterios judiciales orientadores que contienen contenido jurídico de alta relevancia.<br><br>
+
+En la pestaña <strong>“Materias”</strong>, podrás encontrar el ranking de las materias a lo largo del año.
+La materia con ranking 1 se refiere a la materia más común, mientras que el ranking 6 es la materia con menos tesis emitidas.<br><br>
+
+En la pestaña <strong>“Totales por Ministra(o)”</strong>, encontrarás un mapa de calor con las tesis emitidas
+por cada ministra o ministro en el tiempo.<br><br>
+
+En la pestaña <strong>“Por tipo”</strong>, encontrarás el total de tesis emitidas por tipo
+(aislada o jurisprudencia). A diferencia de las tesis aisladas, las jurisprudencias corresponden
+a criterios obligatorios y vinculantes para las cortes inferiores a la SCJN.<br><br>
+
+En la pestaña <strong>“Temas Principales”</strong>, podrás seleccionar los temas más relevantes
+contenidos en los rubros de las tesis por época judicial.<br><br>
+
+El análisis incluye información de 2015 a la fecha
+(excepto la pestaña de <strong>“Temas Principales”</strong>, que contiene todas las épocas judiciales desde 1920).
+</p>
+
+<hr style="margin:24px 0; opacity:0.20;">
+
+<p style="text-align:center; font-size:15px; font-weight:600; color:#4b5563; margin-bottom:8px;">
+Precedents
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280; margin-top:0;">
+This section contains information related to precedents issued by the SCJN.
+These precedents are guiding judicial criteria with highly relevant legal content.<br><br>
+
+In <strong>“Areas”</strong>, you will find a ranking of subject areas throughout the year.
+Rank 1 corresponds to the most common area, while rank 6 corresponds to the area with the fewest precedents issued.<br><br>
+
+In <strong>“Totals by Justice”</strong>, you will find a heatmap showing precedents issued
+by each justice over time.<br><br>
+
+In <strong>“By Type”</strong>, you will find the total number of precedents by type
+(isolated precedent or jurisprudencia). Unlike isolated precedents, jurisprudencia refers to binding criteria
+for lower courts below the SCJN.<br><br>
+
+In <strong>“Main Topics”</strong>, you can explore the most relevant themes found in precedent headings
+by judicial era.<br><br>
+
+This analysis includes information from 2015 onward
+(except for <strong>“Main Topics”</strong>, which includes all judicial eras since 1920).
+</p>
+
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+    with sub1:
+        st.altair_chart(tesis_materias_chart, use_container_width=True)
+
+    with sub2:
+        st.altair_chart(tesis_heatmap, use_container_width=True)
+
+    with sub3:
+        st.altair_chart(tesis_por_tipo_chart, use_container_width=True)
+
+    with sub4:
+        render_ngrams_tesis_tab()
 
 # Declaraciones tab
 with tab_declaraciones:
-    st.header("Declaraciones")
-    st.subheader("Nivel educativo por persona")
+    st.header("Declaraciones (Disclosures)")
 
-    edu_por_persona = build_edu_table(declaraciones)
-    st.dataframe(edu_por_persona, use_container_width=True)
+    sub0, sub1, sub2, sub3 = st.tabs(
+        [
+            "Overview",
+            "Nivel educativo (Educational level)",
+            "Bienes inmuebles (Assets)",
+            "Salarios (Salaries)",
+        ]
+    )
+
+    with sub0:
+        st.markdown(
+            """<div style="max-width:1050px; margin:0 auto 24px auto; line-height:1.75;">
+
+<p style="text-align:center; font-size:20px; font-weight:600; color:#2f3343; margin-bottom:14px;">
+Declaraciones
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151; margin-bottom:12px;">
+En esta parte podrás encontrar información vinculada con las declaraciones patrimoniales y de intereses
+de las y los ministros en los últimos dos años (2024 y 2025).<br><br>
+
+En la pestaña <strong>“Nivel educativo”</strong>, podrás encontrar una tabla que contiene
+los niveles educativos más altos reportados por las y los ministros.<br><br>
+
+En la pestaña <strong>“Bienes inmuebles”</strong>, podrás encontrar los bienes inmuebles declarados
+por los ministros.<br><br>
+
+En la pestaña <strong>“Salarios”</strong>, podrás encontrar los sueldos declarados por las y los ministros.
+</p>
+
+<hr style="margin:24px 0; opacity:0.20;">
+
+<p style="text-align:center; font-size:15px; font-weight:600; color:#4b5563; margin-bottom:8px;">
+Disclosures
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280; margin-top:0;">
+This section contains information related to the financial and conflict-of-interest disclosures
+of Supreme Court justices for the last two years (2024 and 2025).<br><br>
+
+In <strong>“Educational Level”</strong>, you will find a table with the highest educational levels
+reported by the justices.<br><br>
+
+In <strong>“Assets”</strong>, you will find declared real estate properties.<br><br>
+
+In <strong>“Salaries”</strong>, you will find the salaries reported by the justices.
+</p>
+
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+    with sub1:
+        st.subheader(
+            "Nivel educativo más alto declarado por persona (Highest educational level declared)"
+        )
+        edu_table = build_edu_table(declaraciones)
+        st.dataframe(edu_table, use_container_width=True, hide_index=True)
+
+    with sub2:
+        st.subheader("Bienes inmuebles (Assets)")
+        inmuebles_table = build_inmuebles_table(declaraciones_inmuebles)
+        st.dataframe(inmuebles_table, use_container_width=True, hide_index=True)
+
+    with sub3:
+        st.subheader("Salario declarado (Declared salary)")
+        salary_table = build_salary_table(declaraciones)
+        st.dataframe(salary_table, use_container_width=True, hide_index=True)
+

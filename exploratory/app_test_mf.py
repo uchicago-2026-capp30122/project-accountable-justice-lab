@@ -14,6 +14,7 @@ import pandas as pd
 from analysis.tesis.tesis_graphs import get_all_tesis_charts
 from analysis.tesis.tesis_productivity_index import get_productivity_ministros_app
 from analysis.tesis.salient_tokens_tesis_viz import render_ngrams_tesis_tab
+from analysis.tesis.salient_tokens_tesis_viz import render_ngrams_tesis_tab
 
 from analysis.sentencias.sentencias_graphs import get_all_sentencias_charts
 

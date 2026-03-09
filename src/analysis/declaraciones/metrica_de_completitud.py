@@ -38,14 +38,3 @@ def metrica_completitud_inmuebles(df2):
         "con_al_menos_un_inmueble": ministros_con_inmueble,
         "porcentaje": porcentaje
     }
-    
-
-##df1 = pd.read_excel("data/clean_data/declaraciones/final_variables.xlsx")
-##df2 = pd.read_excel("data/clean_data/declaraciones/total_inmuebles.xlsx")
-##
-##
-##m1 = metrica_completitud_educacion(df1)
-##m2 = metrica_completitud_inmuebles(df2)
-##
-##print(m1)
-##print(m2)

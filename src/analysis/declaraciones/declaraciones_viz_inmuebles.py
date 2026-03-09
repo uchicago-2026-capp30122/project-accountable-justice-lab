@@ -20,5 +20,13 @@ def build_inmuebles_table(inmuebles_df):
         [["nombre", "primer_apellido", "superficie_construccion_m2", "valor_adquisicion_mxn"]]
         .reset_index(drop=True)
     )
+    
+    inmuebles_table = inmuebles_table.rename(
+        columns={
+            "nombre": "Nombre (Name)",
+            "primer_apellido": "Primer apellido (First lastname)",
+            "superficie_construccion_m2": "Superficie construida en M2 (Construction area (M2)",
+            "valor_adquisicion_mxn": "Valor de adquisición MXN (Acquisition value (MXN))"
+        })
 
     return inmuebles_table

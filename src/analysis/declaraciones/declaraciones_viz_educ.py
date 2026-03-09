@@ -23,11 +23,11 @@ def build_edu_table(declaraciones_df):
 
     edu_por_persona = edu_por_persona.rename(
         columns={
-            "nombre": "Nombre",
-            "primer_apellido": "Primer apellido",
-            "segundo_apellido": "Segundo apellido",
-            "edu_highest_level": "Mayor nivel educativo alcanzado",
-            "edu_highest_institution": "Institución académica"
+            "nombre": "Nombre (Name)",
+            "primer_apellido": "Primer apellido (First lastname)",
+            "segundo_apellido": "Segundo apellido (Second lastname)",
+            "edu_highest_level": "Mayor nivel educativo alcanzado (Highest academic level achieved)",
+            "edu_highest_institution": "Institución académica (Academic institution)"
         }
     )
 
