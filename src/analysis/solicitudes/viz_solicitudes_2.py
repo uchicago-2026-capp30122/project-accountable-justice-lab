@@ -93,9 +93,9 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
     subtab_overview, subtab_mentions, subtab_themes, subtab_index = st.tabs(
         [
             "Overview",
-            "Menciones a Ministros",
+            "Menciones a Ministros (Minister Count)",
             "Temas Principales (N-grams)",
-            "Índice de No Respuesta",
+            "Índice de No Respuesta (No Response Rate)",
         ]
     )
 
