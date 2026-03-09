@@ -140,7 +140,7 @@ def extract_inmuebles(text: str) -> list[dict] | None:
 
     start, end = sl
 
-    # Extract only inmbueble section and remove empty lines
+    # Extract only inmueble section and remove empty lines
     chunk = [ln for ln in lines[start:end] if ln]
 
     # Final output list
