@@ -1,9 +1,12 @@
 """
 salient_tokens_solicitudes.py
-This file is where the main text processing and analysis
-for the court's requests (solicitudes). It defines custom stopwords
-for the mexican legal context and implements the TF-IDF to identify salient
-n-grams. It also uses fuzzy matchig (Jaro Winkler) to identify minister names
+This file is the main text-analysis script for the solicitudes/requests. It 
+reads the cleaned combined CSV, normalizes the request text, removes a custom 
+set of spanish and legal-domain stopwords, creates contiguous n-grams, and then 
+scores them with a TF-IDF formula to identify which phrases are most distinctive 
+by year, not just most common overall (like ngrams_solicitudes.py). It uses 
+fuzzy matching (Jaro-Winkler) to filter rows by minister names even when 
+spelling or accents vary a little.
 """
 
 import csv

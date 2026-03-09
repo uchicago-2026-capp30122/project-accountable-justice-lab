@@ -1,9 +1,18 @@
 """
 conteo_ministros_sol.py
-This file generates reads all the requests (solicitudes) and for each row,
-it checks if a certain minister is mentioned in a certain year.
-It generates a file called: todos_los_ministros_timeseries.csv
-This file is used for the bar chart solicitudes visualization.
+This file builds a year by year time series of minister mentions in solicitudes.
+It reads the combined csv, takes each row's description, normalizes the text, 
+checks if each minister from the relevant court composition for that year is 
+mentioned, counts those matches and writes the result in an output file called 
+todos_los_ministros_timeseries.csv. The output is a three column table with 
+year, minister and count. This is later used for the bar chart visualization of
+solicitudes in streamlit. The order is basically this: load the cleaned 
+solicitudes csv, identify the year of each request, look up which ministers     
+belonged to the court in that year, check if each minister is mentioned in 
+the request text, accumulate counts by minister and year, export the result 
+as a CSV for plotting. 
+
+
 """
 
 import csv
