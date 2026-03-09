@@ -65,8 +65,8 @@ Source Type: Bulk data
 Summary: The Plataforma Nacional de Transparencia contains information regarding all public entities legally obligated to disclose public information regarding their operation and their staff (including the Supreme Court Justice’s). Within this platform, we can find relevant information such as asset and conflict of interest disclosures, income, curriculum and requests of information made by the public. We believe that this platform can be a valuable addition to our primary source of information, as it will help complement the justice’s profiles. Our primary focus will be the asset and conflict of interest disclosures, although we would also like to analyze requests of information and link those related to the justices so we can also identify what people are asking about them. 
 
 Challenges:
-Design of the web scraper for making periodic JSON queries.
-Define up to which year we want to go. Transparency-related data started in 2015, so that could be a good starting point—assuming the platform allows it.
+The raw solicitudes files could not be parsed with json.loads() because some records contained broken JSON, especially quotes and commas inside text fields. 
+For the future it would be a good idea to design a web scraper for making periodic JSON queries. Because the data was available only from 2016, we downloaded the JSON for each year in the platform directly. 
 
 ### Data Source #3
 Person in charge: Daniela Avayú
