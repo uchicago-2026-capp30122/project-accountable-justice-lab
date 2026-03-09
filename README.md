@@ -92,8 +92,8 @@ install:
 fetch_data:
 	mkdir -p data/raw_data/sentencias_data
 	mkdir -p data/raw_data/tesis_data
-	curl -L -o data/raw_data/sentencias_data/Sentencia.csv https://github.com/uchicago-2026-capp30122/project-accountable-justice-lab/releases/download/v1.0/Sentencia.csv
-	curl -L -o data/raw_data/tesis_data/Tesis.csv https://github.com/uchicago-2026-capp30122/project-accountable-justice-lab/releases/download/v1.0/Tesis.csv
+	curl -fL -o data/raw_data/sentencias_data/Sentencia.csv https://github.com/mafermunoz94/project_accountable_justice_lab_data/releases/download/v1.0.0/Sentencia.csv
+	curl -fL -o data/raw_data/tesis_data/Tesis.csv https://github.com/mafermunoz94/project_accountable_justice_lab_data/releases/download/v1.0.0/Tesis.csv
 
 data_extraction:
 	uv run -m src.extraction
@@ -117,7 +117,7 @@ Potential extensions of this project include:
 * Expanding the historical coverage of asset declarations
 * Improving automatic PDF parsing and extraction accuracy
 * Developing additional transparency metrics, such as response time to information requests
-* Conducting topic analysis by policy areas, such as gender, childhood, equality and        non-discrimination, economic, social and environmental rights, and Indigenous rights, in order to identify how specific subtopics within these areas have evolved over time.
+* Conducting topic analysis by policy areas, such as gender, childhood, equality and non-discrimination, economic, social and environmental rights, and Indigenous rights, in order to identify how specific subtopics within these areas have evolved over time.
 
 ## Link to project video
 
