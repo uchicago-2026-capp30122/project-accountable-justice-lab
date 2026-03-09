@@ -12,26 +12,33 @@ EPOCA_OPTIONS = ORDER[::-1]
 
 
 def render_ngrams_tesis_tab():
-    """Renderiza las pestañas de la aplicación."""
-    st.header("⚖️ Conceptos más mencionados en tesis")
+    """
+    Render ngrams visualization for streamlit.
 
-    # Ngrams
+    This function creates the main views for ngrams, with a particular focus on
+    the tesis dataframe and the historical epochs of the Supreme Court.
+    """
+    st.header("⚖️ Conceptos más mencionados en tesis")
 
     st.subheader("Conoce la(s) palabra(s) más mencionadas en los rubros de las tesis")
 
     col1, col2, col3 = st.columns(3)
 
+    # Add epoch for possible selection
     with col1:
         selected_epoca = st.selectbox("Época:", EPOCA_OPTIONS, key="themes_epoca")
 
+    # Specify n for ngrams
     with col2:
         n_size = st.selectbox("Tamaño del (n-gram):", [1, 2, 3], index=0)
 
+    # Specify top k tokens
     with col3:
         top_k = st.slider("Número de resultados", 5, 10, 15)
 
     if st.button("Ejecutar Análisis de Temas", key="run_themes"):
         try:
+            # Run function to create dataframe with top tokens
             temas_tesis = analyze_themes(
                 filename=tesis_data_file,
                 n_size=n_size,
@@ -41,9 +48,8 @@ def render_ngrams_tesis_tab():
             if temas_tesis.empty:
                 st.warning("No se encontraron resultados.")
                 return
-
+            # Filter by selected epoch
             temas_epoca = temas_tesis[temas_tesis["epoca"] == selected_epoca].copy()
-            # Llamamos a la función de tu archivo maestro
 
             if temas_epoca.empty:
                 st.warning(f"No hay resultados para {selected_epoca}.")

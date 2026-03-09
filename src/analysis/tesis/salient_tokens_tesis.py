@@ -17,8 +17,6 @@ TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 
 tesis_data_file = TESIS_DATA / "tesis_joined_data_scjn.csv"
 
-# THIS IS BASICALLY TEXT PROCESSING
-
 ORDER = [
     "Quinta Época",
     "Sexta Época",
@@ -33,8 +31,14 @@ ORDER = [
 
 def normalize_text(text):
     """
-    clean text by lowercasing, removing accents and striping punctuation
-    normalizing things like Constitución to constitucion so same word
+    Clean text by lowercasing, removing accents and striping punctuation
+    normalizing words like Constitución to constitucion be understood as the
+    same word.
+
+    Inputs:
+        text(str): string of text that needs to be nromalized.
+    Returns:
+        normalized text
     """
     if not text:
         return ""
@@ -50,7 +54,8 @@ def normalize_text(text):
 
 def get_ngrams(text, n):
     """
-    turn text to list of ngrams
+    Turn text to list of ngrams. And remove stop words, numbers and letters
+    shorter than 3 letters
     fikters stopwords and words shorter than 3 letters
     """
     words = [
@@ -64,12 +69,13 @@ def get_ngrams(text, n):
 
 def analyze_themes(filename=tesis_data_file, n_size=1, top_k=10):
     """
-    groups text by year and applies TF-IDF formula for salient tokens.
-    includes a time-series counter for the filtered minister/word.
-    Genera output en terminal y guarda CSVs para Streamlit.
+    Groups text by year and applies TF-IDF formula for salient tokens.
+
+
     """
     epoca_docs = {}
 
+    # Read filename and create epoch dictionary. Adding the ngrams to the epoch
     with open(filename, "r", encoding="utf-8") as f:
         reader = csv.DictReader(f)
         for row in reader:
@@ -84,16 +90,18 @@ def analyze_themes(filename=tesis_data_file, n_size=1, top_k=10):
                 epoca_docs[epoca] = []
             epoca_docs[epoca].extend(ngrams)
 
-    # calc salient tokens
+    # Calculate salient tokens
     all_epocas = list(epoca_docs.keys())
     num_epocas = len(all_epocas)
     ngram_epoca_counts = {}
     for epoca, ngrams in epoca_docs.items():
         for gram in set(ngrams):
+            # Add number of mentions for that ngram
             ngram_epoca_counts[gram] = ngram_epoca_counts.get(gram, 0) + 1
 
     epoca_data = []
 
+    # Total counts for that ngram in a given epoch
     for epoca in all_epocas:
         ngrams_in_epoca = epoca_docs[epoca]
         if not ngrams_in_epoca:
@@ -118,7 +126,7 @@ def analyze_themes(filename=tesis_data_file, n_size=1, top_k=10):
                 {"epoca": epoca, "ngram": gram, "count": count, "score": score}
             )
 
-    # convert to dataframe
+    # Convert to dataframe
     ngrams_df = pd.DataFrame(epoca_data)
     ngrams_df["epoca"] = pd.Categorical(
         ngrams_df["epoca"], categories=ORDER, ordered=True
@@ -128,6 +136,7 @@ def analyze_themes(filename=tesis_data_file, n_size=1, top_k=10):
 
 def main_ngrams():
 
+    # By default calculate ngrams in the tesis data file
     epoca_ngrams = analyze_themes(tesis_data_file)
 
     return epoca_ngrams
