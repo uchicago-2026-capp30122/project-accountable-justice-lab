@@ -1,10 +1,15 @@
 """
 ngrams_solicitudes.py
-This file is a basic, raw ngrams counter,
-it uses raw frequency vs the salient_tokens_solicitudes.py
-file that does saliency comparison.
-This was the first ngrams file we did, but opted to use the salient_tokens
-analysis for our visualizations
+This was the first exploratory version of the ngram analysis we did. 
+It is a basic n-gram frequency counter. It reads the cleaned solicitudes dataset, 
+keeps only rows from one year, preprocesses the text, removes stopwords, 
+builds contiguous n-grams, and counts how often each one appears.
+The script is simple, first it parses command-line arguments, then reads the 
+CSV and keep only rows from the selected year. It can optionally filter rows 
+containing a substring. Then it combines all text into one large string and 
+remove punctuation and stopwords. Last, it build n-grams and counts 
+them with Counter.
+
 """
 
 import csv

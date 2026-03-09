@@ -1,5 +1,17 @@
 """
 clean_solicitudes.py
+
+The raw solicitudes files could not be parsed with json.loads() because 
+some records contained malformed JSON, especially quotes and commas 
+inside text fields. Instead of relying on strict JSON parsing, we used a 
+custom extraction pipeline. First, we decoded file bytes to preserve Spanish 
+characters. Then, split the files into record-level blocks using 
+the "Folio" field. After that, we extracted a fixed set of fields with regex 
+patterns that stop at the next known key rather than at commas or quotes, 
+which made the process more robust to malformed text. Finally, we cleaned the 
+text, standardized dates and binary variables, and exported both yearly and 
+combined CSV files for later analysis.
+
 json files are basically broken:
 - some records contain quotes inside text fields
 - some have commas that break the format

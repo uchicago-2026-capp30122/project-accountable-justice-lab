@@ -1,10 +1,11 @@
 """
 ngrams_datos.py
-This file does theme analysis (ngrams) for all ministers.
-It iterates through the list of SCJN ministers per year, filters
-requests mentioning each minister and calculates the top 10 n grams
-per year. It generates a file called ngrams_por_ministro.csv, which is
-the pre-calculated data for the solicitudes ngram dashboard.
+This file is a precomputation script for the dashboard on streamlit. It loops 
+through all ministers that appear in the yearly dictionary of ministers in the 
+SCJN and runs the ngram analysis from salient_tokens_solicitudes.py, collects 
+the results in one list, converts that list into a pandas dataframe and writes 
+the final table to ngrams_por_ministro.csv. That csv will then be used for the 
+solicitudes ngram dashboard. 
 """
 
 import pandas as pd
