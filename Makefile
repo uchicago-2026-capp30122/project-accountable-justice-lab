@@ -24,4 +24,4 @@ analysis:
 	uv run src/analysis/solicitudes/indices_solicitudes.py
 
 app:
-	uv run streamlit run src/app/app_test.py
+	uv run streamlit run src/app/app.py
