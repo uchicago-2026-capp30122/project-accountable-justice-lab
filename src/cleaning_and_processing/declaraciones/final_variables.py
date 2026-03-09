@@ -192,7 +192,7 @@ for idx in range(len(df)):
         salaries.append(None)
         edu_levels.append(None)
         edu_insts.append(None)
-        inmuebles_json_col.append(None)  # <<< AGREGAR AQUÍ (nuevo)
+        inmuebles_json_col.append(None)  
         continue
 
     text = txt_path.read_text(encoding="utf-8", errors="replace")
@@ -214,7 +214,7 @@ for idx in range(len(df)):
 df["salary_mxn"] = salaries
 df["edu_highest_level"] = edu_levels
 df["edu_highest_institution"] = edu_insts
-df["inmuebles_json"] = inmuebles_json_col  # <<< ESTA LÍNEA FALTABA
+df["inmuebles_json"] = inmuebles_json_col  
 
 
 df.to_excel(OUTPUT_XLSX, index=False)
@@ -231,5 +231,5 @@ print(
     "institution:",
     pd.Series(edu_insts).notna().sum(),
     "inmuebles_json:",
-    pd.Series(inmuebles_json_col).notna().sum(),  # <<< AGREGAR AQUÍ (nuevo)
+    pd.Series(inmuebles_json_col).notna().sum(),  
 )
