@@ -8,7 +8,7 @@
 
 ## Abstract
 
-Our project focuses on metrics related to Mexico’s Supreme Court, with special emphasis on its justices. We have approached these metrics from two perspectives: transparency and access to public information and “judicial content production”. The first perspective (transparency and access to public information) will examine two elements. The first, corresponds to requests of information addressed to the Supreme Court, which we have linked to specific topics of interest, but particularly, when directly referencing justices. We analyze requests of public information linked to each of the Supreme Court justice and identify what kind of information (words or concepts) people are most interested in. Additionally, we added an index of no response that calculates the proportion of responses that fully addressed the requests or those that were discarded (and thus there was not a satisfactory answer). The second element related to transparency and access to justice will link justice’s annual income and asset disclosures, which we will process to identify each of the justice’s education, previous work experience and assets (personal property, real estate, vehicles, etc.). 
+Our project focuses on metrics related to Mexico’s Supreme Court, with special emphasis on its justices. We have approached these metrics from two perspectives: transparency and access to public information and “judicial content production”. The first perspective (transparency and access to public information) will examine two elements. The first, corresponds to requests of information addressed to the Supreme Court, which we have linked to specific topics of interest, but particularly, when directly referencing justices. We analyze requests of public information, with an emphasis on mentions to justices, and a salient word analysis of the requests that mention each justice. Additionally, we added an index of no response to the requests; the no response is understood as no informatión delivered from the institution to the citizen making the request. The second element related to transparency and access to justice will link justice’s annual income and asset disclosures, which we will process to identify each of the justice’s education, previous work experience and assets (personal property, real estate, vehicles, etc.). 
 
 For the second perspective (judicial content production), we generated a set of charts that identify trends and patterns for both court rulings (sentencias) and judicial precedents (tesis). In the case of rulings, one particular element of interest was the integrity of the data: we noticed there was a big difference between historical information and recent dates, which we believe is a valuable insight in itself, as it allows researchers and people to understand how reliable and complete the data is depending on the year of analysis. In addition to this, we have added charts related to total rulings and tesis emitted through the years, classifying by type, voting result. To complement the quantitative metrics, we have added a topic analysis component, that identifies the most mentioned words or set of words in the title of tesis (which we know have relevant legal content).
 
@@ -35,6 +35,7 @@ This project combines data from two primary sources.
     ### Solicitudes de información (Jimena)
         The solicitudes dataset contains transparency requests submitted to Mexico’s National Transparency Platform requesting information from the Supreme Court of Justice of the Nation (SCJN). The platform allows downloading yearly transparency request records. For this project, the data covers from 2017 to January 2026. Each year must be downloaded separately as a JSON export from the platform.
         
+        The main issue with this dataset is that the raw requests files (solicitudes) cannot be parsed because some records contained malformed or broken JSON, especially quotes and commas. 
 
     ### Declaraciones (Dani)
        The declaraciones(disclosures) are retrieved by bulk downloading CSV files for each quarter. Then, the script compiled_dataset.py compiles all of the CSV files into a single dataset and generates an Excel file containing the aggregated information. The script also filters the rows to keep only those corresponding to judges, and saves the filtered dataset. In total, we compile 7 CSV files, which together contain approximately 9,000 rows. After applying the filter, the resulting dataset contains only 29 rows, that represent information of 13 judges.
@@ -43,6 +44,7 @@ This project combines data from two primary sources.
     1) Incompleteness: Most PDFs are not completed full. We do not have information about asset declaration of all judges, for examples.  
     2) There is no historical information, we ust have information of 2025 and 2026.
     3) The PDFs are similar but no identical in content/structure. 
+    
        
 ## Repository structure
 
