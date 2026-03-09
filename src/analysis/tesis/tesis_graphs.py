@@ -118,7 +118,7 @@ def return_tesis_por_tipo_chart(tesis):
             y=alt.Y("idTesis:Q"),
             color=alt.Color("tipoTesis:N", legend=None),
             tooltip=[
-                alt.Tooltip("anio:O", title="Año, Year"),
+                alt.Tooltip("anio:O", title="Año (Year)"),
                 alt.Tooltip("tipoTesis:N", title="Tipo (Type)"),
                 alt.Tooltip(
                     "idTesis:Q", title="Tesis emitidas (Emitted Tesis)", format=","
@@ -208,7 +208,7 @@ def return_tesis_heatmap(tesis_2015):
         alt.Chart(tesis_ministro)
         .mark_rect()
         .encode(
-            x="anio:O",
+            x=alt.X("anio:O", title="Año (Year)"),
             y=alt.Y("ministro:N", sort="-x"),
             color=alt.Color("idTesis:Q", title="Tesis"),
             tooltip=[
