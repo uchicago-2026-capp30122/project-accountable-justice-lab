@@ -30,6 +30,8 @@ def return_sentencias_timeline(sentencias):
         sentencias.groupby("anio")["expediente"].count().to_frame().reset_index()
     )
 
+    counts_sentencias["anio"] = pd.to_datetime(counts_sentencias["anio"], format="%Y")
+
     chart_timeline = (
         alt.Chart(counts_sentencias)
         .mark_line(point=True, color="#2b6cb0")
@@ -82,10 +84,14 @@ def return_votacion_percentages(sentencias):
         .encode(
             x=alt.X("anio:O", title="Año (Year)"),
             y=alt.Y("percentage:Q", title="Sentencias (Rulings)"),
-            color=alt.Color("votos:N", title="Tipo votación (kind of vote)"),
+            color=alt.Color(
+                "votos:N",
+                title="Tipo votación (vote type)",
+                scale=alt.Scale(range=["#8F98A3", "#3B6EA5", "#6FB8D2"]),
+            ),
             tooltip=[
                 alt.Tooltip("anio", title="Año (Year)"),
-                alt.Tooltip("votos", title="Tipo votación (kind of vote)"),
+                alt.Tooltip("votos", title="Tipo votación (vote type)"),
                 alt.Tooltip(
                     "percentage:Q", title="Porcentaje (percentage)", format=".2%"
                 ),
