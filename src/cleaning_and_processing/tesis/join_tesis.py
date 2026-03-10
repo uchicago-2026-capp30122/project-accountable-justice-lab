@@ -39,9 +39,6 @@ def join_tesis_sources():
     that clean up certain columns and creates new columns that are relevant for
     the analysis, such as ministro (justice) and main_materia (main subject).
 
-    Because we will be doing two levels of analysis, we will generate two cleaned
-    csv files
-
     Inputs:
         None.
 
@@ -55,19 +52,21 @@ def join_tesis_sources():
     csv_data = pd.read_csv(csv_sourcefile, dtype=str)
 
     joined_tesis = pd.concat([csv_data, api_data], ignore_index=True)
-    # # Keep año as the only int type column
+    # Keep año as the only int type column
     joined_tesis["anio"] = joined_tesis["anio"].astype("int64")
 
-    # # Modify NA values for anexos
+    # Modify NA values for anexos
     joined_tesis["anexos"] = joined_tesis["anexos"].fillna("Sin anexos")
     joined_tesis["ministro"] = joined_tesis["precedentes"].apply(get_ministro)
 
+    # Create voting outcome columns
     joined_tesis["votos"] = np.where(
         joined_tesis["organoJuris"] == "Pleno",
         joined_tesis["precedentes"].apply(get_votacion_pleno),
         joined_tesis["precedentes"].apply(get_votacion_salas),
     )
 
+    # Extract main materia
     joined_tesis["main_materia"] = joined_tesis["materias"].apply(simplify_materia)
 
     # Filter tesis only by Supreme Court

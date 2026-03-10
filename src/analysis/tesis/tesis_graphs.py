@@ -6,6 +6,13 @@ import re
 from pathlib import Path
 from datetime import datetime as dt
 
+"""
+
+This file contains all of the functions necessary to create the graphs for the 
+Tesis tab of the app. 
+
+"""
+
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 

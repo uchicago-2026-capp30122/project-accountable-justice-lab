@@ -43,6 +43,13 @@ def remove_missing_dates(date: str):
     into a general date. This structure implies that the date of the ruling was
     not registered.
 
+    Although this function is not scalable, given the current state of the data,
+    solving each edge case results in more precision.
+
+    We defined 1985 as a possible year, given that we have data after 1989, so
+    we can distinguish years known and unknown. These values will be later updated
+    using the file number to attempt at a match of the year for that ruling.
+
     Inputs:
         - date (str): date of ruling.
 

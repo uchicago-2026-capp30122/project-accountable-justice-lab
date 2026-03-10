@@ -49,10 +49,7 @@ Number of investments (we have the investments people own but not the amount)
 Liabilities (?)
 
 Challenges:
-When we download the information, we get a CSV with independent PDFs per judge. We then have to scrap each PDF.
-Each PDF, although has the same overall structure, can be different in number of pages, categories and other components.
-There is only information for 2024 and 2025 (up till Q3). We have Q1 2024,Q2 2024, Q3 2024, Q1 2025, Q2 2025, and Q3 2025. We have to combine them and understand if they are initial declarations, regular, or ending declarations.  
-Design web scrapping code to extract information from PDF (which we have not done before). Also, not all the PDFs are the same and have similar titles for categories. Salary is in a category different from the other categories. 
+When we download the information, we get a CSV with independent PDFs per judge. We then have to scrap each PDF. Each PDF, although has the same overall structure, can be different in number of pages, categories and other components. There is only information for 2024 and 2025 (up till Q3). We have Q1 2024,Q2 2024, Q3 2024, Q1 2025, Q2 2025, and Q3 2025. We have to combine them and understand if they are initial declarations, regular, or ending declarations. Design web scrapping code to extract information from PDF (which we have not done before). Also, not all the PDFs are the same and have similar titles for categories. Salary is in a category different from the other categories. 
 
 ## Project structure
 
@@ -95,8 +92,6 @@ Each team member was responsible for different data sources and their correspond
 - Daniela Avayú: declaraciones data source pipeline (all directories with name "declaraciones")
 
 The app.py file was mostly done by Daniela Avayú and Jimena Gómez.
-
-* the ngrams code was adapted from Jimena's code on ngram analysis for the solicitudes part. 
 
 ## Final thoughts 
 

@@ -86,10 +86,6 @@ def load_sentencias_csv():
         clean_file_number
     )
 
-    # Modify NA values for asuntosAcumulados
-    sentencias["asuntosAcumulados"] = sentencias["asuntosAcumulados"].fillna(
-        "Sin asuntos acumulados"
-    )
     # Add source of extraction - historical comes from csv files
     sentencias["fuenteExtraccion"] = "csv"
 
