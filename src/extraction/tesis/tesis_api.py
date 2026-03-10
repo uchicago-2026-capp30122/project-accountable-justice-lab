@@ -92,10 +92,10 @@ def get_all_tesis():
     This function loops over lists of ids accessed through the API.
 
     Inputs:
-        url (str): base URL for API request
+        None
 
     Outputs:
-        general_tesis (list of dics): list of dictionaries of tesis.
+        general_tesis (list of dicts): list of dictionaries of tesis.
         general_tesis_scjn (list of dics): list containing dictionaries of tesis
         specific to the Supreme Court.
     """
@@ -125,7 +125,6 @@ def get_id_list(page_number):
     individual element to extract all information from a given tesis.
 
     Inputs:
-        url (str): base URL for API request
         page_number (int): page number of id page we are accessing in the API
 
     Outputs:

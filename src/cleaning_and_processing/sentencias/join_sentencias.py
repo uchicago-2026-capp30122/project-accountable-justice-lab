@@ -9,6 +9,13 @@ from .utils_sentencias import (
     clean_file_number,
 )
 
+"""
+In this file, the historical and API data sources for sentencias are joined. 
+The dataframes are concatenated and then several columns are created, refering to
+the cleaned up year of resolution or the voting outcome. 
+"""
+
+
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 SENTENCIAS_RAW_DATA = BASE_DIR / "data" / "raw_data" / "sentencias_data"
@@ -21,6 +28,18 @@ api_sourcefile = SENTENCIAS_RAW_DATA / "sentencias_data_api.csv"
 
 
 def join_sentencias_sources():
+    """
+    This function merges api and csv sentencias datasources. It also calls
+    several functions that clean up certain columns and creates new columns that
+    are relevant for the analysis, such as date and voting outcome.
+
+    Inputs:
+        None.
+
+    Returns:
+        None. One csv file of cleaned data.
+
+    """
 
     api_data = pd.read_csv(api_sourcefile, dtype=str)
     csv_data = pd.read_csv(csv_sourcefile, dtype=str)
@@ -28,7 +47,7 @@ def join_sentencias_sources():
     # Join both datasources
     joined_sentencias = pd.concat([csv_data, api_data], ignore_index=True)
 
-    # Verify that all files have the correct format
+    # Verify that all file numbers have the correct format
     joined_sentencias["expediente"] = joined_sentencias["expediente"].apply(str)
     joined_sentencias["expediente"] = joined_sentencias["expediente"].apply(
         clean_file_number
@@ -46,7 +65,7 @@ def join_sentencias_sources():
     # Get voting outcome
     joined_sentencias["votos"] = joined_sentencias["votacion"].apply(get_votacion)
 
-    # # Add cleanDate column to extract as much information of years as possible
+    # Add cleanDate column to extract as much information of years as possible
     joined_sentencias["cleanDate"] = joined_sentencias["fechaResolucion"].apply(
         remove_missing_dates
     )
@@ -71,10 +90,6 @@ def join_sentencias_sources():
     output_file_csv = SENTENCIAS_CLEAN_DATA / "sentencias_joined_data.csv"
     joined_sentencias.to_csv(output_file_csv, index=False)
 
-    return joined_sentencias
-
 
 if __name__ == "__main__":
     join_sentencias_sources()
-
-# uv run python src/cleaning_and_processing/tesis/join_sentencias.py

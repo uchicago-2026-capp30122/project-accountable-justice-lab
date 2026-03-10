@@ -13,8 +13,6 @@ physically provided in August 2nd, 2025, so the csv file has tesis emitted up
 until July 2025 (tesis are published every week). 
 """
 
-# BASE_DIR = Path(__file__).parent.parent.parent.parent
-
 BASE_DIR = Path(__file__).resolve().parents[3]
 
 DATA_DIR = BASE_DIR / "data"
@@ -69,8 +67,6 @@ def load_tesis_csv():
     tesis = tesis.dropna(how="all")
     # Keep year (anio) as the only int type column
     tesis["anio"] = tesis["anio"].astype("int64")
-    # Modify NA values for anexos
-    #  tesis["anexos"] = tesis["anexos"].fillna("Sin anexos")
     # Add source of extraction - historical comes from csv files
     tesis["fuenteExtraccion"] = "csv"
     # First convert from pandas df to a json file with new column names

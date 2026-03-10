@@ -314,16 +314,16 @@ with tab_general:
     col1, col2 = st.columns(2)
 
     with col1:
-        st.metric("Total tesis (Total precedents)", total_tesis)
-
-    with col2:
         st.metric("Total sentencias (Total rulings)", total_sentencias)
 
-    st.subheader("Línea de tiempo tesis (Tesis timeline)")
-    st.altair_chart(tesis_timeline_chart, use_container_width=True)
+    with col2:
+        st.metric("Total tesis (Total precedents)", total_tesis)
 
     st.subheader("Línea de tiempo sentencias (Rulings timeline)")
     st.altair_chart(sentencias_timeline_chart, use_container_width=True)
+
+    st.subheader("Línea de tiempo tesis (Tesis timeline)")
+    st.altair_chart(tesis_timeline_chart, use_container_width=True)
 
     st.subheader("Completitud de declaraciones (Disclosure completeness)")
 

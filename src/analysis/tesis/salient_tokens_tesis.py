@@ -11,6 +11,13 @@ from pathlib import Path
 from collections import Counter
 from .datatypes import STOPWORDS
 
+"""
+
+This file creates the main dataframe for n-gram analysis. These functions 
+were adapted from Jimena's code on n-gram analysis for solicitudes, which was
+mostly based on the PA3 Assignment in CAPP121. 
+
+"""
 
 BASE_DIR = Path(__file__).resolve().parents[3]
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
@@ -38,7 +45,7 @@ def normalize_text(text):
     Inputs:
         text(str): string of text that needs to be nromalized.
     Returns:
-        normalized text
+        normalized text (str)
     """
     if not text:
         return ""
@@ -57,6 +64,12 @@ def get_ngrams(text, n):
     Turn text to list of ngrams. And remove stop words, numbers and letters
     shorter than 3 letters
     fikters stopwords and words shorter than 3 letters
+
+    Inputs:
+        text (str): string of text
+        n (int): n-grams to slice the text into.
+
+    Returns: list: list of ngrams for a given text.
     """
     words = [
         w
@@ -70,6 +83,15 @@ def get_ngrams(text, n):
 def analyze_themes(filename=tesis_data_file, n_size=1, top_k=10):
     """
     Groups text by year and applies TF-IDF formula for salient tokens.
+
+    Inputs:
+        filename (str): name of csv file to process information
+        n_size (int): size of n-grams
+        top_k (int): number of top-k records to extract given relevance
+
+    Returns:
+        ngrams_df (df): pandas dataframe that contains the results for each
+        epoch given the size of the ngram and top token results.
 
 
     """

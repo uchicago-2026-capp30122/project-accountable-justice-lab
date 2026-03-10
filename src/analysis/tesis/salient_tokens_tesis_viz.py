@@ -4,6 +4,13 @@ import sys
 from pathlib import Path
 from .salient_tokens_tesis import ORDER, analyze_themes, main_ngrams
 
+"""
+
+This file creates the main structure of the tab that contaings the n-grams
+analysis for tesis and their corresponding épocas (epochs).
+
+"""
+
 BASE_DIR = Path(__file__).resolve().parents[3]
 TESIS_DATA = BASE_DIR / "data" / "clean_data" / "tesis_data"
 tesis_data_file = TESIS_DATA / "tesis_joined_data_scjn.csv"
@@ -17,6 +24,9 @@ def render_ngrams_tesis_tab():
 
     This function creates the main views for ngrams, with a particular focus on
     the tesis dataframe and the historical epochs of the Supreme Court.
+
+    Inputs: None
+    Returns: st.dataframe: streamlit visualization containig n-gram analysis
     """
     st.header("⚖️ Conceptos más mencionados en tesis")
 
