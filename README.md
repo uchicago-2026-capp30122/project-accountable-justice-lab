@@ -29,22 +29,22 @@ Although the official name of our project is "Accountable Justice Lab", the name
 
 ## Repository structure
 
-**1. Data: Divided into raw/ clean /visualization.** 
+**1. data: Divided into raw/ clean /visualization.** 
 
 raw_data: Original files downloaded from external sources
 clean_data: Processed datasets used for analysis
 viz_dev: Intermediate files used for visualization development
 
-**2. SRC**
+**2. src:**
 Contains the actual source code of project and contains 4 four sub-folders. 
 a) Extraction: Data is extracted from multiple sources. 
 b) Cleaning_and_processing: Data is processed.
 c) Analysis: Data processed used to the visualizations. 
 d) App: The Streamlit application that powers the interactive dashboard.
 
-**3. Tests:** Contains simple validation tests for the three main datasets.
+**3. tests:** Contains simple validation tests for the three main datasets.
 
-**4. Exploratory:** exploratory files of the data that are not part of the running program. 
+**4. exploratory:** exploratory files of the data that are not part of the running program. 
 
 
 ## How to run
@@ -73,13 +73,13 @@ make app
 
 This project combines data from two primary sources.
 
-### Repositorio de la Suprema Corte de Justicia de la Nación
+### 1. Repositorio de la Suprema Corte de Justicia de la Nación
 
-#### 1. Sentencias (court rulings)
+#### a. Sentencias (court rulings)
 
 This is historical information of court rulings by Mexico's Supreme Court of Justice. 
 
-#### Tesis (judicial criteria / precedents)
+#### b. Tesis (judicial criteria / precedents)
     
 Both types of information had two different forms of accessing:
 - Information pre August 2025: bulk data obtained directly from the Supreme Court (this data will be automatically downloaded into the data folder in the "fetch_data" step of the process). 
@@ -91,11 +91,11 @@ To directly access the data use the following links: <https://github.com/mafermu
 
 ### 2. Plataforma Nacional de Transparencia: <https://www.plataformadetransparencia>
 
-#### Solicitudes de información
+#### a. Solicitudes de información
     
 The solicitudes dataset contains transparency requests submitted to Mexico’s National Transparency Platform requesting information from the Supreme Court of Justice of the Nation (SCJN). The platform allows downloading yearly transparency request records. For this project, the data covers from 2017 to January 2026. Each year must be downloaded separately as a JSON export from the platform.
 
-#### Declaraciones
+#### b. Declaraciones
     
 The declaraciones(disclosures) are retrieved by bulk downloading CSV files for each quarter. Then, the script compiled_dataset.py compiles all of the CSV files into a single dataset and generates an Excel file containing the aggregated information. The script also filters the rows to keep only those corresponding to judges, and saves the filtered dataset. In total, we compile 7 CSV files, which together contain approximately 9,000 rows. After applying the filter, the resulting dataset contains only 29 rows, that represent information of 13 judges.
 
