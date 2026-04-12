@@ -2,7 +2,11 @@ import csv
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from .utils_tesis import (
+from utils_tesis import (
+    get_expediente,
+    get_tipo_asunto,
+    get_ponente,
+    get_secretaria,
     get_ministro,
     get_votacion_pleno,
     get_votacion_salas,
@@ -57,7 +61,23 @@ def join_tesis_sources():
 
     # Modify NA values for anexos
     joined_tesis["anexos"] = joined_tesis["anexos"].fillna("Sin anexos")
+
+    # Get expediente
+
+    joined_tesis["expediente"] = joined_tesis["precedentes"].apply(get_expediente)
+
+    # Get tipo asunto
+
+    joined_tesis["tipo_asunto"] = joined_tesis["precedentes"].apply(get_tipo_asunto)
+
+    # Get ponente
+    joined_tesis["ponente"] = joined_tesis["precedentes"].apply(get_ponente)
+
+    # Get ministro
     joined_tesis["ministro"] = joined_tesis["precedentes"].apply(get_ministro)
+
+    # Get secretario
+    joined_tesis["ministro"] = joined_tesis["precedentes"].apply(get_secretaria)
 
     # Create voting outcome columns
     joined_tesis["votos"] = np.where(
@@ -76,6 +96,9 @@ def join_tesis_sources():
 
     output_file_csv = TESIS_CLEAN_DATA / "tesis_joined_data_scjn.csv"
     tesis_scjn.to_csv(output_file_csv, index=False)
+
+    output_file_csv_complete = TESIS_CLEAN_DATA / "tesis_joined_data_complete.csv"
+    joined_tesis.to_csv(output_file_csv_complete, index=False)
 
 
 def filter_by_instancia(tesis, instancia: str):

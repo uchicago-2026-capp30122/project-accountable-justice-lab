@@ -5,6 +5,119 @@ Helper functions used to clean tesis dataframe
 """
 
 
+def get_expediente(precedentes: str):
+    """
+    This function extracts the file number of the court case. That generally
+    follows the structure "number/year".
+
+
+    Inputs:
+        - precedentes (str): text refering to the precedentes column in a tesis
+        dataframe
+
+    Returns:
+        - expediente (str): file number.
+
+    """
+
+    precedentes = precedentes.lower().strip()
+    pattern = r"\d+/\d+"
+    expediente = re.search(pattern, precedentes)
+
+    if not expediente:
+        return "sin datos"
+    else:
+        return expediente.group(0)
+
+
+def get_tipo_asunto(precedentes: str):
+    """
+    This function extracts the type of court case from the precedentes field.
+    The type of case is normally mentioned at the strart of the precedentes
+    text and is followed by the file number.
+
+    Inputs:
+        - precedentes (str): text refering to the precedentes column in a tesis
+        dataframe
+
+    Returns:
+        - tipo_asunto (str): type of court case.
+
+    """
+
+    precedentes = precedentes.lower().strip()
+    pattern = r"^(.+?)\s+\d+/\d+"
+    asunto = re.search(pattern, precedentes)
+
+    if not asunto:
+        return "sin datos"
+    else:
+        return asunto.group(1)
+
+
+def get_ponente(precedentes: str):
+    """
+    This function extracts the name of ponente (judge or justice) from a
+    text. This function is built according to the general format of the column
+    "precedentes", which follows the general rule of stating within the text
+    (not necessarily at the beginning) "Ponente: First Middle Last Name".
+
+    This is the same function as get ministro (only for this one we are generalizing
+    for tesis beyond the Supreme Court)
+
+    Inputs:
+        - precedentes (str): text refering to the precedentes column in a tesis
+        dataframe
+
+    Returns:
+        - ponente (str): name of judge that drafted the tesis.
+
+    """
+
+    precedentes = precedentes.lower().strip()
+    pattern = (
+        r"(?<=ponente:\s)([a-záéíóúüñ]+(?:\s[a-z][\.,]?)*(?:\s[a-záéíóúüñ]+)+)(?=[\.,])"
+    )
+    noise = r"ministr[o|a]\s|president[e|a]\s|magistrad[o|a]"
+    ponente = re.search(pattern, precedentes)
+
+    if not ponente:
+        return "sin datos"
+    else:
+        ponente = ponente.group(1)
+        ponente_clean = re.sub(noise, "", ponente)
+        return ponente_clean
+
+
+def get_secretaria(precedentes: str):
+    """
+    This function extracts the name of secretaria/o (clerk) from a
+    text. This function is built according to the general format of the column
+    "precedentes", which follows the general rule of stating within the text
+    (not necessarily at the beginning) "Secretaria(o): First Middle Last Name".
+
+    This is the same function as get ponente (only for this one we are generalizing
+    for tesis beyond the Supreme Court)
+
+    Inputs:
+        - precedentes (str): text refering to the precedentes column in a tesis
+        dataframe
+
+    Returns:
+        - secretaria (str): name of clerk that drafted the tesis.
+
+    """
+
+    precedentes = precedentes.lower().strip()
+    pattern = r"(?:secretaria|secretario|secretarias|secretarios|secretariado):\s([a-záéíóúüñ]+(?:\s[a-z][\.,]?)*(?:\s[a-záéíóúüñ]+)+)(?=[\.,])"
+    secretaria = re.search(pattern, precedentes)
+
+    if not secretaria:
+        return "sin datos"
+    else:
+        return secretaria.group(1)
+
+
 def get_ministro(precedentes: str):
     """
     This function extracts the name of ministro or ministra (justice) from a
@@ -39,7 +152,7 @@ def get_ministro(precedentes: str):
         ministro = ministro.group(1)
         ministro_clean = re.sub(noise, "", ministro)
         ministro = secondary_match_ministro(ministro_clean)
-        return ministro
+        return ministro_clean
 
 
 def secondary_match_ministro(ministro: str):
@@ -164,5 +277,3 @@ def simplify_materia(materias: str):
         return materia.group()
     else:
         return ""
-
-
