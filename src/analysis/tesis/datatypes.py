@@ -443,4 +443,7 @@ STOPWORDS = {
     "bis",
     "solo",
     "mostrara",
+    "ante",
+    "actos",
+    "tratandose"
 }
