@@ -2,7 +2,7 @@ import csv
 import numpy as np
 import pandas as pd
 from pathlib import Path
-from utils_tesis import (
+from .utils_tesis import (
     get_expediente,
     get_tipo_asunto,
     get_ponente,
@@ -77,7 +77,7 @@ def join_tesis_sources():
     joined_tesis["ministro"] = joined_tesis["precedentes"].apply(get_ministro)
 
     # Get secretario
-    joined_tesis["ministro"] = joined_tesis["precedentes"].apply(get_secretaria)
+    joined_tesis["secretaria"] = joined_tesis["precedentes"].apply(get_secretaria)
 
     # Create voting outcome columns
     joined_tesis["votos"] = np.where(
