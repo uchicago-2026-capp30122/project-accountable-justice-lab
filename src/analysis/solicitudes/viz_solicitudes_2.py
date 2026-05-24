@@ -90,12 +90,13 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
     )
 
     # subtabs within solicitudes viz
-    subtab_overview, subtab_mentions, subtab_themes, subtab_index = st.tabs(
+    subtab_overview, subtab_mentions, subtab_themes, subtab_index, subtab_revision = st.tabs(
         [
             "Overview",
             "Menciones a Ministros (Minister Count)",
             "Temas Principales (N-grams)",
             "Índice de No Respuesta (No Response Rate)",
+            "Revisa tu solicitud"
         ]
     )
 
@@ -284,6 +285,50 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
             )
 
             st.dataframe(table_df, hide_index=True, use_container_width=True)
+
+    # Revisión de solicitud 
+    with subtab_revision:
+        # Formulario
+        st.subheader("Formulario de revisión de solicitud")
+    
+        # Create form
+        with st.form("form_revision_solicitud"):
+            # Creates text box
+            contenido_solicitud = st.text_area("Contenido solicitud")
+    
+            medio_entrada = st.selectbox(
+                "Medio de entrada",
+                ["electrónica", "manual", "dispositivo móvil"]
+            )
+    
+            medio_entrega = st.selectbox(
+                "Medio de entrega",
+                ["virtual", "presencial"]
+            )
+    
+            tipo_solicitud = st.selectbox(
+                "Tipo de solicitud",
+                ["datos personales", "información pública"]
+            )
+    
+            # Creates submission button
+            submitted = st.form_submit_button("Enviar solicitud")
+    
+        # This only happens when person submits
+        if submitted:
+            nueva_respuesta = pd.DataFrame([{
+                "contenido_solicitud": contenido_solicitud,
+                "medio_entrada": medio_entrada,
+                "medio_entrega": medio_entrega,
+                "tipo_solicitud": tipo_solicitud,
+            }])
+    
+            output_path = Path("respuestas_formulario.csv")
+    
+            nueva_respuesta.to_csv(output_path, index=False)
+    
+            st.success("Formulario guardado correctamente.")
+
 
 
 if __name__ == "__main__":

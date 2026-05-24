@@ -572,3 +572,150 @@ In <strong>“Salaries”</strong>, you will find the salaries reported by the j
         st.subheader("Salario declarado (Declared salary)")
         salary_table = build_salary_table(declaraciones)
         st.dataframe(salary_table, use_container_width=True, hide_index=True)
+
+# PRUEBA tab
+with tab_declaraciones:
+    st.header("Declaraciones (Disclosures)")
+
+    sub0, sub1, sub2, sub3 = st.tabs(
+        [
+            "Overview",
+            "Nivel educativo (Educational level)",
+            "Bienes inmuebles (Assets)",
+            "Salarios (Salaries)",
+        ]
+    )
+
+    with sub0:
+        st.markdown(
+            """<div style="max-width:1050px; margin:0 auto 24px auto; line-height:1.75;">
+
+<p style="text-align:center; font-size:20px; font-weight:600; color:#2f3343; margin-bottom:14px;">
+Declaraciones
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151; margin-bottom:12px;">
+En esta parte podrás encontrar información vinculada con las declaraciones patrimoniales y de intereses
+de las y los ministros en los últimos dos años (2024 y 2025).<br><br>
+
+En la pestaña <strong>“Nivel educativo”</strong>, podrás encontrar una tabla que contiene
+los niveles educativos más altos reportados por las y los ministros.<br><br>
+
+En la pestaña <strong>“Bienes inmuebles”</strong>, podrás encontrar los bienes inmuebles declarados
+por los ministros.<br><br>
+
+En la pestaña <strong>“Salarios”</strong>, podrás encontrar los sueldos declarados por las y los ministros.
+</p>
+
+<hr style="margin:24px 0; opacity:0.20;">
+
+<p style="text-align:center; font-size:15px; font-weight:600; color:#4b5563; margin-bottom:8px;">
+Disclosures
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280; margin-top:0;">
+This section contains information related to the financial and conflict-of-interest disclosures
+of Supreme Court justices for the last two years (2024 and 2025).<br><br>
+
+In <strong>“Educational Level”</strong>, you will find a table with the highest educational levels
+reported by the justices.<br><br>
+
+In <strong>“Assets”</strong>, you will find declared real estate properties.<br><br>
+
+In <strong>“Salaries”</strong>, you will find the salaries reported by the justices.
+</p>
+
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+    with sub1:
+        st.subheader(
+            "Nivel educativo más alto declarado por persona (Highest educational level declared)"
+        )
+        edu_table = build_edu_table(declaraciones)
+        st.dataframe(edu_table, use_container_width=True, hide_index=True)
+
+    with sub2:
+        st.subheader("Bienes inmuebles (Assets)")
+        inmuebles_table = build_inmuebles_table(declaraciones_inmuebles)
+        st.dataframe(inmuebles_table, use_container_width=True, hide_index=True)
+
+    with sub3:
+        st.subheader("Salario declarado (Declared salary)")
+        salary_table = build_salary_table(declaraciones)
+        st.dataframe(salary_table, use_container_width=True, hide_index=True)
+        
+
+# Declaraciones tab
+with tab_declaraciones:
+    st.header("Declaraciones (Disclosures)")
+
+    sub0, sub1, sub2, sub3 = st.tabs(
+        [
+            "Overview",
+            "Nivel educativo (Educational level)",
+            "Bienes inmuebles (Assets)",
+            "Salarios (Salaries)",
+        ]
+    )
+
+    with sub0:
+        st.markdown(
+            """<div style="max-width:1050px; margin:0 auto 24px auto; line-height:1.75;">
+
+<p style="text-align:center; font-size:20px; font-weight:600; color:#2f3343; margin-bottom:14px;">
+Declaraciones
+</p>
+
+<p style="text-align:justify; font-size:15px; color:#374151; margin-bottom:12px;">
+En esta parte podrás encontrar información vinculada con las declaraciones patrimoniales y de intereses
+de las y los ministros en los últimos dos años (2024 y 2025).<br><br>
+
+En la pestaña <strong>“Nivel educativo”</strong>, podrás encontrar una tabla que contiene
+los niveles educativos más altos reportados por las y los ministros.<br><br>
+
+En la pestaña <strong>“Bienes inmuebles”</strong>, podrás encontrar los bienes inmuebles declarados
+por los ministros.<br><br>
+
+En la pestaña <strong>“Salarios”</strong>, podrás encontrar los sueldos declarados por las y los ministros.
+</p>
+
+<hr style="margin:24px 0; opacity:0.20;">
+
+<p style="text-align:center; font-size:15px; font-weight:600; color:#4b5563; margin-bottom:8px;">
+Disclosures
+</p>
+
+<p style="text-align:justify; font-size:13px; color:#6b7280; margin-top:0;">
+This section contains information related to the financial and conflict-of-interest disclosures
+of Supreme Court justices for the last two years (2024 and 2025).<br><br>
+
+In <strong>“Educational Level”</strong>, you will find a table with the highest educational levels
+reported by the justices.<br><br>
+
+In <strong>“Assets”</strong>, you will find declared real estate properties.<br><br>
+
+In <strong>“Salaries”</strong>, you will find the salaries reported by the justices.
+</p>
+
+</div>""",
+            unsafe_allow_html=True,
+        )
+
+    with sub1:
+        st.subheader(
+            "Nivel educativo más alto declarado por persona (Highest educational level declared)"
+        )
+        edu_table = build_edu_table(declaraciones)
+        st.dataframe(edu_table, use_container_width=True, hide_index=True)
+
+    with sub2:
+        st.subheader("Bienes inmuebles (Assets)")
+        inmuebles_table = build_inmuebles_table(declaraciones_inmuebles)
+        st.dataframe(inmuebles_table, use_container_width=True, hide_index=True)
+
+    with sub3:
+        st.subheader("Salario declarado (Declared salary)")
+        salary_table = build_salary_table(declaraciones)
+        st.dataframe(salary_table, use_container_width=True, hide_index=True)
