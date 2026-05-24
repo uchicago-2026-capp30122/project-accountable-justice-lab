@@ -6,7 +6,9 @@ readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
     "altair>=6.0.0",
+    "antiword>=0.1.0",
     "datetime>=6.0",
+    "docx2txt>=0.9",
     "jellyfish>=1.2.1",
     "openpyxl>=3.1.5",
     "pandas<3",
@@ -14,6 +16,9 @@ dependencies = [
     "pytest>=9.0.2",
     "ruff>=0.15.5",
     "streamlit>=1.30",
+    "textract>=2.0.0",
+    "textract-py3>=3.0.1",
+    "tika>=3.1.0",
 ]
 
 [dependency-groups]
