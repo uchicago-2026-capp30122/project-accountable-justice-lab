@@ -3,10 +3,11 @@ import datetime
 import httpx
 import json
 import time
+import re
 from datetime import datetime
 from pathlib import Path
 import pandas as pd
-from .http_sentencias import cached_get
+from .http_sentencias import cached_get, cached_get_docx
 
 """
 This file gets sentencias (court rulings) most recent information from the Supreme
@@ -32,7 +33,7 @@ SENTENCIAS_DIR = RAW_DATA / "sentencias_data"
 
 # Checking limits for sentencias ids - looking for those post July 2025
 PAGE_LIMIT = 40
-MAX_RECORDS = 1000
+MAX_RECORDS = 2000
 
 ENGROSES_CSV_COLUMNS = (
     "idSentencia",
@@ -49,6 +50,9 @@ ENGROSES_CSV_COLUMNS = (
     "asuntosAcumulados",
     "huellaDigital",
     "fuenteExtraccion",
+    "tipo_asunto_api",
+    "expediente_api",
+    "document_name",
 )
 
 
@@ -65,7 +69,7 @@ def get_total_ids():
         id_list_total (list): sorted list of ids found in page limit
     """
 
-    id_list_total = []
+    id_list_total = set()
 
     page_number = 0
 
@@ -75,10 +79,10 @@ def get_total_ids():
         else:
             kwargs = {"page": str(page_number)}
             id_list = cached_get("ids", **kwargs)
-        id_list_total.extend(id_list)
+        id_list_total.update(id_list)
         page_number += 1
 
-    return sorted(id_list_total, reverse=True)
+    return sorted(list(id_list_total), reverse=True)
 
 
 def get_all_rulings():
@@ -111,6 +115,11 @@ def get_all_rulings():
         ) > datetime.strptime("09/07/2025", "%d/%m/%Y"):
             response["fuenteExtraccion"] = "api"
             response["idSentencia"] = id_record
+            document_url = response["urlInternet"]
+            response["document_name"] = document_url.split("/")[-1]
+            tipo_asunto, expediente = extract_tipo_asunto_expediente(document_url)
+            response["tipo_asunto_api"] = tipo_asunto
+            response["expediente_api"] = expediente
             engroses_data_general.append(response)
 
     return engroses_data_general
@@ -123,7 +132,6 @@ def build_sentencia_csv():
     August 2025 that will be accessed through the Supreme Court's API.
 
     """
-
     engroses_data_general = get_all_rulings()
 
     output_filename = "sentencias_data_api.csv"
@@ -131,6 +139,28 @@ def build_sentencia_csv():
         writer = csv.DictWriter(f, fieldnames=ENGROSES_CSV_COLUMNS)
         writer.writeheader()
         writer.writerows(engroses_data_general)
+
+
+def extract_tipo_asunto_expediente(document_url):
+    """
+    Extract document tipo asunto and expediente
+
+    # ejemplo difícil: '3_356835_7434.docx' - acción de inconstitucionalidad 'y su acumulada'
+
+    """
+
+    doc_text = cached_get_docx(document_url)
+    doc_content_reduced = doc_text[:200]
+
+    pattern = r"^\s*(.+?)\s+(\d+/\d{4})"
+    matches = re.findall(pattern, doc_content_reduced, flags=re.MULTILINE)
+    if len(set(matches)) != 1:
+        tipo_asunto = "manual"
+        expediente = "manual"
+    else:
+        tipo_asunto = list(set(matches))[0][0].lower()
+        expediente = list(set(matches))[0][1].lower()
+    return tipo_asunto, expediente
 
 
 if __name__ == "__main__":

@@ -1,9 +1,14 @@
 import datetime
+import docx2txt
+
+# from docx import Document
 import httpx
 import json
 import time
+import re
 from datetime import datetime
 from pathlib import Path
+import subprocess
 
 
 BASE_DIR = Path(__file__).resolve().parents[3]
@@ -12,9 +17,14 @@ DATA_DIR = BASE_DIR / "data"
 RAW_DATA = DATA_DIR / "raw_data"
 SENTENCIAS_DIR = RAW_DATA / "sentencias_data"
 JSON_SENTENCIAS_DIR = SENTENCIAS_DIR / "_cache"
+DOC_SENTENCIAS_DIR = SENTENCIAS_DIR / "_cache_documents"
+SOFFICE_PATH = "/Applications/LibreOffice.app/Contents/MacOS/soffice"
 
 if not JSON_SENTENCIAS_DIR.is_dir():
     JSON_SENTENCIAS_DIR.mkdir(parents=True, exist_ok=True)
+
+if not DOC_SENTENCIAS_DIR.is_dir():
+    DOC_SENTENCIAS_DIR.mkdir(parents=True, exist_ok=True)
 
 BASE_URL = "https://bicentenario.scjn.gob.mx/repositorio-scjn/api/v1/"
 
@@ -118,3 +128,72 @@ def cached_get(record_id, **kwargs) -> dict:
 
         except FetchException:
             print("Encountered error while accessing API")
+
+
+def cached_get_docx(document_url) -> dict:
+    """
+    This function caches all GET requests it makes, by writing
+    the successful responses to disk.
+
+    Three things to keep in mind:
+
+    - If the function is making an HTTP request, sleep for 2 seconds first
+      using `time.sleep(2)`. (Do not sleep if the response is in cache.)
+
+    Parameters:
+        document_url: url that has document
+
+    Returns:
+        Contents of document as text.
+
+    Raises:
+        FetchException if a non-200 response occurs.
+    """
+
+    # Scenario 1: we already have the information stored
+    filename = document_url.split("/")[-1]
+    file_path = DOC_SENTENCIAS_DIR / filename
+
+    if file_path.is_file():
+        if file_path.suffix == ".doc":
+            file_path = convert_to_docx(file_path)
+        doc_content = docx2txt.process(file_path)
+        return doc_content
+
+    # Scenario 2: we don't have the information and need to do a GET request
+    else:
+        time.sleep(0.5)
+        try:
+            response = httpx.get(document_url, follow_redirects=True)
+            response.raise_for_status()
+            content = response.content
+
+            file_path.write_bytes(content)
+
+            if file_path.suffix == ".doc":
+                file_path = convert_to_docx(file_path)
+
+            if file_path.suffix == ".docx":
+                doc_content = docx2txt.process(file_path)
+                return doc_content
+            else:
+                return "not found"
+
+        except FetchException:
+            print("Encountered error while accessing API")
+
+
+def convert_to_docx(file_path):
+    subprocess.run(
+        [
+            SOFFICE_PATH,
+            "--headless",
+            "--convert-to",
+            "docx",
+            str(file_path),
+            "--outdir",
+            DOC_SENTENCIAS_DIR,
+        ]
+    )
+    file_path = file_path.with_suffix(".docx")
+    return file_path
