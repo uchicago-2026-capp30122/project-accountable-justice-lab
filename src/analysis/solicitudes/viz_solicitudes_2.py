@@ -312,7 +312,7 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
             medio_entrega = st.selectbox("Medio de entrega", ["virtual", "presencial"])
 
             tipo_solicitud = st.selectbox(
-                "Tipo de solicitud", ["datos personales", "información pública"]
+                "Tipo de solicitud", ["Datos Personales", "Información Pública"]
             )
 
             # Creates submission button
@@ -330,12 +330,17 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
                     }
                 ]
             )
-
+            
             output_path = Path("respuestas_formulario.csv")
 
             nueva_respuesta.to_csv(output_path, index=False)
 
             st.success("Formulario guardado correctamente.")
+            
+            probability, prediction = return_prediction()
+            
+            st.success(f"Tu solicitud tiene una probabilidad de {probability[0] * 100:.2f}%")
+
 
 
 if __name__ == "__main__":
