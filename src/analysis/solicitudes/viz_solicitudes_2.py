@@ -1,9 +1,9 @@
 """
-This file was to test the solicitudes tab for the streamlit dashboard. 
-It does 3 main things: shows a bar chart of how many times each minister is mentioned 
-in solicitudes for a selected year, and it lets the user run an interative 
-salient ngrams analysis by minister, year and ngram size, 
-and finally shows in a third tab the no response index graph and chart. 
+This file was to test the solicitudes tab for the streamlit dashboard.
+It does 3 main things: shows a bar chart of how many times each minister is mentioned
+in solicitudes for a selected year, and it lets the user run an interative
+salient ngrams analysis by minister, year and ngram size,
+and finally shows in a third tab the no response index graph and chart.
 """
 
 import streamlit as st
@@ -16,27 +16,29 @@ root_path = Path(__file__).resolve().parents[3]
 sys.path.append(str(root_path))
 
 from src.analysis.solicitudes.salient_tokens_solicitudes import analyze_themes
+from src.analysis.declaraciones.declaraciones_prob_ml import return_prediction
 
 SOLICITUDES_COUNTS_CSV = Path("data/viz_data/todos_los_ministros_timeseries.csv")
 SOLICITUDES_TEXT_CSV = Path(
-"data/clean_data/solicitudes/clean_solicitudes_2017_2026.csv"
+    "data/clean_data/solicitudes/clean_solicitudes_2017_2026.csv"
 )
 SOLICITUDES_INDEX_CSV = Path("data/viz_data/noresponse_index_solicitudes.csv")
 
+
 def return_ministers_bar_chart(df, selected_year):
     """Bar chart of counts a minister is mentioned in a request"""
-    # keep only one year 
+    # keep only one year
     df_year = df[df["year"] == str(selected_year)].copy()
 
-    # empty chart if there is no data for that year 
+    # empty chart if there is no data for that year
     if df_year.empty:
         return alt.Chart(pd.DataFrame({"minister": [], "count": []})).mark_bar()
 
     # format minister names and sort so most common are first
     df_year["minister"] = df_year["minister"].astype(str).str.title()
     df_year = df_year.sort_values("count", ascending=False).reset_index(drop=True)
-    df_year['highlight'] = df_year.index == 0
-    #chart, count on x, minister on y
+    df_year["highlight"] = df_year.index == 0
+    # chart, count on x, minister on y
     chart = (
         alt.Chart(df_year)
         .mark_bar()
@@ -44,9 +46,7 @@ def return_ministers_bar_chart(df, selected_year):
             x=alt.X("count:Q", title="Menciones (Counts)"),
             y=alt.Y("minister:N", sort="-x", title="Ministro (Justice)"),
             color=alt.condition(
-                alt.datum.highlight,
-                alt.value("#1269a7"),  
-                alt.value("#3769A6")  
+                alt.datum.highlight, alt.value("#1269a7"), alt.value("#3769A6")
             ),
             tooltip=["minister", "count"],
         )
@@ -54,12 +54,15 @@ def return_ministers_bar_chart(df, selected_year):
     )
     return chart
 
+
 def return_no_response_line_chart(df):
     """time series chart of non-response index by year"""
     chart_df = df.copy()
     chart_df["year"] = pd.to_numeric(chart_df["year"], errors="coerce")
     chart_df["no_response_percent"] = chart_df["no_response_index"] * 100
-    chart_df = chart_df.dropna(subset=["year", "no_response_percent"]).sort_values("year")
+    chart_df = chart_df.dropna(subset=["year", "no_response_percent"]).sort_values(
+        "year"
+    )
 
     chart = (
         alt.Chart(chart_df)
@@ -69,7 +72,11 @@ def return_no_response_line_chart(df):
             y=alt.Y("no_response_percent:Q", title="No respuesta (no response) (%)"),
             tooltip=[
                 alt.Tooltip("year:O", title="Año"),
-                alt.Tooltip("no_response_percent:Q", title="No respuesta (no response) (%)", format=".2f"),
+                alt.Tooltip(
+                    "no_response_percent:Q",
+                    title="No respuesta (no response) (%)",
+                    format=".2f",
+                ),
             ],
         )
         .properties(height=250)
@@ -80,9 +87,7 @@ def return_no_response_line_chart(df):
 
 def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
     st.header("Solicitudes (Requests)")
-    available_years = sorted(
-        solicitudes_counts["year"].dropna().unique(), reverse=True
-    )
+    available_years = sorted(solicitudes_counts["year"].dropna().unique(), reverse=True)
 
     # use ministers in data as the selectbox options
     available_ministers = sorted(
@@ -90,19 +95,21 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
     )
 
     # subtabs within solicitudes viz
-    subtab_overview, subtab_mentions, subtab_themes, subtab_index, subtab_revision = st.tabs(
-        [
-            "Overview",
-            "Menciones a Ministros (Minister Count)",
-            "Temas Principales (N-grams)",
-            "Índice de No Respuesta (No Response Rate)",
-            "Revisa tu solicitud"
-        ]
+    subtab_overview, subtab_mentions, subtab_themes, subtab_index, subtab_revision = (
+        st.tabs(
+            [
+                "Overview",
+                "Menciones a Ministros (Minister Count)",
+                "Temas Principales (N-grams)",
+                "Índice de No Respuesta (No Response Rate)",
+                "Revisa tu solicitud",
+            ]
+        )
     )
 
     with subtab_overview:
         st.markdown(
-    """
+            """
     <div style="max-width:1050px; margin:0 auto 24px auto; line-height:1.75;">
 
     <p style="text-align:center; font-size:20px; font-weight:600; color:#2f3343; margin-bottom:14px;">
@@ -224,7 +231,9 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
                     ]
 
                     if themes_year.empty:
-                        st.info("No themes available for this justice in the selected year.")
+                        st.info(
+                            "No themes available for this justice in the selected year."
+                        )
                     else:
                         display_df = themes_year[["ngram", "count", "score"]].rename(
                             columns={
@@ -286,49 +295,47 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
 
             st.dataframe(table_df, hide_index=True, use_container_width=True)
 
-    # Revisión de solicitud 
+    # Revisión de solicitud
     with subtab_revision:
         # Formulario
         st.subheader("Formulario de revisión de solicitud")
-    
+
         # Create form
         with st.form("form_revision_solicitud"):
             # Creates text box
             contenido_solicitud = st.text_area("Contenido solicitud")
-    
+
             medio_entrada = st.selectbox(
-                "Medio de entrada",
-                ["electrónica", "manual", "dispositivo móvil"]
+                "Medio de entrada", ["electrónica", "manual", "dispositivo móvil"]
             )
-    
-            medio_entrega = st.selectbox(
-                "Medio de entrega",
-                ["virtual", "presencial"]
-            )
-    
+
+            medio_entrega = st.selectbox("Medio de entrega", ["virtual", "presencial"])
+
             tipo_solicitud = st.selectbox(
-                "Tipo de solicitud",
-                ["datos personales", "información pública"]
+                "Tipo de solicitud", ["datos personales", "información pública"]
             )
-    
+
             # Creates submission button
             submitted = st.form_submit_button("Enviar solicitud")
-    
+
         # This only happens when person submits
         if submitted:
-            nueva_respuesta = pd.DataFrame([{
-                "contenido_solicitud": contenido_solicitud,
-                "medio_entrada": medio_entrada,
-                "medio_entrega": medio_entrega,
-                "tipo_solicitud": tipo_solicitud,
-            }])
-    
-            output_path = Path("respuestas_formulario.csv")
-    
-            nueva_respuesta.to_csv(output_path, index=False)
-    
-            st.success("Formulario guardado correctamente.")
+            nueva_respuesta = pd.DataFrame(
+                [
+                    {
+                        "contenido_solicitud": contenido_solicitud,
+                        "medio_entrada": medio_entrada,
+                        "medio_entrega": medio_entrega,
+                        "tipo_solicitud": tipo_solicitud,
+                    }
+                ]
+            )
 
+            output_path = Path("respuestas_formulario.csv")
+
+            nueva_respuesta.to_csv(output_path, index=False)
+
+            st.success("Formulario guardado correctamente.")
 
 
 if __name__ == "__main__":
@@ -336,7 +343,7 @@ if __name__ == "__main__":
         df_counts = pd.read_csv(SOLICITUDES_COUNTS_CSV)
         df_counts["year"] = df_counts["year"].astype(str)
         df_index = pd.read_csv(SOLICITUDES_INDEX_CSV)
-        df_index['year'] = df_index['year'].astype(str)
+        df_index["year"] = df_index["year"].astype(str)
         render_solicitudes_tab(df_counts, df_index)
     else:
         st.error(f"Missing file for counts or index")
