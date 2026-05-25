@@ -10,7 +10,7 @@ import streamlit as st
 import pandas as pd
 
 # Import table-building functions for the Declaraciones tab
-from analysis.declaraciones.declaraciones_prob_ml import return_prediction
+from analysis.solicitudes.solicitudes_prob_ml import return_prediction
 from analysis.declaraciones.declaraciones_viz_educ import build_edu_table
 from analysis.declaraciones.declaraciones_viz_inmuebles import build_inmuebles_table
 from analysis.declaraciones.declaraciones_viz_salario import build_salary_table

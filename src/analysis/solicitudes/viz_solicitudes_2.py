@@ -16,7 +16,7 @@ root_path = Path(__file__).resolve().parents[3]
 sys.path.append(str(root_path))
 
 from src.analysis.solicitudes.salient_tokens_solicitudes import analyze_themes
-from src.analysis.declaraciones.declaraciones_prob_ml import return_prediction
+from src.analysis.solicitudes.solicitudes_prob_ml import return_prediction
 
 SOLICITUDES_COUNTS_CSV = Path("data/viz_data/todos_los_ministros_timeseries.csv")
 SOLICITUDES_TEXT_CSV = Path(
