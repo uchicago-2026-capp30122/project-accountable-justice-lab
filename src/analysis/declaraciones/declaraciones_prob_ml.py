@@ -25,7 +25,7 @@ scaler = joblib.load(SCALER_PATH)
 encoder = joblib.load(ENCODER_PATH)
 feature_cols = joblib.load(COLUMNS_PATH)
 
-SAMPLE_CSV = DATA_DIR / "test_declaraciones.csv"
+SAMPLE_CSV = BASE_DIR / "respuestas_formulario.csv"
 
 
 RESPUESTA_CSV = DATA_DIR / "test_checar.csv"
