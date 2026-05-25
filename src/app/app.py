@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 
 # Import table-building functions for the Declaraciones tab
+from analysis.declaraciones.declaraciones_prob_ml import return_prediction
 from analysis.declaraciones.declaraciones_viz_educ import build_edu_table
 from analysis.declaraciones.declaraciones_viz_inmuebles import build_inmuebles_table
 from analysis.declaraciones.declaraciones_viz_salario import build_salary_table
@@ -645,7 +646,7 @@ In <strong>“Salaries”</strong>, you will find the salaries reported by the j
         st.subheader("Salario declarado (Declared salary)")
         salary_table = build_salary_table(declaraciones)
         st.dataframe(salary_table, use_container_width=True, hide_index=True)
-        
+
 
 # Declaraciones tab
 with tab_declaraciones:
