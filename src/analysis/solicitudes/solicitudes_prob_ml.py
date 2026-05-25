@@ -40,7 +40,7 @@ medio_entrada_dict = {
 
 tipo_solicitud_dict = {
     "Información Pública": "informacion_publica",
-    "Datos Personales": "datos_personales",
+    "datos personales": "datos_personales",
 }
 
 
