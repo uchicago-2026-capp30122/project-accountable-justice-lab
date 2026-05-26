@@ -312,7 +312,7 @@ def render_solicitudes_tab(solicitudes_counts, solicitudes_index):
             medio_entrega = st.selectbox("Medio de entrega", ["virtual", "presencial"])
 
             tipo_solicitud = st.selectbox(
-                "Tipo de solicitud", ["Datos Personales", "Información Pública"]
+                "Tipo de solicitud", ["Datos Personales", "Información pública"]
             )
 
             # Creates submission button
